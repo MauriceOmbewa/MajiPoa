@@ -1,0 +1,37 @@
+/* ==========================================================================
+   MajiSafi - Standalone Home Component Styles
+   File: src/app/pages/home/home.component.css
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+}
+
+/* Custom font smoothing for high-DPI displays */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle pulse animation for status dots */
+@keyframes ping-subtle {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animate-ping-subtle {
+  animation: ping-subtle 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
