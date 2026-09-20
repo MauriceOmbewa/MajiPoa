@@ -1,0 +1,397 @@
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Product Detail Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-product-detail
+     Files: src/app/pages/product-detail/product-detail.html (.ts, .scss)
+     Styling: Tailwind CSS Utility Classes + product-detail.scss
+     ========================================================================== -->
+
+<div class="product-detail-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased selection:bg-[#E8F2FC] selection:text-[#1877D2] pb-16">
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] shadow-xs">
+    <div class="max-w-[1180px] mx-auto px-5 h-[68px] flex items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <a routerLink="/" (click)="navigateTo('home')" class="flex items-center gap-2.5 no-underline group cursor-pointer">
+        <svg class="w-7 h-7 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.5S4.5 11 4.5 15.4A7.5 7.5 0 0 0 19.5 15.4C19.5 11 12 2.5 12 2.5Z" fill="url(#pdBrandGrad)"/>
+          <defs>
+            <linearGradient id="pdBrandGrad" x1="4" y1="3" x2="20" y2="21">
+              <stop stop-color="#2FC4C0"/>
+              <stop offset="1" stop-color="#1877D2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="font-['Bricolage_Grotesque'] font-bold text-[22px] tracking-tight text-[#07243D]">
+          Maji<span class="text-[#1877D2]">Safi</span>
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1">
+        <button
+          type="button"
+          (click)="navigateTo('discover')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium bg-[#07243D] text-white transition cursor-pointer">
+          Find water
+        </button>
+        <button
+          type="button"
+          (click)="navigateTo('home')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Home
+        </button>
+        <button
+          type="button"
+          (click)="showToast('Navigating to orders...')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          My orders
+        </button>
+        <button
+          type="button"
+          (click)="openPassport()"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Water quality
+        </button>
+        <button
+          type="button"
+          (click)="showToast('Help & Support: Call 0800 720 000 (Toll Free)')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Help
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Location Pill -->
+        <button
+          type="button"
+          (click)="showToast('Location selector: ' + locationName())"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] text-[13.5px] text-[#07243D] hover:border-[#1877D2] transition cursor-pointer max-w-[210px] sm:max-w-[260px]">
+          <span>📍</span>
+          <b class="truncate font-semibold">{{ locationName() }}</b>
+          <span class="text-xs text-[#1877D2] underline shrink-0 hidden sm:inline ml-0.5">Change</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button
+          type="button"
+          (click)="openCart()"
+          class="relative w-10 h-10 rounded-full border border-[#DBE7F1] bg-white flex items-center justify-center hover:bg-[#F1F6FA] transition cursor-pointer text-[#07243D]"
+          aria-label="Shopping Cart">
+          <span class="text-base">🛒</span>
+          @if (cartCount() > 0) {
+            <span class="absolute -top-1 -right-1 bg-[#2FC4C0] text-[#043433] text-[11px] font-bold min-w-[19px] h-[19px] rounded-full flex items-center justify-center px-1 shadow-xs ring-2 ring-white">
+              {{ cartCount() }}
+            </span>
+          }
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Body Wrap -->
+  <div class="max-w-[1180px] mx-auto px-5 pt-[22px]">
+    <!-- Breadcrumb trail -->
+    <p class="text-[#5E7489] text-[13.5px] mb-5 flex items-center gap-1.5 flex-wrap">
+      <button
+        type="button"
+        (click)="navigateTo('discover')"
+        class="hover:text-[#1877D2] hover:underline cursor-pointer border-none bg-transparent p-0 text-inherit">
+        Water near you
+      </button>
+      <span class="text-[#8FB0CC]">›</span>
+      <button
+        type="button"
+        (click)="openVendor()"
+        class="hover:text-[#1877D2] hover:underline cursor-pointer border-none bg-transparent p-0 text-inherit">
+        {{ product().vendor }}
+      </button>
+      <span class="text-[#8FB0CC]">›</span>
+      <span class="text-[#07243D] font-medium">{{ product().size }} refill</span>
+    </p>
+
+    <!-- Main Grid Split: 1fr and 380px Aside -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+      <!-- Left Column: Product Details, Origin Card, and Reviews -->
+      <div>
+        <!-- Hero Product Card / 320px Visual Display -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs">
+          <div class="h-[320px] bg-gradient-to-br from-[#EAF4FC] via-[#D8ECF8] to-[#CFE7F7] flex flex-col items-center justify-center relative select-none">
+            <!-- Subtle Water Ripple Effect in background -->
+            <div class="absolute w-56 h-56 rounded-full bg-white/20 animate-pulse pointer-events-none"></div>
+            <div class="absolute w-40 h-40 rounded-full bg-white/30 pointer-events-none"></div>
+
+            <span class="font-['Bricolage_Grotesque'] text-[72px] sm:text-[80px] text-[#7FB4DC] font-semibold tracking-tight relative z-10 drop-shadow-2xs">
+              {{ product().size }}
+            </span>
+
+            <span class="relative z-10 px-3 py-1 rounded-full bg-white/80 backdrop-blur-xs text-[#0F3A5C] text-xs font-semibold border border-white/60 shadow-2xs mt-1">
+              Standard 20-Litre Dispensary Refill Jug
+            </span>
+          </div>
+        </div>
+
+        <!-- Product Title & Verified Vendor Sub-row -->
+        <h1 class="font-['Bricolage_Grotesque'] text-[28px] sm:text-[32px] font-bold text-[#07243D] tracking-tight mt-[22px] mb-[6px] leading-tight">
+          {{ product().name }}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-3 mb-[14px] text-[14px]">
+          <button
+            type="button"
+            (click)="openVendor()"
+            class="font-semibold text-[#1877D2] hover:underline cursor-pointer border-none bg-transparent p-0">
+            {{ product().vendor }}
+          </button>
+
+          <span class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#12946A]">
+            <span>✓</span> Verified vendor
+          </span>
+
+          <span class="text-[#5E7489] text-[13.5px] flex items-center gap-1">
+            <span class="text-[#D97706] font-semibold">{{ product().rating }} ★</span>
+            <span>({{ product().reviewCount }})</span>
+          </span>
+
+          <span class="text-[12px] font-bold px-2.5 py-0.5 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da]">
+            Delivers in ~{{ product().deliveryMinutes }} min
+          </span>
+        </div>
+
+        <!-- Product Description with Link to New Jug Bundle -->
+        <p class="text-[#07243D] text-[15px] leading-relaxed max-w-[62ch] mb-7">
+          Refill of your own 20L hard jug with purified drinking water. Bring out your empty jug when the rider arrives — the swap takes a minute. If you don't have a jug yet, order the
+          <button
+            type="button"
+            (click)="selectNewJugBundle()"
+            class="text-[#1877D2] font-semibold hover:underline cursor-pointer border-none bg-transparent p-0 mx-1">
+            new jug bundle
+          </button>
+          instead.
+        </p>
+
+        <!-- Section: Where this water comes from -->
+        <h3 class="font-['Bricolage_Grotesque'] text-[20px] font-bold text-[#07243D] mt-[26px] mb-[12px]">
+          Where this water comes from
+        </h3>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl shadow-xs overflow-hidden">
+          <div class="p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">Source</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.source }}</b>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">Treatment</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.treatment }}</b>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">Certification</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.certification }}</b>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">pH</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.ph }} (Optimal alkaline-neutral)</b>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">TDS</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.tds }} ppm (Pristine low mineral)</b>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <span class="text-[#5E7489] text-[13px]">Last lab test</span>
+              <b class="text-[14px] text-[#07243D] font-semibold">{{ product().origin.lastLabTest }}</b>
+            </div>
+          </div>
+
+          <!-- Passport Trust Banner Footer -->
+          <div class="border-t border-[#DBE7F1] px-5 py-3.5 bg-[#FAFBFD] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span class="text-[#5E7489] text-[13.5px]">
+              Documents are checked by MajiSafi before a vendor can sell.
+            </span>
+            <button
+              type="button"
+              (click)="openPassport()"
+              class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] hover:border-[#1877D2] transition cursor-pointer self-start sm:self-auto whitespace-nowrap shadow-2xs">
+              <span>🔬 View water passport</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: What customers say -->
+        <h3 class="font-['Bricolage_Grotesque'] text-[20px] font-bold text-[#07243D] mt-[26px] mb-[12px]">
+          What customers say
+        </h3>
+
+        <div class="grid grid-cols-1 gap-3">
+          @for (review of reviews(); track review.id) {
+            <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4.5 shadow-xs">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <b class="text-[15px] text-[#07243D] font-semibold">{{ review.author }}</b>
+                <span class="text-[#5E7489] text-[13px] flex items-center gap-1">
+                  <span class="text-[#D97706] font-semibold">{{ review.stars }} ★</span>
+                  <span>·</span>
+                  <span>{{ review.dateAgo }}</span>
+                </span>
+              </div>
+              <p class="text-[#07243D] text-[14.5px] leading-relaxed m-0">
+                {{ review.comment }}
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right Column: Sticky Pricing & Order Aside -->
+      <aside class="bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-md sticky top-[88px] flex flex-col gap-5">
+        <!-- Price and Unit Badge -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-['Bricolage_Grotesque'] text-[32px] font-bold text-[#07243D] tracking-tight">
+              KSh {{ product().priceKsh }}
+            </span>
+            <span class="text-[12px] font-semibold px-2.5 py-1 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] text-[#0F3A5C]">
+              per jug
+            </span>
+          </div>
+          <p class="text-[#5E7489] text-[13.5px] m-0">
+            Delivery KSh {{ deliveryFee() }} to {{ locationName() }}
+          </p>
+        </div>
+
+        <!-- Quantity Stepper & Stock Gauge -->
+        <div class="flex flex-col gap-2 pt-2 border-t border-[#DBE7F1]">
+          <label class="text-[13.5px] font-bold text-[#07243D]">Quantity</label>
+          <div class="flex items-center justify-between gap-3">
+            <div class="inline-flex items-center border border-[#DBE7F1] rounded-full bg-white shadow-2xs overflow-hidden">
+              <button
+                type="button"
+                (click)="decrementQty()"
+                [disabled]="quantity() <= 1"
+                class="w-9 h-9 flex items-center justify-center text-base font-bold text-[#5E7489] hover:bg-[#F1F6FA] hover:text-[#07243D] transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                −
+              </button>
+              <span class="min-w-8 text-center text-[15px] font-bold text-[#07243D]">
+                {{ quantity() }}
+              </span>
+              <button
+                type="button"
+                (click)="incrementQty()"
+                [disabled]="quantity() >= stockLeft()"
+                class="w-9 h-9 flex items-center justify-center text-base font-bold text-[#5E7489] hover:bg-[#F1F6FA] hover:text-[#07243D] transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                +
+              </button>
+            </div>
+
+            <span class="text-[#5E7489] text-[13.5px]">
+              {{ stockLeft() }} jugs available today
+            </span>
+          </div>
+
+          <!-- Stock Availability Meter Bar (58% filled) -->
+          <div class="w-full h-1.5 rounded-full bg-[#E5EFF7] overflow-hidden mt-1" title="Daily inventory capacity">
+            <div
+              class="h-full rounded-full bg-gradient-to-r from-[#2FC4C0] to-[#1877D2] transition-all duration-300"
+              [style.width.%]="stockPercentage()">
+            </div>
+          </div>
+        </div>
+
+        <!-- When Delivery Picker (Radio Options) -->
+        <div class="flex flex-col gap-2 pt-2 border-t border-[#DBE7F1]">
+          <label class="text-[13.5px] font-bold text-[#07243D]">When?</label>
+
+          <div class="flex flex-col gap-2">
+            <!-- Option 1: ASAP -->
+            <label
+              (click)="setTiming('asap')"
+              [class]="timing() === 'asap'
+                ? 'flex items-center gap-3 p-3 rounded-xl border-2 border-[#1877D2] bg-[#E8F2FC]/40 cursor-pointer transition'
+                : 'flex items-center gap-3 p-3 rounded-xl border border-[#DBE7F1] bg-white hover:bg-[#F1F6FA] cursor-pointer transition'">
+              <input
+                type="radio"
+                name="when"
+                [checked]="timing() === 'asap'"
+                class="w-4 h-4 text-[#1877D2] accent-[#1877D2] cursor-pointer">
+              <div class="flex flex-col">
+                <b class="text-[14px] text-[#07243D] font-semibold">As soon as possible</b>
+                <span class="text-[#5E7489] text-[13px]">Arrives ~45 min</span>
+              </div>
+            </label>
+
+            <!-- Option 2: Scheduled Time Window -->
+            <label
+              (click)="setTiming('today')"
+              [class]="timing() === 'today'
+                ? 'flex items-center gap-3 p-3 rounded-xl border-2 border-[#1877D2] bg-[#E8F2FC]/40 cursor-pointer transition'
+                : 'flex items-center gap-3 p-3 rounded-xl border border-[#DBE7F1] bg-white hover:bg-[#F1F6FA] cursor-pointer transition'">
+              <input
+                type="radio"
+                name="when"
+                [checked]="timing() === 'today'"
+                class="w-4 h-4 text-[#1877D2] accent-[#1877D2] cursor-pointer">
+              <div class="flex flex-col">
+                <b class="text-[14px] text-[#07243D] font-semibold">Choose a time today</b>
+                <span class="text-[#5E7489] text-[13px]">2 hr windows up to 8pm</span>
+              </div>
+            </label>
+
+            <!-- Option 3: Recurring Subscription -->
+            <label
+              (click)="setTiming('repeat')"
+              [class]="timing() === 'repeat'
+                ? 'flex items-center gap-3 p-3 rounded-xl border-2 border-[#1877D2] bg-[#E8F2FC]/40 cursor-pointer transition'
+                : 'flex items-center gap-3 p-3 rounded-xl border border-[#DBE7F1] bg-white hover:bg-[#F1F6FA] cursor-pointer transition'">
+              <input
+                type="radio"
+                name="when"
+                [checked]="timing() === 'repeat'"
+                class="w-4 h-4 text-[#1877D2] accent-[#1877D2] cursor-pointer">
+              <div class="flex flex-col">
+                <b class="text-[14px] text-[#07243D] font-semibold">Repeat this order</b>
+                <span class="text-[#5E7489] text-[13px]">Every week or fortnight</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Primary Action Buttons -->
+        <div class="flex flex-col gap-2.5 pt-2">
+          <!-- Add to Cart -->
+          <button
+            type="button"
+            (click)="addToCart()"
+            class="w-full py-3 rounded-full font-semibold text-[15px] bg-[#1877D2] text-white hover:bg-[#1464B4] transition shadow-md shadow-[#1877D2]/20 cursor-pointer flex items-center justify-center gap-2">
+            <span>🛒</span>
+            <span>Add to cart · KSh {{ totalPrice() }}</span>
+          </button>
+
+          <!-- Buy Now with M-Pesa -->
+          <button
+            type="button"
+            (click)="buyWithMpesa()"
+            class="w-full py-3 rounded-full font-semibold text-[15px] border border-[#07243D] bg-white text-[#07243D] hover:bg-[#F1F6FA] transition cursor-pointer flex items-center justify-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#12946A]"></span>
+            <span>Buy now with M Pesa</span>
+          </button>
+
+          <p class="text-center text-[12.5px] text-[#5E7489] m-0 mt-1">
+            No account needed. Pay when you confirm.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  @if (toastMessage()) {
+    <div class="fixed bottom-6 right-6 z-50 bg-[#07243D] text-white px-5 py-3 rounded-2xl shadow-2xl border border-[#2FC4C0]/40 flex items-center gap-2.5 animate-bounce-short">
+      <span class="w-2.5 h-2.5 rounded-full bg-[#2FC4C0] animate-pulse"></span>
+      <span class="text-sm font-semibold">{{ toastMessage() }}</span>
+    </div>
+  }
+</div>

@@ -1,0 +1,596 @@
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Vendor Details Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-vendor-details
+     Files: src/app/pages/vendor-details/vendor-details.html (.ts, .scss)
+     Styling: Tailwind CSS Utility Classes + vendor-details.scss
+     ========================================================================== -->
+
+<div class="vendor-details-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased pb-16">
+  <!-- Top Navigation / Breadcrumb Bar -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] sticky top-0 z-30 shadow-xs">
+    <div class="max-w-[1180px] mx-auto px-5 h-[64px] flex items-center justify-between gap-4">
+      <!-- Back to Discover -->
+      <button
+        type="button"
+        (click)="goBack()"
+        class="inline-flex items-center gap-2 text-sm font-semibold text-[#0F3A5C] hover:text-[#1877D2] transition cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        <span>Back to water search</span>
+      </button>
+
+      <!-- Quick Nav Links -->
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="openPassport()"
+          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7] hover:bg-[#d0f1ef] transition cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          <span>Verified KEBS Passport</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="scrollToProducts()"
+          class="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#07243D] text-white hover:bg-[#0F3A5C] transition cursor-pointer">
+          Order Now
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Vendor Hero Banner with Deep Blue Gradient -->
+  <section class="vendor-hero bg-gradient-to-br from-[#0B3358] via-[#0D446B] to-[#11557A] text-white py-9 px-5 border-b border-[#0F3A5C]">
+    <div class="max-w-[1180px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="flex items-start gap-5">
+        <!-- Vendor Logo / Monogram -->
+        <div class="w-[76px] h-[76px] rounded-[22px] bg-white/12 border border-white/20 text-white font-['Bricolage_Grotesque'] font-bold text-2xl flex items-center justify-center shadow-inner shrink-0">
+          {{ vendor().initials }}
+        </div>
+
+        <!-- Vendor Header Meta -->
+        <div>
+          <h1 class="font-['Bricolage_Grotesque'] font-bold text-2xl sm:text-3xl text-white tracking-tight">
+            {{ vendor().name }}
+          </h1>
+          <p class="text-[#a8c4da] text-[14.5px] mt-1.5 mb-3">
+            {{ vendor().estate }}, Nairobi · {{ vendor().distanceKm }} km away · <span class="text-[#8ff0ed] font-medium">open until {{ vendor().closingTime }}</span>
+          </p>
+
+          <!-- Badges Row -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#2FC4C0] text-[#04283f]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+              Verified vendor
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white/12 border border-white/20 text-[#cfe4f4]">
+              <span class="text-[#FBBF24]">★</span> {{ vendor().rating }} · {{ vendor().reviewCount }} ratings
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/12 border border-white/20 text-[#cfe4f4]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+              </svg>
+              Delivers in ~{{ vendor().deliveryTimeMins }} min
+            </span>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white/12 border border-white/20 text-[#cfe4f4]">
+              Since {{ vendor().sinceYear }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="shrink-0 w-full sm:w-auto">
+        <button
+          type="button"
+          (click)="scrollToProducts()"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#2FC4C0] hover:bg-[#25ab9c] text-[#04283f] font-bold text-sm tracking-wide shadow-md transition cursor-pointer text-center">
+          Order from this vendor
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Wrap -->
+  <main class="max-w-[1180px] mx-auto px-5 pt-6 pb-12">
+    <!-- Navigation Tabs -->
+    <div class="flex items-center gap-2 border-b border-[#DBE7F1] pb-px mb-7 overflow-x-auto">
+      <button
+        type="button"
+        (click)="setTab('products')"
+        [class.border-[#1877D2]]="activeTab() === 'products'"
+        [class.text-[#1877D2]]="activeTab() === 'products'"
+        [class.border-transparent]="activeTab() !== 'products'"
+        [class.text-[#5E7489]]="activeTab() !== 'products'"
+        class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
+        Products ({{ vendorProducts().length }})
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('quality')"
+        [class.border-[#1877D2]]="activeTab() === 'quality'"
+        [class.text-[#1877D2]]="activeTab() === 'quality'"
+        [class.border-transparent]="activeTab() !== 'quality'"
+        [class.text-[#5E7489]]="activeTab() !== 'quality'"
+        class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
+        Water quality &amp; lab tests
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('reviews')"
+        [class.border-[#1877D2]]="activeTab() === 'reviews'"
+        [class.text-[#1877D2]]="activeTab() === 'reviews'"
+        [class.border-transparent]="activeTab() !== 'reviews'"
+        [class.text-[#5E7489]]="activeTab() !== 'reviews'"
+        class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
+        Reviews ({{ vendor().reviewCount }})
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('delivery')"
+        [class.border-[#1877D2]]="activeTab() === 'delivery'"
+        [class.text-[#1877D2]]="activeTab() === 'delivery'"
+        [class.border-transparent]="activeTab() !== 'delivery'"
+        [class.text-[#5E7489]]="activeTab() !== 'delivery'"
+        class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
+        Delivery areas &amp; hours
+      </button>
+    </div>
+
+    <!-- ================= TAB 1: PRODUCTS ================= -->
+    <section *ngIf="activeTab() === 'products'" id="vendor-products-section">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="font-['Bricolage_Grotesque'] text-xl font-bold text-[#07243D]">Available for Delivery Today</h2>
+          <p class="text-xs text-[#5E7489] mt-0.5">Bring an empty bottle for refills, or select new jug packages.</p>
+        </div>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E3F5EE] text-[#12946A]">
+          ● In stock now
+        </span>
+      </div>
+
+      <!-- 4-Column Responsive Product Grid matching user specification -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <!-- Product 1: 20L refill -->
+        <article class="p-card bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs hover:border-[#1877D2]/40 transition flex flex-col justify-between">
+          <div
+            (click)="onProductClick(vendorProducts()[0])"
+            class="thumb h-[140px] bg-gradient-to-b from-[#E8F2FC] to-[#DBE7F1] flex items-center justify-center relative cursor-pointer group">
+            <span class="sz font-['Bricolage_Grotesque'] text-4xl font-bold text-[#7FB4DC] group-hover:scale-105 transition-transform">
+              20L
+            </span>
+            <span class="absolute top-2.5 right-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/90 text-[#07243D] border border-[#DBE7F1]">
+              Refill
+            </span>
+          </div>
+
+          <div class="meta p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3
+                (click)="onProductClick(vendorProducts()[0])"
+                class="name font-['Bricolage_Grotesque'] font-bold text-base text-[#07243D] hover:text-[#1877D2] cursor-pointer">
+                20L refill — hard jug
+              </h3>
+              <p class="vendor text-xs text-[#5E7489] mt-1">Bring your own jug</p>
+              <div class="price font-['Bricolage_Grotesque'] text-lg font-bold text-[#07243D] mt-2">
+                KSh 250
+              </div>
+            </div>
+
+            <div class="foot flex items-center justify-between gap-2 mt-4 pt-3 border-t border-[#F1F6FA]">
+              <button
+                type="button"
+                (click)="onProductClick(vendorProducts()[0])"
+                class="text-xs font-semibold text-[#1877D2] hover:underline cursor-pointer">
+                Details
+              </button>
+              <button
+                type="button"
+                (click)="addProductToCart(vendorProducts()[0])"
+                class="btn sm px-3.5 py-1.5 rounded-lg bg-[#07243D] hover:bg-[#0F3A5C] text-white text-xs font-semibold transition cursor-pointer">
+                Add
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 2: 20L new jug -->
+        <article class="p-card bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs hover:border-[#1877D2]/40 transition flex flex-col justify-between">
+          <div
+            (click)="onProductClick(vendorProducts()[1])"
+            class="thumb h-[140px] bg-gradient-to-b from-[#E8F2FC] to-[#DBE7F1] flex items-center justify-center relative cursor-pointer group">
+            <span class="sz font-['Bricolage_Grotesque'] text-4xl font-bold text-[#7FB4DC] group-hover:scale-105 transition-transform">
+              20L
+            </span>
+            <span class="absolute top-2.5 right-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7]">
+              New Jug
+            </span>
+          </div>
+
+          <div class="meta p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3
+                (click)="onProductClick(vendorProducts()[1])"
+                class="name font-['Bricolage_Grotesque'] font-bold text-base text-[#07243D] hover:text-[#1877D2] cursor-pointer">
+                20L new jug + water
+              </h3>
+              <p class="vendor text-xs text-[#5E7489] mt-1">Jug is yours to keep</p>
+              <div class="price font-['Bricolage_Grotesque'] text-lg font-bold text-[#07243D] mt-2">
+                KSh 1,150
+              </div>
+            </div>
+
+            <div class="foot flex items-center justify-between gap-2 mt-4 pt-3 border-t border-[#F1F6FA]">
+              <button
+                type="button"
+                (click)="onProductClick(vendorProducts()[1])"
+                class="text-xs font-semibold text-[#1877D2] hover:underline cursor-pointer">
+                Details
+              </button>
+              <button
+                type="button"
+                (click)="addProductToCart(vendorProducts()[1])"
+                class="btn sm px-3.5 py-1.5 rounded-lg bg-[#07243D] hover:bg-[#0F3A5C] text-white text-xs font-semibold transition cursor-pointer">
+                Add
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 3: 500ml case -->
+        <article class="p-card bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs hover:border-[#1877D2]/40 transition flex flex-col justify-between">
+          <div
+            (click)="onProductClick(vendorProducts()[2])"
+            class="thumb h-[140px] bg-gradient-to-b from-[#E8F2FC] to-[#DBE7F1] flex items-center justify-center relative cursor-pointer group">
+            <span class="sz font-['Bricolage_Grotesque'] text-3xl font-bold text-[#7FB4DC] group-hover:scale-105 transition-transform">
+              500ml
+            </span>
+            <span class="tag badge info absolute top-2.5 right-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#E8F2FC] text-[#1877D2] border border-[#cfe2f7]">
+              Case of 24
+            </span>
+          </div>
+
+          <div class="meta p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3
+                (click)="onProductClick(vendorProducts()[2])"
+                class="name font-['Bricolage_Grotesque'] font-bold text-base text-[#07243D] hover:text-[#1877D2] cursor-pointer">
+                500ml bottled water
+              </h3>
+              <p class="vendor text-xs text-[#5E7489] mt-1">Sealed case</p>
+              <div class="price font-['Bricolage_Grotesque'] text-lg font-bold text-[#07243D] mt-2">
+                KSh 620
+              </div>
+            </div>
+
+            <div class="foot flex items-center justify-between gap-2 mt-4 pt-3 border-t border-[#F1F6FA]">
+              <button
+                type="button"
+                (click)="onProductClick(vendorProducts()[2])"
+                class="text-xs font-semibold text-[#1877D2] hover:underline cursor-pointer">
+                Details
+              </button>
+              <button
+                type="button"
+                (click)="addProductToCart(vendorProducts()[2])"
+                class="btn sm px-3.5 py-1.5 rounded-lg bg-[#07243D] hover:bg-[#0F3A5C] text-white text-xs font-semibold transition cursor-pointer">
+                Add
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 4: 5,000L Tank delivery -->
+        <article class="p-card bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs hover:border-[#1877D2]/40 transition flex flex-col justify-between">
+          <div
+            (click)="requestTankQuote()"
+            class="thumb h-[140px] bg-gradient-to-b from-[#E8F2FC] to-[#DBE7F1] flex items-center justify-center relative cursor-pointer group">
+            <span class="sz font-['Bricolage_Grotesque'] text-3xl font-bold text-[#7FB4DC] group-hover:scale-105 transition-transform">
+              5,000L
+            </span>
+            <span class="absolute top-2.5 right-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
+              Tanker
+            </span>
+          </div>
+
+          <div class="meta p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3
+                (click)="requestTankQuote()"
+                class="name font-['Bricolage_Grotesque'] font-bold text-base text-[#07243D] hover:text-[#1877D2] cursor-pointer">
+                Tank delivery
+              </h3>
+              <p class="vendor text-xs text-[#5E7489] mt-1">Quote within 30 min</p>
+              <div class="price font-['Bricolage_Grotesque'] text-lg font-bold text-[#07243D] mt-2">
+                From KSh 6,500
+              </div>
+            </div>
+
+            <div class="foot flex items-center justify-between gap-2 mt-4 pt-3 border-t border-[#F1F6FA]">
+              <button
+                type="button"
+                (click)="requestTankQuote()"
+                class="text-xs font-semibold text-[#1877D2] hover:underline cursor-pointer">
+                Details
+              </button>
+              <button
+                type="button"
+                (click)="requestTankQuote()"
+                class="btn sm ghost px-3.5 py-1.5 rounded-lg border border-[#07243D] text-[#07243D] hover:bg-[#07243D] hover:text-white text-xs font-semibold transition cursor-pointer">
+                Request
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Quick Info Split: Water Quality + Delivery & Hours -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Water Quality Quick Card -->
+        <div class="card pad bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
+          <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] mb-3">
+            Water quality
+          </h3>
+          <div class="grid grid-cols-2 gap-3 text-[14.5px]">
+            <div class="stack flex flex-col">
+              <span class="muted text-xs text-[#5E7489]">Source</span>
+              <b class="text-[#07243D] font-semibold">Licensed borehole, Ngong Rd</b>
+            </div>
+            <div class="stack flex flex-col">
+              <span class="muted text-xs text-[#5E7489]">Treatment</span>
+              <b class="text-[#07243D] font-semibold">RO + UV</b>
+            </div>
+            <div class="stack flex flex-col">
+              <span class="muted text-xs text-[#5E7489]">pH / TDS</span>
+              <b class="text-[#07243D] font-semibold">7.2 · 68 ppm</b>
+            </div>
+            <div class="stack flex flex-col">
+              <span class="muted text-xs text-[#5E7489]">Last lab test</span>
+              <b class="text-[#07243D] font-semibold">2 Sep 2026 · SGS Kenya</b>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="openPassport()"
+            class="btn ghost sm inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl border border-[#1877D2] text-[#1877D2] hover:bg-[#E8F2FC] text-xs font-semibold transition cursor-pointer">
+            <span>See full records</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        <!-- Delivery & Hours Quick Card -->
+        <div class="card pad bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
+          <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] mb-3">
+            Delivery &amp; hours
+          </h3>
+          <div class="space-y-2.5 text-[14.5px]">
+            <div class="between flex items-center justify-between">
+              <span class="muted text-xs text-[#5E7489]">Areas</span>
+              <b class="text-[#07243D] font-semibold text-right">Kilimani, Hurlingham, Yaya, Kileleshwa</b>
+            </div>
+            <div class="between flex items-center justify-between">
+              <span class="muted text-xs text-[#5E7489]">Fee</span>
+              <b class="text-[#07243D] font-semibold">KSh 80 within 3 km</b>
+            </div>
+            <div class="between flex items-center justify-between">
+              <span class="muted text-xs text-[#5E7489]">Mon – Sat</span>
+              <b class="text-[#07243D] font-semibold">7:00 am – 8:00 pm</b>
+            </div>
+            <div class="between flex items-center justify-between">
+              <span class="muted text-xs text-[#5E7489]">Sunday</span>
+              <b class="text-[#07243D] font-semibold">9:00 am – 4:00 pm</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: WATER QUALITY ================= -->
+    <section *ngIf="activeTab() === 'quality'" class="space-y-6">
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DBE7F1] pb-5 mb-5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E3F5EE] text-[#12946A]">
+                ✓ Valid Accreditation
+              </span>
+              <span class="text-xs text-[#5E7489]">Licence: KEBS/WQ/2026/0881</span>
+            </div>
+            <h2 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-[#07243D] mt-1">
+              Water Quality Passport &amp; Lab Audits
+            </h2>
+            <p class="text-sm text-[#5E7489] mt-1">
+              Tested monthly by independent ISO/IEC 17025 certified laboratories (SGS Kenya &amp; KEBS).
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="openPassport()"
+            class="px-4 py-2 rounded-xl bg-[#1877D2] hover:bg-[#1464B4] text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+            View Certified PDF Certificate
+          </button>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <div class="text-xs text-[#5E7489]">pH Level</div>
+            <div class="text-2xl font-bold font-['Bricolage_Grotesque'] text-[#07243D] mt-1">7.2</div>
+            <div class="text-[11px] text-[#12946A] font-medium mt-1">Optimal Neutral (6.5 – 8.5)</div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <div class="text-xs text-[#5E7489]">Total Dissolved Solids</div>
+            <div class="text-2xl font-bold font-['Bricolage_Grotesque'] text-[#07243D] mt-1">68 <span class="text-xs font-normal">ppm</span></div>
+            <div class="text-[11px] text-[#12946A] font-medium mt-1">Crisp, refreshing taste</div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <div class="text-xs text-[#5E7489]">Turbidity</div>
+            <div class="text-2xl font-bold font-['Bricolage_Grotesque'] text-[#07243D] mt-1">0.14 <span class="text-xs font-normal">NTU</span></div>
+            <div class="text-[11px] text-[#12946A] font-medium mt-1">&lt; 1.0 limit standard</div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <div class="text-xs text-[#5E7489]">Coliform &amp; E. coli</div>
+            <div class="text-2xl font-bold font-['Bricolage_Grotesque'] text-[#12946A] mt-1">0 CFU</div>
+            <div class="text-[11px] text-[#12946A] font-medium mt-1">100% Pathogen free</div>
+          </div>
+        </div>
+
+        <!-- Purification Steps -->
+        <div class="p-5 rounded-xl bg-[#F1F6FA] border border-[#DBE7F1]">
+          <h4 class="font-bold text-sm text-[#07243D] mb-3">Multi-Barrier Purification Process:</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#07243D]">
+            <div class="bg-white p-3 rounded-lg border border-[#DBE7F1]">
+              <span class="font-bold text-[#1877D2]">1. Sediment &amp; Carbon:</span> Removes particulate matter, chlorine, odor and organic compounds.
+            </div>
+            <div class="bg-white p-3 rounded-lg border border-[#DBE7F1]">
+              <span class="font-bold text-[#1877D2]">2. Reverse Osmosis:</span> 0.0001 micron membrane eliminates heavy metals and excessive minerals.
+            </div>
+            <div class="bg-white p-3 rounded-lg border border-[#DBE7F1]">
+              <span class="font-bold text-[#1877D2]">3. UV + Ozonation:</span> Dual biological sterilization protects during bottling and storage.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: REVIEWS ================= -->
+    <section *ngIf="activeTab() === 'reviews'" class="space-y-6">
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DBE7F1] pb-5 mb-5">
+          <div>
+            <h2 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-[#07243D]">
+              Customer Reviews from Kilimani
+            </h2>
+            <p class="text-sm text-[#5E7489] mt-0.5">Verified deliveries confirmed via M-Pesa transaction reference.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-3xl font-bold font-['Bricolage_Grotesque'] text-[#07243D]">4.8</div>
+            <div>
+              <div class="flex text-[#FBBF24] text-sm">★★★★★</div>
+              <div class="text-xs text-[#5E7489]">612 total ratings</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl border border-[#DBE7F1] bg-[#F8FBFE]">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-[#07243D]">Faith Mwangi</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-[#E3F5EE] text-[#12946A] font-medium">Verified Order</span>
+              </div>
+              <span class="text-xs text-[#5E7489]">Yesterday</span>
+            </div>
+            <p class="text-xs text-[#07243D] leading-relaxed">
+              "Brought 2 refill bottles to Lenana Rd within 35 minutes. Rider was very courteous and helped carry them up to the 2nd floor. Clean caps and fresh taste."
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[#DBE7F1] bg-[#F8FBFE]">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-[#07243D]">David Otieno</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-[#E3F5EE] text-[#12946A] font-medium">Verified Order</span>
+              </div>
+              <span class="text-xs text-[#5E7489]">3 days ago</span>
+            </div>
+            <p class="text-xs text-[#07243D] leading-relaxed">
+              "We have been using ABC Water for our office water dispenser for 6 months. Always punctual and we love that we can check the water passport batch test results."
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl border border-[#DBE7F1] bg-[#F8FBFE]">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-[#07243D]">Wanjiku N.</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-[#E3F5EE] text-[#12946A] font-medium">Verified Order</span>
+              </div>
+              <span class="text-xs text-[#5E7489]">1 week ago</span>
+            </div>
+            <p class="text-xs text-[#07243D] leading-relaxed">
+              "Smooth M-Pesa payment, instant STK prompt and no extra delivery hidden charges. Best water vendor in Hurlingham/Kilimani area."
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: DELIVERY AREAS ================= -->
+    <section *ngIf="activeTab() === 'delivery'" class="space-y-6">
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
+        <h2 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-[#07243D] mb-2">
+          Coverage Estates &amp; Timings
+        </h2>
+        <p class="text-sm text-[#5E7489] mb-6">
+          Motorcycle riders equipped with heavy-duty twin racks dispatch directly from the Kilimani central depot.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <h4 class="font-bold text-sm text-[#07243D] mb-2">Service Zones:</h4>
+            <ul class="space-y-2 text-xs text-[#07243D]">
+              <li class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#12946A]"></span>
+                <b>Zone 1 (Under 30 mins):</b> Kilimani, Argwings Kodhek, Lenana, Chania Ave
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#12946A]"></span>
+                <b>Zone 2 (30–45 mins):</b> Hurlingham, Yaya Center, Kileleshwa, Dennis Pritt
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#1877D2]"></span>
+                <b>Zone 3 (45–60 mins):</b> Lavington, Upper Hill, Woodley
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#F8FBFE] border border-[#DBE7F1]">
+            <h4 class="font-bold text-sm text-[#07243D] mb-2">Delivery Charges:</h4>
+            <div class="space-y-2 text-xs text-[#07243D]">
+              <div class="flex justify-between border-b border-[#DBE7F1] pb-1.5">
+                <span>Standard local delivery (1–2 jugs):</span>
+                <b>KSh 80</b>
+              </div>
+              <div class="flex justify-between border-b border-[#DBE7F1] pb-1.5">
+                <span>Bulk residential (3+ jugs):</span>
+                <b class="text-[#12946A]">FREE delivery</b>
+              </div>
+              <div class="flex justify-between">
+                <span>Direct Tanker delivery (5,000L):</span>
+                <b>KSh 500 flat fee</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#E8F2FC] border border-[#cfe2f7] flex items-center justify-between gap-4">
+          <div class="text-xs text-[#0F3A5C]">
+            <span class="font-bold">Need emergency water after 8:00 PM?</span>
+            <p>Our dispatch phone line is active for hospital and corporate urgent requirements.</p>
+          </div>
+          <button
+            type="button"
+            (click)="showToast('Vendor hotline: +254 700 123 456')"
+            class="px-3.5 py-1.5 rounded-lg bg-[#07243D] text-white text-xs font-semibold whitespace-nowrap cursor-pointer">
+            Call Dispatch
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

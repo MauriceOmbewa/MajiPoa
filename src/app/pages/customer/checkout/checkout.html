@@ -1,0 +1,324 @@
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Checkout Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-checkout
+     Files: src/app/pages/checkout/checkout.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:26px 20px 60px;max-width:960px">
+  <h1 style="font-size:30px;margin-bottom:6px">Checkout</h1>
+  <p class="muted" style="margin-bottom:22px">
+    You're ordering as a guest.
+    <a href="javascript:void(0)" (click)="onSignInClick()">Sign in</a> if you'd rather use a saved address.
+  </p>
+
+  <div class="grid split" style="grid-template-columns:1fr 340px;gap:28px;align-items:start">
+    <div class="stack" style="gap:16px">
+
+      <!-- Step 1: Delivery Address -->
+      <div class="card">
+        <div class="card-head">
+          <h3>1. Where are we delivering?</h3>
+          <span class="badge ok">Within delivery area</span>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="a1">Estate, street or building</label>
+            <input
+              id="a1"
+              type="text"
+              [value]="deliveryAddress()"
+              (input)="updateDeliveryAddress($event)"
+              placeholder="e.g. Riverside Court, Argwings Kodhek Rd, Kilimani"
+            />
+          </div>
+
+          <div class="grid g2" style="gap:14px;grid-template-columns:1fr 1fr">
+            <div class="field">
+              <label for="a2">House / apartment number</label>
+              <input
+                id="a2"
+                type="text"
+                [value]="apartmentNo()"
+                (input)="updateApartmentNo($event)"
+                placeholder="e.g. B12"
+              />
+            </div>
+            <div class="field">
+              <label for="a3">Floor</label>
+              <input
+                id="a3"
+                type="text"
+                [value]="floor()"
+                (input)="updateFloor($event)"
+                placeholder="e.g. 3rd"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="a4">Directions for the rider</label>
+            <textarea
+              id="a4"
+              rows="2"
+              [value]="riderDirections()"
+              (input)="updateRiderDirections($event)"
+              placeholder="Gate colour, landmark, where to leave the jug, security desk instructions…"
+            ></textarea>
+          </div>
+
+          <!-- Interactive Map pin simulator -->
+          <div class="map" (click)="onMapPinMoved($event)" style="height:180px;position:relative;cursor:crosshair">
+            <span
+              class="pin"
+              [style.left]="pinPosition().x + '%'"
+              [style.top]="pinPosition().y + '%'"
+            >
+              Drop pin here
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Contact Info -->
+      <div class="card">
+        <div class="card-head">
+          <h3>2. Who should we call?</h3>
+        </div>
+        <div class="card-body">
+          <div class="grid g2" style="gap:14px;grid-template-columns:1fr 1fr">
+            <div class="field">
+              <label for="n1">Name</label>
+              <input
+                id="n1"
+                type="text"
+                [value]="customerName()"
+                (input)="updateCustomerName($event)"
+                placeholder="Maurice O."
+              />
+            </div>
+            <div class="field">
+              <label for="p1">Phone number</label>
+              <input
+                id="p1"
+                type="tel"
+                [value]="phoneNumber()"
+                (input)="updatePhoneNumber($event)"
+              />
+              <span class="hint">We send order updates by SMS. This is also the number we bill on M-Pesa.</span>
+            </div>
+          </div>
+
+          <label class="check" style="margin-top:12px">
+            <input
+              type="checkbox"
+              [checked]="someoneElseReceives()"
+              (change)="toggleSomeoneElse()"
+            />
+            <span>Someone else will receive the water — add their number</span>
+          </label>
+
+          <div *ngIf="someoneElseReceives()" class="grid g2" style="gap:14px;grid-template-columns:1fr 1fr;margin-top:10px">
+            <div class="field">
+              <label for="rec-name">Recipient's name</label>
+              <input id="rec-name" type="text" placeholder="e.g. Caretaker John" />
+            </div>
+            <div class="field">
+              <label for="rec-phone">Recipient's phone</label>
+              <input id="rec-phone" type="tel" placeholder="07XX XXX XXX" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Delivery time -->
+      <div class="card">
+        <div class="card-head">
+          <h3>3. Delivery time</h3>
+        </div>
+        <div class="card-body stack" style="gap:10px">
+          <label
+            class="pick"
+            [class.on]="selectedSlot() === 'asap'"
+            (click)="selectSlot('asap')"
+          >
+            <input type="radio" name="slot" [checked]="selectedSlot() === 'asap'" />
+            <span>
+              <b>As soon as possible</b>
+              <span class="muted" style="font-size:13px">ABC Water ~45 min · Blue Spring ~1 hr 20</span>
+            </span>
+          </label>
+
+          <label
+            class="pick"
+            [class.on]="selectedSlot() === 'today_evening'"
+            (click)="selectSlot('today_evening')"
+          >
+            <input type="radio" name="slot" [checked]="selectedSlot() === 'today_evening'" />
+            <span>
+              <b>Today, 4:00 – 6:00 pm</b>
+              <span class="muted" style="font-size:13px">Both vendors available</span>
+            </span>
+          </label>
+
+          <label
+            class="pick"
+            [class.on]="selectedSlot() === 'tomorrow_morning'"
+            (click)="selectSlot('tomorrow_morning')"
+          >
+            <input type="radio" name="slot" [checked]="selectedSlot() === 'tomorrow_morning'" />
+            <span>
+              <b>Tomorrow morning, 8:00 – 10:00 am</b>
+              <span class="muted" style="font-size:13px">KSh 20 cheaper delivery</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Step 4: Payment -->
+      <div class="card">
+        <div class="card-head">
+          <h3>4. Payment</h3>
+          <span class="badge info">M-Pesa</span>
+        </div>
+        <div class="card-body">
+          <div class="stack" style="gap:10px;margin-bottom:14px">
+            <label
+              class="pick"
+              [class.on]="paymentMethod() === 'mpesa'"
+              (click)="selectPaymentMethod('mpesa')"
+            >
+              <input type="radio" name="pay" [checked]="paymentMethod() === 'mpesa'" />
+              <span>
+                <b>M-Pesa</b>
+                <span class="muted" style="font-size:13px">You'll get a prompt on {{ mpesaNumber() || 'your phone' }} to enter your PIN</span>
+              </span>
+            </label>
+
+            <label
+              class="pick"
+              [class.on]="paymentMethod() === 'cod'"
+              (click)="selectPaymentMethod('cod')"
+            >
+              <input type="radio" name="pay" [checked]="paymentMethod() === 'cod'" />
+              <span>
+                <b>Pay the rider on delivery</b>
+                <span class="muted" style="font-size:13px">Cash or M-Pesa to the vendor till, where the vendor allows it</span>
+              </span>
+            </label>
+          </div>
+
+          <div *ngIf="paymentMethod() === 'mpesa'" class="field" style="margin-top:6px">
+            <label for="mp">M-Pesa number</label>
+            <input
+              id="mp"
+              type="tel"
+              [value]="mpesaNumber()"
+              (input)="updateMpesaNumber($event)"
+            />
+          </div>
+
+          <label class="check" style="margin-top:12px">
+            <input
+              type="checkbox"
+              [checked]="saveForLater()"
+              (change)="toggleSaveForLater()"
+            />
+            <span>Save this order so I can reorder later — we'll create an account from your phone number after payment</span>
+          </label>
+
+          <button
+            type="button"
+            class="btn block"
+            style="margin-top:14px;cursor:pointer;width:100%"
+            (click)="triggerMpesaPayment()"
+          >
+            Pay KSh {{ totalDue().toLocaleString() }} with M-Pesa
+          </button>
+          <p class="hint center" style="text-align:center;margin-top:8px">
+            By paying you accept our terms and the vendor's refund policy.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order summary sidebar -->
+    <aside class="card pad" style="position:sticky;top:88px">
+      <h3 style="margin-bottom:12px">Your order</h3>
+      <div class="stack" style="gap:10px;font-size:14px;margin-bottom:12px">
+        <div *ngFor="let line of orderLines()" class="between">
+          <span>
+            {{ line.quantity }} × {{ line.name }}<br>
+            <span class="muted" style="font-size:13px">{{ line.vendor }}</span>
+          </span>
+          <b class="num">KSh {{ line.subtotalKsh.toLocaleString() }}</b>
+        </div>
+      </div>
+
+      <div class="sum">
+        <span>Water</span>
+        <b class="num">KSh {{ waterSubtotal().toLocaleString() }}</b>
+      </div>
+      <div class="sum">
+        <span>Delivery · {{ vendorCount() }} vendors</span>
+        <b class="num">KSh {{ deliveryFee().toLocaleString() }}</b>
+      </div>
+      <div *ngIf="discountAmount() > 0" class="sum">
+        <span>{{ promoCode() }}</span>
+        <b class="num" style="color:var(--ok)">− KSh {{ discountAmount().toLocaleString() }}</b>
+      </div>
+      <div class="sum total">
+        <span>Total</span>
+        <span class="num">KSh {{ totalDue().toLocaleString() }}</span>
+      </div>
+
+      <p class="hint" style="margin-top:12px">
+        No hidden charges. Refunds go back to the same M-Pesa number.
+      </p>
+    </aside>
+  </div>
+</div>
+
+<!-- M-Pesa STK push — waiting state modal -->
+<div
+  id="stk"
+  *ngIf="showStkModal()"
+  style="display:grid;position:fixed;inset:0;background:rgba(7,36,61,.55);place-items:center;z-index:80;padding:20px"
+>
+  <div class="card pad" style="max-width:380px;width:100%;text-align:center;box-shadow:var(--e2)">
+    <div style="width:64px;height:64px;border-radius:20px;background:var(--ok-50);display:grid;place-items:center;margin:0 auto 14px;font-size:28px">
+      📲
+    </div>
+    <h3>Check your phone</h3>
+    <p class="muted" style="font-size:14.5px">
+      We sent an M-Pesa request for <b>KSh {{ totalDue().toLocaleString() }}</b> to <b>{{ mpesaNumber() }}</b>. Enter your PIN to confirm.
+    </p>
+
+    <!-- Progress Meter -->
+    <div class="meter" style="margin:16px 0">
+      <i [style.width]="stkProgressPercent() + '%'"></i>
+    </div>
+
+    <p class="hint">Waiting for confirmation · expires in {{ countdownText() }}</p>
+
+    <button
+      type="button"
+      class="btn block"
+      style="margin-top:12px;width:100%;cursor:pointer"
+      (click)="confirmPaid()"
+    >
+      I've paid
+    </button>
+    <button
+      type="button"
+      class="btn quiet block"
+      style="margin-top:6px;width:100%;cursor:pointer"
+      (click)="closeStkModal()"
+    >
+      Cancel and go back
+    </button>
+    <p class="hint" style="margin-top:10px">
+      Didn't get the prompt? <a href="javascript:void(0)" (click)="resendPrompt()">Send it again</a> or dial *334#.
+    </p>
+  </div>
+</div>

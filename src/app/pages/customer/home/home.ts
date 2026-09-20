@@ -11,10 +11,10 @@
  * ============================================================================
  */
 
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 export interface WaterProduct {
   id: string;
@@ -446,5 +446,19 @@ export class HomeComponent {
     setTimeout(() => {
       this.toastMessage.set(null);
     }, 3500);
+  }
+
+  private router = inject(Router);
+
+  navigateToFindWater(): void {
+    this.router.navigate(['/find-water']);
+  }
+
+  navigateToProduct(product: WaterProduct): void {
+    this.router.navigate(['/product-detail']);
+  }
+
+  navigateToCart(): void {
+    this.router.navigate(['/cart']);
   }
 }

@@ -1,0 +1,198 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Signed-In Home Styles (SCSS)
+   File: src/app/pages/signed-in-home/signed-in-home.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-600: #1464B4;
+$blue-50: #E8F2FC;
+$aqua: #2FC4C0;
+$aqua-50: #E2F7F6;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+$info: #1877D2;
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.05);
+
+  &.pad {
+    padding: 20px;
+  }
+
+  .card-head {
+    padding: 14px 20px;
+    background: #FAFBFD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid $line;
+  }
+
+  .card-body {
+    padding: 18px 20px;
+  }
+}
+
+.v-logo {
+  display: grid;
+  place-items: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+.muted {
+  color: $muted;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 3px 8px rgba(7, 36, 61, 0.08);
+  }
+}
+
+.meter {
+  height: 8px;
+  background: rgba(7, 36, 61, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+
+  i {
+    display: block;
+    height: 100%;
+    background: $aqua;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #EEF3F8;
+  color: $muted;
+
+  &.info {
+    background: #E0EEFA;
+    color: $blue;
+    border: 1px solid rgba($blue, 0.25);
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: $blue;
+      animation: pulse-dot 1.8s infinite;
+    }
+  }
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.sm {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 9px;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+  }
+
+  &.block {
+    display: flex;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid.split {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card-body.grid.g3 {
+    grid-template-columns: 1fr !important;
+  }
+}

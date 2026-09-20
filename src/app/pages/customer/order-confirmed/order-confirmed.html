@@ -1,0 +1,93 @@
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Order Confirmed Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-order-confirmed
+     Files: src/app/pages/order-confirmed/order-confirmed.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:40px 20px 60px;max-width:760px;margin:0 auto">
+  <!-- Payment Received Success Hero Card -->
+  <div class="card pad center" style="padding:34px;text-align:center">
+    <div style="width:72px;height:72px;border-radius:24px;background:var(--ok-50, #E3F5EE);color:var(--ok, #12946A);display:grid;place-items:center;margin:0 auto 16px;font-size:34px;font-weight:bold">
+      ✓
+    </div>
+    <h1 style="font-size:30px;margin:0 0 8px;font-weight:700">Payment received</h1>
+    <p class="muted" style="margin:0">
+      Order <b>#{{ orderData().orderNumber }}</b> · M-Pesa code <b>{{ orderData().mpesaReceiptCode }}</b> · KSh {{ orderData().totalKsh.toLocaleString() }}
+    </p>
+
+    <div class="row" style="display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button type="button" class="btn" (click)="trackDelivery()">Track your delivery</button>
+      <button type="button" class="btn ghost" (click)="getReceiptSms()">
+        {{ smsSent() ? 'Receipt sent to SMS ✓' : 'Get receipt on SMS' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Vendor Order Group 1 -->
+  <div *ngFor="let group of vendorGroups()" class="card" style="margin-top:14px">
+    <div class="card-head" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line, #DBE7F1);background:#FAFBFD">
+      <h3 style="margin:0;font-size:15.5px;font-weight:700">
+        {{ group.vendorName }} · arriving ~{{ group.etaTime }}
+      </h3>
+      <span
+        class="badge"
+        [class.info]="group.statusKey === 'preparing'"
+        [class.warn]="group.statusKey === 'waiting'"
+        [class.ok]="group.statusKey === 'dispatched'"
+      >
+        {{ group.statusLabel }}
+      </span>
+    </div>
+    <div class="card-body" style="padding:18px 20px">
+      <div
+        *ngFor="let item of group.items; let first = first"
+        class="between"
+        [style.margin-top]="first ? '0' : '8px'"
+        style="display:flex;align-items:center;justify-content:space-between;font-size:14.5px"
+      >
+        <span>{{ item.quantity }} × {{ item.name }}</span>
+        <b class="num">KSh {{ item.subtotalKsh.toLocaleString() }}</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-Purchase Account Conversion Prompt -->
+  <!-- "The right moment to ask for an account: after the value is delivered, not before" -->
+  <div
+    class="card pad"
+    style="margin-top:18px;background:var(--ink, #07243D);border-color:var(--ink, #07243D);color:#cfe1ef;border-radius:16px;padding:24px"
+  >
+    <div class="between split-account" style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+      <div>
+        <h3 style="color:#ffffff;margin:0 0 6px;font-size:17px;font-weight:700">Keep this order, address and receipt</h3>
+        <p style="margin:0;font-size:14.5px;color:#a8c4da;max-width:46ch;line-height:1.5">
+          Create an account with {{ orderData().phoneNumber }} and your order history, saved address and offers will be waiting next time. Takes one code by SMS.
+        </p>
+      </div>
+      <div class="stack" style="display:flex;flex-direction:column;gap:8px;min-width:170px;shrink:0">
+        <button
+          type="button"
+          class="btn"
+          style="background:var(--aqua, #2FC4C0);color:#04283f;font-weight:700;border:none"
+          (click)="createAccount()"
+        >
+          Create account
+        </button>
+        <button
+          type="button"
+          class="btn quiet"
+          style="color:#a8c4da;background:transparent;border:none"
+          (click)="dismissAccountPrompt()"
+        >
+          Not now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="muted center" style="margin-top:22px;font-size:14px;text-align:center">
+    Something wrong with this order?
+    <a href="javascript:void(0)" (click)="getHelp()" style="color:var(--blue, #1877D2);text-decoration:underline">Get help</a>
+  </p>
+</div>

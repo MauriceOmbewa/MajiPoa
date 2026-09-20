@@ -1,0 +1,302 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Product Detail Styles (SCSS)
+   File: src/app/pages/product-detail/product-detail.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+}
+
+$navy-dark: #07243D;
+$navy-mid: #0F3A5C;
+$water-blue: #1877D2;
+$water-light: #E8F2FC;
+$aqua-mint: #2FC4C0;
+$aqua-bg: #E2F7F6;
+$border-light: #DBE7F1;
+$muted-text: #5E7489;
+$ok-green: #12946A;
+$ok-bg: #E3F5EE;
+
+/* Product Detail Custom Classes matching user specification */
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px 64px;
+}
+
+.muted {
+  color: $muted-text;
+  font-size: 13.5px;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: $water-blue;
+      text-decoration: underline;
+    }
+  }
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 16px;
+  overflow: hidden;
+
+  &.pad {
+    padding: 24px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .card-head {
+    padding: 14px 20px;
+    background: #FAFBFD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+
+.thumb {
+  height: 320px;
+  background: linear-gradient(170deg, #EAF4FC 0%, #CFE7F7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.verified {
+  color: $ok-green;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #F1F6FA;
+  border: 1px solid $border-light;
+  color: $navy-mid;
+
+  &.ok {
+    background: $ok-bg;
+    color: $ok-green;
+    border-color: #c5e8da;
+  }
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $border-light;
+  border-radius: 9999px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(7, 36, 61, 0.04);
+
+  button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 700;
+    color: $muted-text;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: #F1F6FA;
+      color: $navy-dark;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    min-width: 32px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: $navy-dark;
+  }
+}
+
+.meter {
+  height: 6px;
+  border-radius: 9999px;
+  background: #E5EFF7;
+  overflow: hidden;
+  position: relative;
+
+  i {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, $aqua-mint, $water-blue);
+    transition: width 0.3s ease;
+  }
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #F1F6FA;
+  }
+
+  &.on {
+    border: 2px solid $water-blue;
+    background: rgba(232, 242, 252, 0.4);
+  }
+
+  input[type='radio'] {
+    accent-color: $water-blue;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    b {
+      font-size: 14px;
+      color: $navy-dark;
+      font-weight: 600;
+    }
+  }
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wrap-row {
+  flex-wrap: wrap;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 600;
+  background: $water-blue;
+  color: #ffffff;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: darken($water-blue, 6%);
+  }
+
+  &.ghost {
+    background: #ffffff;
+    color: $navy-dark;
+    border-color: $navy-dark;
+
+    &:hover {
+      background: #F1F6FA;
+    }
+  }
+
+  &.sm {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-color: $border-light;
+
+    &:hover {
+      border-color: $water-blue;
+    }
+  }
+
+  &.block {
+    width: 100%;
+    display: flex;
+  }
+}
+
+.hint {
+  font-size: 12.5px;
+  color: $muted-text;
+
+  &.center {
+    text-align: center;
+  }
+}
+
+@keyframes bounce-short {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-short {
+  animation: bounce-short 0.4s ease;
+}
