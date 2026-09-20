@@ -1,0 +1,321 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Track Order Styles (SCSS)
+   File: src/app/pages/track-order/track-order.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-600: #1464B4;
+$blue-50: #E8F2FC;
+$aqua: #2FC4C0;
+$aqua-50: #E2F7F6;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+$warn: #C77A11;
+$warn-50: #FDF1DE;
+
+.wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 26px 20px 60px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.05);
+
+  &.pad {
+    padding: 20px;
+  }
+
+  .card-head {
+    padding: 14px 20px;
+    background: #FAFBFD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background-color: #e5edf4;
+  background-image:
+    radial-gradient(#c7d9e7 1.5px, transparent 1.5px),
+    linear-gradient(to right, rgba(200, 218, 233, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 218, 233, 0.4) 1px, transparent 1px);
+  background-size: 24px 24px, 48px 48px, 48px 48px;
+  overflow: hidden;
+
+  .route-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    border: 1.5px solid $line;
+    color: $ink;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 8px rgba(7, 36, 61, 0.12);
+    white-space: nowrap;
+    z-index: 2;
+    transition: left 0.6s ease-out, top 0.6s ease-out;
+
+    &.rider {
+      border-color: $blue;
+      color: $blue;
+      font-weight: 700;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba($blue, 0.15), 0 3px 10px rgba(24, 119, 210, 0.25);
+      z-index: 3;
+    }
+
+    &.destination {
+      border-color: $ink;
+      background: $ink;
+      color: #ffffff;
+    }
+  }
+}
+
+.v-logo {
+  display: grid;
+  place-items: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+.muted {
+  color: $muted;
+}
+
+.num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  color: $ink;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #EEF3F8;
+  color: $muted;
+
+  &.ok {
+    background: $ok-50;
+    color: $ok;
+    border: 1px solid rgba($ok, 0.2);
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: $ok;
+      animation: pulse-dot 1.8s infinite;
+    }
+  }
+
+  &.warn {
+    background: $warn-50;
+    color: $warn;
+    border: 1px solid rgba($warn, 0.2);
+  }
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+/* Timeline Rail */
+.rail {
+  position: relative;
+
+  li {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 22px;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Vertical line connecting pips */
+    &:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 24px;
+      bottom: 0;
+      width: 2px;
+      background: $line;
+    }
+
+    &.done:not(:last-child)::before {
+      background: $ok;
+    }
+
+    .pip {
+      position: relative;
+      z-index: 2;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid $line;
+      color: $muted;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    &.done .pip {
+      border-color: $ok;
+      background: $ok;
+      color: #ffffff;
+    }
+
+    &.now .pip {
+      border-color: $blue;
+      background: $blue;
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba($blue, 0.2);
+    }
+
+    .t {
+      display: block;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: $ink;
+    }
+
+    .s {
+      display: block;
+      font-size: 13px;
+      color: $muted;
+      margin-top: 2px;
+    }
+
+    &.now .t {
+      color: $blue;
+    }
+  }
+}
+
+/* Sidebar summary totals */
+.sum {
+  &.total {
+    border-top: 1px dashed $line;
+    padding-top: 10px;
+    margin-top: 10px;
+    font-size: 15px;
+
+    .num {
+      font-size: 18px;
+      color: $blue;
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+
+    &.sm {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 9px;
+    }
+  }
+
+  &.block {
+    display: flex;
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .grid.split {
+    grid-template-columns: 1fr !important;
+  }
+}

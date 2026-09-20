@@ -1,0 +1,268 @@
+/* ==========================================================================
+   MajiSafi - Find Water (Discover) Component Styles (SCSS)
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+}
+
+/* Color Variables matching MajiSafi Brand Identity */
+$navy-dark: #07243D;
+$navy-mid: #0F3A5C;
+$water-blue: #1877D2;
+$water-light: #E8F2FC;
+$aqua-mint: #2FC4C0;
+$aqua-bg: #E2F7F6;
+$border-light: #DBE7F1;
+$muted-text: #5E7489;
+$ok-green: #12946A;
+$ok-bg: #E3F5EE;
+$warn-orange: #C25E12;
+$warn-bg: #FEF3EB;
+
+/* Product Card Styling */
+.p-card {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -6px rgba(7, 36, 61, 0.08);
+    border-color: lighten($water-blue, 30%);
+  }
+
+  .thumb {
+    height: 148px;
+    background: linear-gradient(180deg, #EAF4FC 0%, #D8ECF8 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .sz {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #7FB4DC;
+      letter-spacing: -0.02em;
+    }
+
+    .tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  }
+
+  .meta {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+
+    .name {
+      font-weight: 600;
+      font-size: 15px;
+      color: $navy-dark;
+      line-height: 1.35;
+    }
+
+    .vendor {
+      font-size: 13px;
+      color: $muted-text;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: $navy-dark;
+      margin-top: 4px;
+    }
+
+    .foot {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid rgba($border-light, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+  }
+}
+
+/* Vendor List Item Card */
+.v-card {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: lighten($water-blue, 25%);
+    box-shadow: 0 4px 16px -4px rgba(7, 36, 61, 0.05);
+  }
+
+  .v-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, $navy-dark 0%, $water-blue 100%);
+    color: #ffffff;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+}
+
+/* Chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #ffffff;
+  color: $navy-dark;
+  border: 1px solid $border-light;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    background: #F1F6FA;
+  }
+
+  &.on {
+    background: $navy-dark;
+    color: #ffffff;
+    border-color: $navy-dark;
+    font-weight: 600;
+  }
+
+  &.active-blue {
+    background: $water-blue;
+    color: #ffffff;
+    border-color: $water-blue;
+    font-weight: 600;
+  }
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+
+  &.aqua {
+    background: $aqua-bg;
+    border-color: #bfe9e7;
+    color: #127e7b;
+  }
+
+  &.ok {
+    background: $ok-bg;
+    border-color: #c5e8da;
+    color: $ok-green;
+  }
+
+  &.warn {
+    background: $warn-bg;
+    border-color: #fae0cf;
+    color: $warn-orange;
+  }
+
+  &.info {
+    background: $water-light;
+    border-color: #d2e4f7;
+    color: #1464B4;
+  }
+}
+
+/* Simulated Map Container with Radar */
+.map {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #e5eff7;
+  border: 1px solid #cddced;
+
+  .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: $navy-dark;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(7, 36, 61, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 8px;
+      height: 8px;
+      background: $navy-dark;
+    }
+  }
+}
+
+/* Radar ping keyframes */
+@keyframes radar-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
+}
+
+.radar-ping {
+  animation: radar-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  #split {
+    grid-template-columns: 1fr !important;
+  }
+}

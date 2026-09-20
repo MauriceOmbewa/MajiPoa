@@ -54,7 +54,7 @@
         <!-- Cart Button -->
         <button
           type="button"
-          (click)="openCart()"
+          (click)="navigateToCart()"
           class="relative w-10 h-10 rounded-full border border-[#DBE7F1] bg-white flex items-center justify-center hover:bg-[#F1F6FA] transition cursor-pointer text-[#07243D]"
           aria-label="Shopping Cart">
           <span class="text-base">🛒</span>
@@ -167,7 +167,7 @@
         <div>
           <button
             type="button"
-            (click)="onFilterSubmit()"
+            (click)="navigateToFindWater()"
             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold text-[15px] px-6 py-3.5 rounded-full bg-[#1877D2] text-white hover:bg-[#1464B4] transition shadow-sm cursor-pointer whitespace-nowrap">
             Find water
           </button>
@@ -226,7 +226,7 @@
       @if (filteredProducts().length > 0) {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           @for (product of filteredProducts(); track product.id) {
-            <article class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden flex flex-col hover:shadow-md hover:border-[#b8d4ed] transition">
+            <article (click)="navigateToProduct(product)" class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden flex flex-col hover:shadow-md hover:border-[#b8d4ed] transition cursor-pointer">
               <!-- Thumb -->
               <div class="h-[158px] bg-gradient-to-b from-[#EAF4FC] to-[#D8ECF8] relative flex items-center justify-center">
                 <span class="font-['Bricolage_Grotesque'] text-[32px] font-bold text-[#7FB4DC]">

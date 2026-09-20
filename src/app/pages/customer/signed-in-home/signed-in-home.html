@@ -1,0 +1,124 @@
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Signed-In Home Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-signed-in-home
+     Files: src/app/pages/signed-in-home/signed-in-home.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 40px;max-width:1080px;margin:0 auto">
+  <!-- Greeting Header -->
+  <h1 style="font-size:30px;margin:0 0 4px;font-weight:700;color:var(--ink, #07243D)">
+    Good afternoon, {{ customer().name }}
+  </h1>
+  <p class="muted" style="margin:0 0 22px;font-size:15px;color:var(--muted, #5E7489)">
+    {{ customer().activeDeliveriesCount === 1 ? 'One delivery is on its way.' : customer().activeDeliveriesCount + ' deliveries on their way.' }}
+  </p>
+
+  <!-- 2-Column Split Dashboard Layout -->
+  <div class="grid split" style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start">
+    <div class="stack" style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Active Delivery Banner Card -->
+      <div *ngIf="activeOrder() as order" class="card" style="border-color:#c9e0f7;border-radius:16px;overflow:hidden">
+        <div class="card-head" style="background:var(--blue-50, #E8F2FC);border-bottom:1px solid #c9e0f7;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:15px">Arriving about {{ order.estimatedArrival }}</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">Order #{{ order.orderNumber }} · {{ order.vendorName }}</div>
+          </div>
+          <span class="badge info" style="display:inline-flex;align-items:center;gap:6px">
+            <span class="dot"></span>On the way
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#ffffff">
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <span class="v-logo" style="width:44px;height:44px;border-radius:12px;font-size:13px;background:var(--blue, #1877D2);color:#ffffff;display:grid;place-items:center;font-weight:700">
+              {{ order.riderInitials }}
+            </span>
+            <span style="font-size:14.5px;color:var(--ink, #07243D)">
+              <b>{{ order.riderName }} is {{ order.minutesAway }} minutes away</b><br>
+              <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">{{ order.itemsSummary }}</span>
+            </span>
+          </div>
+          <button type="button" class="btn sm" (click)="trackOrder(order.orderNumber)">Track</button>
+        </div>
+      </div>
+
+      <!-- Order Again Card -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line, #DBE7F1)">
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Order again</h3>
+          <a href="javascript:void(0)" (click)="viewAllOrders()" style="font-size:14px;color:var(--blue, #1877D2);text-decoration:none;font-weight:600">All orders</a>
+        </div>
+        <div class="card-body grid g3" style="padding:18px 20px;display:grid;grid-template-columns:repeat(3, 1fr);gap:14px">
+          <div *ngFor="let item of reorderItems()" class="panel stack" style="gap:8px;padding:14px;border:1px solid var(--line, #DBE7F1);border-radius:12px;background:#FAFBFD;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <b style="font-size:14.5px;color:var(--ink, #07243D);display:block">{{ item.title }}</b>
+              <span class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px;display:block">
+                {{ item.vendorName }} · KSh {{ item.priceKsh.toLocaleString() }}
+              </span>
+            </div>
+            <button type="button" class="btn sm ghost" (click)="reorder(item)">Reorder</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recurring Delivery Card -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line, #DBE7F1)">
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Recurring delivery</h3>
+          <a href="javascript:void(0)" (click)="manageRecurring()" style="font-size:14px;color:var(--blue, #1877D2);text-decoration:none;font-weight:600">Manage</a>
+        </div>
+        <div class="card-body between" style="padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <b style="font-size:15px;color:var(--ink, #07243D);display:block">{{ recurringSubscription().planName }}</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:3px">
+              {{ recurringSubscription().frequency }} · next on {{ recurringSubscription().nextDate }}
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:8px">
+            <button type="button" class="btn ghost sm" (click)="skipNext()">Skip next</button>
+            <button type="button" class="btn ghost sm" (click)="pauseRecurring()">
+              {{ isPaused() ? 'Resume' : 'Pause' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="stack" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Quick Actions -->
+      <div class="card pad" style="padding:20px;background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px">
+        <h4 style="margin:0 0 12px;font-size:15px;font-weight:700;color:var(--ink, #07243D)">Quick actions</h4>
+        <div class="stack" style="display:flex;flex-direction:column;gap:8px">
+          <button type="button" class="btn block" (click)="quickAction('discover')">Order water</button>
+          <button type="button" class="btn ghost block" (click)="quickAction('addresses')">Saved addresses</button>
+          <button type="button" class="btn ghost block" (click)="quickAction('offers')">Offers &amp; rewards</button>
+          <button type="button" class="btn ghost block" (click)="quickAction('support')">Get help</button>
+        </div>
+      </div>
+
+      <!-- Loyalty & Points Meter -->
+      <div class="card pad" style="padding:20px;background:var(--aqua-50, #E2F7F6);border:1px solid #bfe9e7;border-radius:16px">
+        <h4 style="margin:0 0 6px;font-size:15px;font-weight:700;color:var(--ink, #07243D)">
+          You have {{ loyalty().points }} points
+        </h4>
+        <p style="font-size:14px;margin:0 0 10px;color:var(--ink, #07243D)">
+          {{ loyalty().pointsRemaining }} more and your next 20L refill is free.
+        </p>
+        <div class="meter" style="height:8px;background:rgba(7, 36, 61, 0.1);border-radius:999px;overflow:hidden">
+          <i [style.width]="loyalty().progressPercentage + '%'" style="display:block;height:100%;background:var(--aqua, #2FC4C0);border-radius:999px;transition:width 0.4s ease"></i>
+        </div>
+      </div>
+
+      <!-- This Month Stats -->
+      <div class="card pad" style="padding:20px;background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px">
+        <h4 style="margin:0 0 6px;font-size:15px;font-weight:700;color:var(--ink, #07243D)">This month</h4>
+        <p class="muted" style="font-size:14px;margin:0;color:var(--muted, #5E7489)">
+          {{ monthlyStats().ordersCount }} orders · {{ monthlyStats().litresCount }} litres · KSh {{ monthlyStats().spentKsh.toLocaleString() }} spent
+        </p>
+      </div>
+    </aside>
+  </div>
+</div>
