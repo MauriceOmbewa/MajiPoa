@@ -1,0 +1,236 @@
+:host {
+  display: block;
+}
+
+/* ── Page header (sticky bar) ────────────────────────────────── */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  background: var(--surface-l1, #f4f8fb);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-on-light, #0b2540);
+  }
+}
+
+.range-select {
+  appearance: auto;
+  background: var(--surface-l2, #fff);
+  border: 1px solid var(--border-light, #dbe6ee);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-on-light, #0b2540);
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-royal, #2563eb);
+  }
+}
+
+/* ── Content column ──────────────────────────────────────────── */
+.page-body {
+  max-width: 764px;          // remove this line to let the page fill the width
+  padding: 24px 28px 48px;
+}
+
+/* ── Stat cards ──────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: var(--surface-l2, #fff);
+  border: 1px solid var(--border-light, #dbe6ee);
+  border-radius: 20px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-on-light, #0b2540);
+}
+
+.stat-note {
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+
+  &--positive {
+    color: var(--color-green-text, #059669);
+    font-weight: 500;
+  }
+}
+
+/* ── Shared card chrome ──────────────────────────────────────── */
+.week-card,
+.payouts-card {
+  background: var(--surface-l2, #fff);
+  border: 1px solid var(--border-light, #dbe6ee);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;          // clips table edges to the rounded corners
+}
+
+.week-card__head,
+.payouts-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-on-light, #0b2540);
+  }
+}
+
+.pill {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-royal, #1d5fa8);
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  padding: 6px 12px;
+  border-radius: var(--r-pill, 999px);
+  white-space: nowrap;
+}
+
+/* ── Tables (full-bleed inside cards) ────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-muted, #64748b);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    color: var(--text-on-light, #0b2540);
+    white-space: nowrap;
+  }
+}
+
+.align-right {
+  text-align: right;
+}
+
+/* ── Weekly breakdown table ──────────────────────────────────── */
+.week-table {
+  .day-cell {
+    color: var(--text-on-light, #0b2540);   // plain text, as in the design
+  }
+
+  .total-cell {
+    font-weight: 800;
+  }
+
+  tfoot .bonus-row td {
+    border-bottom: none;
+    padding: 20px 16px;
+    font-size: 14px;
+    color: var(--text-muted, #64748b);
+    white-space: normal;
+  }
+
+  tfoot .bonus-row .total-cell {
+    color: var(--text-on-light, #0b2540);
+    font-size: 15px;
+    white-space: nowrap;
+  }
+}
+
+/* ── Past payouts table ──────────────────────────────────────── */
+.payouts-table {
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ref-cell {
+    color: var(--text-muted, #64748b);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 13px;
+  }
+}
+
+.status-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--r-pill, 999px);
+  background: var(--surface-l1, #f1f5f9);
+  color: var(--text-muted, #64748b);
+
+  &--paid {
+    background: rgba(0, 200, 83, 0.14);
+    color: var(--color-green-text, #059669);
+  }
+}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted, #64748b);
+
+  .empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    color: var(--text-on-light, #0b2540);
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+}

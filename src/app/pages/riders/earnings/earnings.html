@@ -1,0 +1,118 @@
+<app-rider-layout>
+  <header class="page-header">
+    <h1>Earnings</h1>
+    <select class="range-select" [value]="selectedRange()" (change)="onRangeChange($event)">
+      <option *ngFor="let option of rangeOptions" [value]="option.value">{{ option.label }}</option>
+    </select>
+  </header>
+
+  <main class="page-body">
+
+    <!-- ── Summary cards ─────────────────────────────────────── -->
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">This week</div>
+        <div class="stat-value">KSh {{ summary().weekTotal | number }}</div>
+        <div class="stat-note">{{ summary().weekDeliveries }} deliveries</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Paid out {{ summary().payoutDay }}</div>
+        <div class="stat-value">KSh {{ summary().weekTotal | number }}</div>
+        <div class="stat-note">To {{ summary().payoutPhone }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Average per delivery</div>
+        <div class="stat-value">KSh {{ summary().avgPerDelivery }}</div>
+        <div class="stat-note stat-note--positive" *ngIf="summary().avgDeltaVsLastWeek">
+          ▲ KSh {{ summary().avgDeltaVsLastWeek }} vs last week
+        </div>
+      </div>
+    </section>
+
+    <!-- ── This week breakdown ──────────────────────────────── -->
+    <section class="week-card">
+      <div class="week-card__head">
+        <h2>This week</h2>
+        <span class="pill">Pays out {{ summary().payoutDay }} 6 pm</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="week-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Deliveries</th>
+              <th>Distance</th>
+              <th>Base</th>
+              <th>Bonus</th>
+              <th class="align-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of weeklyBreakdown()">
+              <td class="day-cell">{{ d.day }} {{ d.date }}</td>
+              <td>{{ d.deliveries }}</td>
+              <td>{{ d.distanceKm }} km</td>
+              <td>KSh {{ d.base | number }}</td>
+              <td>KSh {{ d.bonus | number }}</td>
+              <td class="align-right total-cell">KSh {{ d.total | number }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="bonus-row">
+              <td colspan="5">Bonus: KSh 100 for every 10 deliveries completed on time in a day.</td>
+              <td class="align-right total-cell">KSh {{ weekTotalFromBreakdown() | number }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Past payouts ──────────────────────────────────────── -->
+    <section class="payouts-card">
+      <div class="payouts-card__head">
+        <h2>Past payouts</h2>
+      </div>
+
+      <ng-container *ngIf="pastPayouts().length > 0; else emptyPayouts">
+        <div class="table-scroll">
+          <table class="payouts-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Period</th>
+                <th>Deliveries</th>
+                <th>Amount</th>
+                <th>M-Pesa reference</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of pastPayouts()">
+                <td>{{ p.date }}</td>
+                <td>{{ p.period }}</td>
+                <td>{{ p.deliveries }}</td>
+                <td>KSh {{ p.amount | number }}</td>
+                <td class="ref-cell">{{ p.mpesaRef }}</td>
+                <td>
+                  <span class="status-pill" [class.status-pill--paid]="p.status === 'Paid'">{{ p.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <ng-template #emptyPayouts>
+        <div class="empty-state">
+          <div class="empty-icon">💳</div>
+          <h3>No payouts yet</h3>
+          <p>Your completed payouts will show up here.</p>
+        </div>
+      </ng-template>
+    </section>
+
+  </main>
+</app-rider-layout>

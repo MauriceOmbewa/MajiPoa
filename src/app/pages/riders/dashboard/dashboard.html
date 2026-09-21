@@ -1,0 +1,124 @@
+<div class="rider-layout">
+  <app-rider-sidebar></app-rider-sidebar>
+
+  <main class="rider-main">
+    <header class="page-header">
+      <h1>Today</h1>
+      <div class="header-actions">
+        <span class="status-pill" [class.available]="isAvailable()">
+          <span class="dot"></span>
+          {{ isAvailable() ? 'Available' : 'Offline' }}
+        </span>
+        <button class="btn-outline" type="button" (click)="toggleAvailability()">
+          {{ isAvailable() ? 'Go offline' : 'Go online' }}
+        </button>
+      </div>
+    </header>
+
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Earned today</div>
+        <div class="stat-value">KSh {{ earnedToday() | number }}</div>
+        <div class="stat-sub">{{ deliveriesToday() }} deliveries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Online</div>
+        <div class="stat-value">{{ onlineDuration() }}</div>
+        <div class="stat-sub">Since {{ onlineSince() }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rating</div>
+        <div class="stat-value">{{ rating() }} ★</div>
+        <div class="stat-sub">{{ ratingSampleLabel() }}</div>
+      </div>
+    </section>
+
+    <section class="offer-card" *ngIf="currentOffer() as offer">
+      <div class="offer-header">
+        <h2>New delivery offer</h2>
+        <span class="expires-pill">Expires in 0:{{ offer.expiresInSec }}</span>
+      </div>
+
+      <div class="offer-body">
+        <div class="offer-top">
+          <div>
+            <div class="offer-price">KSh {{ offer.price }}</div>
+            <div class="offer-meta">{{ offer.distanceKm }} km total · about {{ offer.etaMin }} min</div>
+          </div>
+          <div class="offer-tags">
+            <span class="tag" *ngFor="let tag of offer.tags">{{ tag }}</span>
+          </div>
+        </div>
+
+        <div class="offer-route">
+          <div class="route-row">
+            <span class="route-dot pickup">▲</span>
+            <span class="route-text">
+              <strong>Pick up · {{ offer.pickupName }}</strong>
+              {{ offer.pickupLocation }} · {{ offer.pickupDistanceKm }} km from you
+            </span>
+          </div>
+          <div class="route-row">
+            <span class="route-dot dropoff">▼</span>
+            <span class="route-text">
+              <strong>Drop off · {{ offer.dropoffName }}</strong>
+              {{ offer.dropoffLocation }} · {{ offer.dropoffDistanceKm }} km from pickup
+            </span>
+          </div>
+        </div>
+
+        <div class="offer-actions">
+          <button class="btn-primary" type="button" (click)="acceptOffer()">Accept delivery</button>
+          <button class="btn-outline" type="button" (click)="declineOffer()">Decline</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="current-delivery-card" *ngIf="currentDelivery() as delivery">
+      <div class="card-header">
+        <h2>Your current delivery</h2>
+        <span class="status-pill on-the-way">
+          <span class="dot"></span>
+          {{ delivery.status }}
+        </span>
+      </div>
+      <div class="delivery-row">
+        <div>
+          <div class="delivery-title">{{ delivery.orderId }} · {{ delivery.from }} → {{ delivery.to }}</div>
+          <div class="delivery-meta">
+            {{ delivery.itemsLabel }} · {{ delivery.etaFromCustomerMin }} min from the customer · KSh {{ delivery.price }}
+          </div>
+        </div>
+        <button class="btn-primary" type="button" (click)="openCurrentDelivery()">Open</button>
+      </div>
+    </section>
+
+    <section class="completed-card">
+      <div class="card-header">
+        <h2>Completed today</h2>
+        <a class="link" routerLink="/riders/history">History</a>
+      </div>
+
+      <table class="completed-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Order</th>
+            <th>From → to</th>
+            <th>Distance</th>
+            <th>Earned</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of completedToday()">
+            <td>{{ row.time }}</td>
+            <td>{{ row.orderId }}</td>
+            <td>{{ row.from }} → {{ row.to }}</td>
+            <td>{{ row.distanceKm }} km</td>
+            <td>KSh {{ row.earned }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>

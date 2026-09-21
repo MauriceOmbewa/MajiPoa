@@ -1,0 +1,90 @@
+
+<div class="rider-layout">
+  <app-rider-sidebar></app-rider-sidebar>
+
+  <main class="rider-main">
+    <header class="page-header">
+      <h1>Delivery history</h1>
+    </header>
+
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Deliveries</div>
+        <div class="stat-value">{{ totalTrips() }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total earned</div>
+        <div class="stat-value">KSh {{ totalEarned() | number }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. rating</div>
+        <div class="stat-value">{{ averageRating() || '—' }} <span *ngIf="averageRating()">★</span></div>
+      </div>
+    </section>
+
+    <section class="filters-card">
+      <div class="range-chips">
+        <button
+          *ngFor="let option of rangeOptions"
+          type="button"
+          class="chip"
+          [class.active]="activeRange() === option.value"
+          (click)="setRange(option.value)">
+          {{ option.label }}
+        </button>
+      </div>
+
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search by order, vendor or area"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </section>
+
+    <section class="trips-card">
+      <ng-container *ngIf="filteredTrips().length > 0; else emptyState">
+        <table class="trips-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Order</th>
+              <th>From → to</th>
+              <th>Distance</th>
+              <th>Time</th>
+              <th>Earned</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let trip of filteredTrips()" (click)="openTrip(trip)" class="trip-row">
+              <td>
+                <div class="trip-date">{{ trip.dateLabel }}</div>
+                <div class="trip-time">{{ trip.timeLabel }}</div>
+              </td>
+              <td>{{ trip.orderId }}</td>
+              <td>{{ trip.fromLabel }} → {{ trip.toLabel }}</td>
+              <td>{{ trip.distanceKm }} km</td>
+              <td>{{ trip.durationMin }} min</td>
+              <td class="trip-earned">KSh {{ trip.earned }}</td>
+              <td>
+                <span class="trip-stars">
+                  <span *ngFor="let star of ratingStars(trip.rating)">{{ star }}</span>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <div class="empty-icon">🚚</div>
+          <h3>No deliveries found</h3>
+          <p>Try a different time range or search term.</p>
+        </div>
+      </ng-template>
+    </section>
+  </main>
+</div>

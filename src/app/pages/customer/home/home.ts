@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * MajiSafi Standalone Home Component for Angular 17+ / 18+ / 19+
+  * MajiSafi Standalone Home Component for Angular 17+ / 18+ / 19+
  * File: src/app/pages/home/home.component.ts
  *
  * Implements:
@@ -14,7 +14,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 export interface WaterProduct {
   id: string;
@@ -69,6 +69,7 @@ export interface WaterPassportData {
 export class HomeComponent {
   // Navigation State
   activeNav = signal<string>('discover');
+   private router = inject(Router);
   navItems = [
     { label: 'Order water', key: 'discover' },
     { label: 'My orders', key: 'orders' },
@@ -78,6 +79,7 @@ export class HomeComponent {
     { label: 'Rider', key: 'rider' },
     { label: 'Admin', key: 'admin' }
   ];
+ 
 
   // Estates Available in Nairobi
   nairobiEstates: LocationEstate[] = [
@@ -283,9 +285,15 @@ export class HomeComponent {
   toastMessage = signal<string | null>(null);
 
   // Methods
-  setActiveNav(key: string): void {
-    this.activeNav.set(key);
+ setActiveNav(key: string): void {
+  this.activeNav.set(key);
+
+  if (key === 'rider') {
+    this.router.navigateByUrl('/riders/dashboard');
   }
+  // Add similar checks here later for 'vendor' or 'admin' if those
+  // should also navigate to their own dashboards.
+}
 
   setFilterChip(chip: string): void {
     this.activeFilterChip.set(chip);
@@ -448,7 +456,6 @@ export class HomeComponent {
     }, 3500);
   }
 
-  private router = inject(Router);
 
   navigateToFindWater(): void {
     this.router.navigate(['/find-water']);

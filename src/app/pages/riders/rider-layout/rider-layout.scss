@@ -1,0 +1,10 @@
+.rider-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.rider-main {
+  flex: 1;
+  min-width: 0;          /* lets wide tables scroll instead of overflowing */
+  box-sizing: border-box;
+}

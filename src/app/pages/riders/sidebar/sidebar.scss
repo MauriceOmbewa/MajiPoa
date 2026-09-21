@@ -1,0 +1,142 @@
+.rider-sidebar {
+  width: 220px;
+  flex-shrink: 0;       /* stop the sidebar being squeezed by flex */
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, #0b1f3a 0%, #0a3b4a 100%);
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* ...rest of the file (.brand, .rider-card, .nav-section, .nav-link, .elsewhere) stays unchanged... */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+
+  .brand-icon {
+    font-size: 20px;
+  }
+
+  .brand-name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 17px;
+  }
+}
+
+.rider-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 28px;
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #06283a;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rider-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rider-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .rider-role {
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .switch-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+  }
+}
+
+.nav-section {
+  margin-bottom: 24px;
+
+  .nav-heading {
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    margin-bottom: 8px;
+    padding: 0 8px;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+
+  .nav-icon {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  &.active {
+    background: #fff;
+    color: #0b1f3a;
+    font-weight: 600;
+  }
+}
+
+.elsewhere {
+  margin-top: auto;
+}
