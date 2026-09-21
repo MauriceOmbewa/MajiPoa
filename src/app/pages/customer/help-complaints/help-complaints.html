@@ -1,1 +1,170 @@
-<p>help-complaints works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Help & Complaints Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-help-complaints
+     Files: src/app/pages/help-complaints/help-complaints.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 50px;max-width:900px;margin:0 auto">
+  <h1 style="font-size:30px;margin:0 0 6px;font-weight:700;color:var(--ink, #07243D)">How can we help?</h1>
+  <p class="muted" style="margin:0 0 22px;font-size:15px;color:var(--muted, #5E7489)">
+    Most problems are solved fastest from the order itself.
+  </p>
+
+  <!-- Submit a Request Card -->
+  <div class="card" style="margin-bottom:24px;background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+    <div class="card-head" style="padding:16px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1)">
+      <h3 style="margin:0;font-size:17px;font-weight:700;color:var(--ink, #07243D)">Get help with an order</h3>
+    </div>
+    
+    <div class="card-body" style="padding:20px">
+      <!-- Submission Confirmation Toast -->
+      <div *ngIf="isSubmitted()" style="background:#E3F5EE;border:1px solid #12946A;color:#12946A;padding:14px;border-radius:10px;margin-bottom:18px;font-size:14px">
+        <b>Case submitted!</b> Reference #SUP-{{ lastSubmittedCaseId() }}. Our support team will review and reply within 2 hours.
+      </div>
+
+      <form (ngSubmit)="submitTicket()">
+        <!-- Order Selector -->
+        <div class="field" style="margin-bottom:16px;display:flex;flex-direction:column;gap:6px">
+          <label for="ord" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Which order?</label>
+          <select
+            id="ord"
+            [(ngModel)]="selectedOrder"
+            name="selectedOrder"
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D);background:#ffffff"
+          >
+            <option *ngFor="let ord of recentOrders" [value]="ord.id">
+              {{ ord.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Issue Category Chips -->
+        <div class="field" style="margin-bottom:16px;display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">What went wrong?</label>
+          <div class="row wrap-row" style="display:flex;gap:8px;flex-wrap:wrap">
+            <span
+              *ngFor="let issue of issueTypes"
+              class="chip"
+              [class.on]="selectedIssue() === issue"
+              (click)="selectIssue(issue)"
+              style="padding:7px 14px;border-radius:9999px;font-size:13px;font-weight:500;border:1px solid var(--line, #DBE7F1);cursor:pointer;transition:all 0.15s ease"
+            >
+              {{ issue }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Details Textarea -->
+        <div class="field" style="margin-bottom:16px;display:flex;flex-direction:column;gap:6px">
+          <label for="d" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Tell us what happened</label>
+          <textarea
+            id="d"
+            rows="3"
+            [(ngModel)]="detailsText"
+            name="detailsText"
+            placeholder="The more detail you give, the faster we can settle it with the vendor."
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D);font-family:inherit;box-sizing:border-box;resize:vertical"
+          ></textarea>
+        </div>
+
+        <!-- File Upload -->
+        <div class="field" style="margin-bottom:18px;display:flex;flex-direction:column;gap:6px">
+          <label for="ph" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Add photos (optional)</label>
+          <input
+            id="ph"
+            type="file"
+            multiple
+            (change)="onFileSelected($event)"
+            style="padding:9px;border:1px dashed var(--line, #DBE7F1);border-radius:10px;background:#FAFBFD;width:100%;box-sizing:border-box"
+          >
+          <span *ngIf="attachedFilesCount() > 0" class="muted" style="font-size:12px;color:var(--muted, #5E7489)">
+            {{ attachedFilesCount() }} file(s) selected
+          </span>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn"
+          style="padding:10px 22px;border-radius:12px;background:var(--ink, #07243D);color:#ffffff;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-bottom:10px"
+        >
+          Submit request
+        </button>
+
+        <p class="hint" style="font-size:12.5px;color:var(--muted, #5E7489);margin:0;line-height:1.5">
+          We reply within 2 hours, 7am–9pm. Water quality reports are escalated immediately and the batch is held.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Open & Resolved Cases Section -->
+  <h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">Your open cases</h3>
+  <div
+    *ngFor="let item of openCases()"
+    class="card"
+    style="margin-bottom:26px;background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)"
+  >
+    <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <b style="color:var(--ink, #07243D);font-size:15px">{{ item.caseNumber }}</b>
+        <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-left:4px">
+          · Order {{ item.orderRef }} · opened {{ item.openedDate }}
+        </span>
+      </div>
+      <span
+        class="badge"
+        [ngClass]="item.status === 'Refunded' || item.status === 'Resolved' ? 'ok' : 'warn'"
+        style="padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600"
+      >
+        {{ item.status }}
+      </span>
+    </div>
+    <div class="card-body" style="padding:16px 20px;font-size:14.5px;color:var(--ink, #07243D);line-height:1.5">
+      {{ item.resolutionSummary }}
+    </div>
+  </div>
+
+  <!-- FAQ Accordion Section -->
+  <h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">Common questions</h3>
+  <div class="stack" style="display:flex;flex-direction:column;gap:10px">
+    
+    <details class="panel" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:12px;padding:14px 18px">
+      <summary style="font-weight:600;font-size:15px;color:var(--ink, #07243D);cursor:pointer">
+        Do I need to return the empty jug?
+      </summary>
+      <p class="muted" style="margin:10px 0 0;font-size:14.5px;color:var(--muted, #5E7489);line-height:1.55">
+        For refills, yes — the rider swaps your empty jug for a full one. If you don't have a jug, order the new jug bundle once and use it from then on.
+      </p>
+    </details>
+
+    <details class="panel" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:12px;padding:14px 18px">
+      <summary style="font-weight:600;font-size:15px;color:var(--ink, #07243D);cursor:pointer">
+        When am I charged for a recurring delivery?
+      </summary>
+      <p class="muted" style="margin:10px 0 0;font-size:14.5px;color:var(--muted, #5E7489);line-height:1.55">
+        On the morning of each delivery. You can skip or cancel any time before the charge goes out.
+      </p>
+    </details>
+
+    <details class="panel" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:12px;padding:14px 18px">
+      <summary style="font-weight:600;font-size:15px;color:var(--ink, #07243D);cursor:pointer">
+        How long does a refund take?
+      </summary>
+      <p class="muted" style="margin:10px 0 0;font-size:14.5px;color:var(--muted, #5E7489);line-height:1.55">
+        Approved refunds go back to the M Pesa number that paid, usually within a few hours and always within 3 working days.
+      </p>
+    </details>
+
+    <details class="panel" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:12px;padding:14px 18px">
+      <summary style="font-weight:600;font-size:15px;color:var(--ink, #07243D);cursor:pointer">
+        Can I order without an account?
+      </summary>
+      <p class="muted" style="margin:10px 0 0;font-size:14.5px;color:var(--muted, #5E7489);line-height:1.55">
+        Yes. A phone number is all we need. An account only saves your addresses, history and offers.
+      </p>
+    </details>
+
+  </div>
+</div>

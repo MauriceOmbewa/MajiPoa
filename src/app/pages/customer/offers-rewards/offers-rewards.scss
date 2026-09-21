@@ -1,0 +1,195 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Offers & Rewards Styles (SCSS)
+   File: src/app/pages/offers-rewards/offers-rewards.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-50: #E0EEFA;
+$aqua: #2FC4C0;
+$aqua-50: #E2F7F6;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+
+.wrap {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 28px 20px 50px;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: $muted;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.04);
+
+  &.pad {
+    padding: 20px;
+  }
+}
+
+.hero-points-card {
+  h2 {
+    font-size: 28px;
+  }
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.grid.g2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.meter {
+  background: #EEF3F8;
+  border: 1px solid $line;
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+
+  i {
+    display: block;
+    height: 100%;
+    background: $aqua;
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+
+  &.info {
+    background: $blue-50;
+    color: $blue;
+  }
+
+  &.aqua {
+    background: $aqua-50;
+    color: #0F827E;
+  }
+
+  &.ok {
+    background: $ok-50;
+    color: $ok;
+  }
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.sm {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+  }
+}
+
+.t-scroll {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+    min-width: 500px;
+
+    th, td {
+      padding: 14px 20px;
+      border-bottom: 1px solid $line;
+    }
+
+    th {
+      background: #FAFBFD;
+      font-weight: 600;
+      color: $muted;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #FAFBFD;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .grid.g2 {
+    grid-template-columns: 1fr;
+  }
+}

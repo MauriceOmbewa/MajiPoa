@@ -1,1 +1,144 @@
-<p>offers-rewards works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Offers & Rewards Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-offers-rewards
+     Files: src/app/pages/offers-rewards/offers-rewards.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 50px;max-width:940px;margin:0 auto">
+  <h1 style="font-size:30px;margin:0 0 6px;font-weight:700;color:var(--ink, #07243D)">Offers &amp; rewards</h1>
+  <p class="muted" style="margin:0 0 22px;font-size:15px;color:var(--muted, #5E7489);max-width:740px">
+    Discounts are funded either by MajiSafi or by the vendor — we label which, so vendors never carry a cost they didn't choose.
+  </p>
+
+  <!-- Highlight Banner Card: Loyalty Points Overview -->
+  <div class="card pad hero-points-card" style="background:linear-gradient(140deg,#0B3358,#0E4B6E);border-color:#0B3358;color:#ffffff;border-radius:16px;padding:24px;margin-bottom:22px;box-shadow:0 4px 12px rgba(11,51,88,0.15)">
+    <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div>
+        <h2 style="color:#ffffff;font-size:26px;font-weight:700;margin:0">
+          {{ points() }} points
+        </h2>
+        <p style="color:#a8c4da;margin:4px 0 0;font-size:14px">
+          {{ pointsToNextReward() }} points from a free 20L refill. You earn 1 point per KSh 10 spent.
+        </p>
+      </div>
+      <div style="min-width:240px;flex:1;max-width:340px">
+        <div class="meter" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);height:10px;border-radius:9999px;overflow:hidden;position:relative">
+          <i [style.width.%]="progressPercent()" style="display:block;height:100%;background:var(--aqua, #2FC4C0);border-radius:9999px;transition:width 0.4s ease"></i>
+        </div>
+        <div class="between" style="display:flex;justify-content:space-between;font-size:13px;color:#a8c4da;margin-top:6px">
+          <span>{{ points() }}</span>
+          <span>{{ targetGoal() }} = free refill</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Available Offers Section -->
+  <h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">Available now</h3>
+  <div class="grid g2" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:26px">
+    
+    <!-- Offer 1: MAJI50 -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+      <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <b style="color:var(--ink, #07243D);font-size:15px">KSh 50 off your first order</b>
+        <span class="badge info" style="font-size:11.5px;padding:3px 8px;border-radius:6px;background:#E0EEFA;color:#1877D2;font-weight:600">MajiSafi</span>
+      </div>
+      <p class="muted" style="font-size:14px;color:var(--muted, #5E7489);margin:8px 0 12px">
+        On orders above KSh 300. One use per phone number.
+      </p>
+      <div class="row" style="display:flex;align-items:center;gap:10px">
+        <code style="background:var(--mist, #F1F6FA);padding:8px 14px;border-radius:8px;font-weight:700;letter-spacing:.05em;color:var(--ink, #07243D);font-size:14px">MAJI50</code>
+        <button
+          type="button"
+          class="btn ghost sm"
+          (click)="copyCode('MAJI50')"
+        >
+          {{ copiedCode() === 'MAJI50' ? 'Copied!' : 'Copy' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Offer 2: Vendor Loyalty (ABC Water) -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+      <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <b style="color:var(--ink, #07243D);font-size:15px">Buy 4 refills, get the 5th free</b>
+        <span class="badge aqua" style="font-size:11.5px;padding:3px 8px;border-radius:6px;background:#E2F7F6;color:#0F827E;font-weight:600">ABC Water</span>
+      </div>
+      <p class="muted" style="font-size:14px;color:var(--muted, #5E7489);margin:8px 0 12px">
+        Counts refills from ABC Water only. You have 3 of 4.
+      </p>
+      <div class="meter" style="background:#EEF3F8;border:1px solid var(--line, #DBE7F1);height:8px;border-radius:9999px;overflow:hidden">
+        <i style="width:75%;display:block;height:100%;background:var(--aqua, #2FC4C0);border-radius:9999px"></i>
+      </div>
+    </div>
+
+    <!-- Offer 3: Free delivery -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+      <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <b style="color:var(--ink, #07243D);font-size:15px">Free delivery before 10 am</b>
+        <span class="badge info" style="font-size:11.5px;padding:3px 8px;border-radius:6px;background:#E0EEFA;color:#1877D2;font-weight:600">MajiSafi</span>
+      </div>
+      <p class="muted" style="font-size:14px;color:var(--muted, #5E7489);margin:8px 0 0">
+        Order the night before for a morning window. Automatically applied.
+      </p>
+    </div>
+
+    <!-- Offer 4: Referral -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+      <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <b style="color:var(--ink, #07243D);font-size:15px">Refer a neighbour</b>
+        <span class="badge info" style="font-size:11.5px;padding:3px 8px;border-radius:6px;background:#E0EEFA;color:#1877D2;font-weight:600">MajiSafi</span>
+      </div>
+      <p class="muted" style="font-size:14px;color:var(--muted, #5E7489);margin:8px 0 12px">
+        They get KSh 50 off, you get 100 points when they receive their first order.
+      </p>
+      <div class="row" style="display:flex;align-items:center;gap:10px">
+        <code style="background:var(--mist, #F1F6FA);padding:8px 14px;border-radius:8px;font-weight:700;color:var(--ink, #07243D);font-size:14px">MAURICE-K9</code>
+        <button
+          type="button"
+          class="btn ghost sm"
+          (click)="shareReferralCode('MAURICE-K9')"
+        >
+          {{ copiedCode() === 'MAURICE-K9' ? 'Copied!' : 'Share' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Points History Table Section -->
+  <h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">Points history</h3>
+  <div class="card t-scroll" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+    <table style="width:100%;border-collapse:collapse;text-align:left;font-size:14px">
+      <thead>
+        <tr style="background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);color:var(--muted, #5E7489);font-weight:600">
+          <th style="padding:14px 20px">Date</th>
+          <th style="padding:14px 20px">Activity</th>
+          <th style="padding:14px 20px">Order</th>
+          <th style="padding:14px 20px;text-align:right">Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of history()" style="border-bottom:1px solid var(--line, #DBE7F1)">
+          <td style="padding:14px 20px;color:var(--ink, #07243D)">{{ item.date }}</td>
+          <td style="padding:14px 20px;color:var(--ink, #07243D);font-weight:500">{{ item.activity }}</td>
+          <td style="padding:14px 20px;color:var(--muted, #5E7489)">
+            <ng-container *ngIf="item.orderRef">
+              <a href="javascript:void(0)" (click)="viewOrder(item.orderRef)" style="color:var(--blue, #1877D2);text-decoration:none;font-weight:600">
+                {{ item.orderRef }}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="!item.orderRef">—</ng-container>
+          </td>
+          <td
+            style="padding:14px 20px;text-align:right;font-weight:700"
+            [style.color]="item.pointsDelta > 0 ? 'var(--ok, #12946A)' : 'var(--ink, #07243D)'"
+          >
+            {{ item.pointsDelta > 0 ? '+' + item.pointsDelta : item.pointsDelta }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

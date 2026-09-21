@@ -1,0 +1,201 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Help & Complaints Styles (SCSS)
+   File: src/app/pages/help-complaints/help-complaints.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-50: #E0EEFA;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+$warn: #C77A11;
+$warn-50: #FEF6E7;
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 50px;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: $muted;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.04);
+
+  .card-head {
+    padding: 14px 20px;
+    background: #FAFBFD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid $line;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.wrap-row {
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.chip {
+  padding: 7px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid $line;
+  background: #FAFBFD;
+  color: $ink;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #F0F7FD;
+    border-color: rgba($blue, 0.4);
+  }
+
+  &.on {
+    background: $ink;
+    color: #ffffff;
+    border-color: $ink;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  select,
+  textarea,
+  input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid $line;
+    font-size: 14px;
+    background: #ffffff;
+    color: $ink;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $blue;
+      box-shadow: 0 0 0 3px rgba($blue, 0.12);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 84px;
+    font-family: inherit;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.ok {
+    background: $ok-50;
+    color: $ok;
+  }
+
+  &.warn {
+    background: $warn-50;
+    color: $warn;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+}
+
+.hint {
+  font-size: 12.5px;
+  color: $muted;
+}
+
+details.panel {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: all 0.2s ease;
+
+  &[open] {
+    box-shadow: 0 2px 8px rgba(7, 36, 61, 0.04);
+  }
+
+  summary {
+    font-weight: 600;
+    font-size: 15px;
+    color: $ink;
+    cursor: pointer;
+    user-select: none;
+  }
+}

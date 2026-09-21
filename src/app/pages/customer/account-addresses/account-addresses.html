@@ -1,1 +1,198 @@
-<p>account-addresses works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Account & Addresses Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-account-addresses
+     Files: src/app/pages/account-addresses/account-addresses.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 50px;max-width:900px;margin:0 auto">
+  <h1 style="font-size:30px;margin:0 0 16px;font-weight:700;color:var(--ink, #07243D)">Account</h1>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs" style="display:flex;gap:8px;border-bottom:1px solid var(--line, #DBE7F1);padding-bottom:10px;margin-bottom:24px;overflow-x:auto">
+    <button
+      type="button"
+      [class.on]="activeTab() === 'profile'"
+      (click)="setTab('profile')"
+      class="tab-btn"
+    >
+      Profile
+    </button>
+    <button
+      type="button"
+      [class.on]="activeTab() === 'addresses'"
+      (click)="setTab('addresses')"
+      class="tab-btn"
+    >
+      Addresses
+    </button>
+    <button
+      type="button"
+      [class.on]="activeTab() === 'payment'"
+      (click)="setTab('payment')"
+      class="tab-btn"
+    >
+      Payment
+    </button>
+    <button
+      type="button"
+      [class.on]="activeTab() === 'notifications'"
+      (click)="setTab('notifications')"
+      class="tab-btn"
+    >
+      Notifications
+    </button>
+    <button
+      type="button"
+      [class.on]="activeTab() === 'privacy'"
+      (click)="setTab('privacy')"
+      class="tab-btn"
+    >
+      Privacy
+    </button>
+  </div>
+
+  <div class="grid split" style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start">
+    
+    <!-- Main Content Area -->
+    <div class="stack" style="display:flex;flex-direction:column;gap:16px">
+      
+      <!-- Section 1: User Details -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Your details</h3>
+          <button type="button" class="btn ghost sm" (click)="saveDetails()">
+            {{ isDetailsSaved() ? 'Saved!' : 'Save changes' }}
+          </button>
+        </div>
+        <div class="card-body" style="padding:18px 20px">
+          <div class="grid g2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="f" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Full name</label>
+              <input
+                id="f"
+                type="text"
+                [(ngModel)]="profile.fullName"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="ph" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Phone number</label>
+              <input
+                id="ph"
+                type="tel"
+                [(ngModel)]="profile.phone"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+              <span class="hint" style="font-size:12px;color:var(--muted, #5E7489)">Used for delivery, M Pesa and sign in.</span>
+            </div>
+          </div>
+          <div class="field" style="display:flex;flex-direction:column;gap:6px">
+            <label for="em" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Email (optional)</label>
+            <input
+              id="em"
+              type="email"
+              [(ngModel)]="profile.email"
+              placeholder="For receipts and statements"
+              style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Saved Addresses -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Saved addresses</h3>
+          <button type="button" class="btn sm" (click)="addAddress()">Add address</button>
+        </div>
+        <div class="card-body stack" style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <div
+            *ngFor="let addr of addresses()"
+            class="panel between"
+            style="padding:14px 16px;background:#FAFBFD;border:1px solid var(--line, #DBE7F1);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap"
+          >
+            <div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <b style="color:var(--ink, #07243D);font-size:15px">{{ addr.label }}</b>
+                <span *ngIf="addr.isDefault" class="badge ok" style="padding:2px 8px;border-radius:6px;font-size:11.5px;background:#E3F5EE;color:#12946A;font-weight:600">
+                  Default
+                </span>
+              </div>
+              <div class="muted" style="font-size:14px;color:var(--muted, #5E7489);margin-top:3px">
+                {{ addr.details }}
+              </div>
+            </div>
+            <div class="row" style="display:flex;align-items:center;gap:6px">
+              <button type="button" class="btn quiet sm" (click)="editAddress(addr.id)">Edit</button>
+              <button type="button" class="btn quiet sm" (click)="removeAddress(addr.id)">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Notification Preferences -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1)">
+          <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Notifications</h3>
+        </div>
+        <div class="card-body" style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <label class="check" style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink, #07243D);cursor:pointer">
+            <input type="checkbox" [(ngModel)]="notifications.smsUpdates" style="accent-color:var(--blue, #1877D2);width:16px;height:16px">
+            <span>SMS updates on every order step</span>
+          </label>
+          <label class="check" style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink, #07243D);cursor:pointer">
+            <input type="checkbox" [(ngModel)]="notifications.recurringReminders" style="accent-color:var(--blue, #1877D2);width:16px;height:16px">
+            <span>Reminder before a recurring delivery</span>
+          </label>
+          <label class="check" style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink, #07243D);cursor:pointer">
+            <input type="checkbox" [(ngModel)]="notifications.offersAndRewards" style="accent-color:var(--blue, #1877D2);width:16px;height:16px">
+            <span>Offers and rewards</span>
+          </label>
+          <label class="check" style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink, #07243D);cursor:pointer">
+            <input type="checkbox" [(ngModel)]="notifications.qualityAlerts" style="accent-color:var(--blue, #1877D2);width:16px;height:16px">
+            <span>Water quality alerts for vendors I buy from</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Aside Profile & Meta Sidebar -->
+    <aside class="stack" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Profile Badge Card -->
+      <div class="card pad center" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:22px 18px;text-align:center;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <div class="v-logo" style="width:64px;height:64px;border-radius:20px;margin:0 auto 10px;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;background:var(--blue-50, #E0EEFA);color:var(--blue, #1877D2)">
+          {{ initials() }}
+        </div>
+        <b style="font-size:16px;color:var(--ink, #07243D);display:block">{{ profile.fullName }}</b>
+        <p class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin:4px 0 0">
+          Customer since Jun 2026 · {{ totalOrders() }} orders
+        </p>
+      </div>
+
+      <!-- Vendor Switcher Card -->
+      <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:18px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <h4 style="margin:0 0 8px;font-size:15px;font-weight:700;color:var(--ink, #07243D)">Also a vendor?</h4>
+        <p class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin:0 0 14px;line-height:1.5">
+          If you run a water business, add it here and switch between customer and vendor from the same account.
+        </p>
+        <button type="button" class="btn ghost sm block" (click)="addBusiness()" style="width:100%;justify-content:center">
+          Add a business
+        </button>
+      </div>
+
+      <!-- Privacy & Data Card -->
+      <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:18px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <h4 style="margin:0 0 8px;font-size:15px;font-weight:700;color:var(--ink, #07243D)">Your data</h4>
+        <a href="javascript:void(0)" (click)="downloadData()" style="font-size:14px;display:block;padding:6px 0;color:var(--blue, #1877D2);text-decoration:none;font-weight:500">
+          Download my data
+        </a>
+        <a href="javascript:void(0)" (click)="deleteAccount()" style="font-size:14px;display:block;padding:6px 0;color:var(--danger, #D9383A);text-decoration:none;font-weight:500">
+          Delete my account
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</div>

@@ -1,0 +1,183 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Water Quality Styles (SCSS)
+   File: src/app/pages/water-quality/water-quality.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-50: #E0EEFA;
+$aqua: #2FC4C0;
+$aqua-50: #E2F7F6;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+$warn: #C77A11;
+$warn-50: #FEF6E7;
+$danger: #D9383A;
+$danger-50: #FDE8E8;
+
+.hero {
+  background: linear-gradient(165deg, #0B3358, #11557A);
+  color: #ffffff;
+  padding: 48px 20px 110px;
+
+  h1 {
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: $muted;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.04);
+
+  &.pad {
+    padding: 22px;
+  }
+}
+
+.grid.g3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+
+  &.ok {
+    background: $ok-50;
+    color: $ok;
+    border: 1px solid rgba($ok, 0.2);
+  }
+
+  &.warn {
+    background: $warn-50;
+    color: $warn;
+    border: 1px solid rgba($warn, 0.2);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.sm {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+  }
+}
+
+.t-scroll {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+    min-width: 680px;
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid $line;
+    }
+
+    th {
+      background: #FAFBFD;
+      font-weight: 600;
+      color: $muted;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #FAFBFD;
+    }
+  }
+}
+
+.hint {
+  font-size: 13px;
+  color: $muted;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .grid.g3 {
+    grid-template-columns: 1fr;
+  }
+}

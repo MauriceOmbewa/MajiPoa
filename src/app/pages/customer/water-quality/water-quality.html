@@ -1,1 +1,151 @@
-<p>water-quality works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Water Quality Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-water-quality
+     Files: src/app/pages/water-quality/water-quality.html (.ts, .scss)
+     ========================================================================== -->
+
+<!-- Hero Section -->
+<section class="hero" style="background:linear-gradient(165deg,#0B3358,#11557A);color:#ffffff;padding:48px 20px 110px">
+  <div class="wrap" style="max-width:1100px;margin:0 auto">
+    <div style="max-width:60ch">
+      <h1 style="color:#ffffff;font-size:36px;line-height:1.2;margin:0 0 14px;font-weight:700">
+        You should know what's in your water.
+      </h1>
+      <p class="lede" style="color:#C6DCEB;font-size:17px;line-height:1.6;margin:0">
+        Every vendor on MajiSafi submits their source, treatment process, permits and lab results before they can sell. We check them, publish what we verified, and pause vendors whose tests lapse.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Floating Feature Cards Overlapping Hero -->
+<div class="wrap" style="max-width:1100px;margin:-64px auto 0;padding:0 20px;position:relative;z-index:3">
+  <div class="grid g3" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:18px">
+    
+    <!-- Card 1: What we check -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:22px;box-shadow:0 6px 16px rgba(7,36,61,0.06)">
+      <h3 style="margin:0 0 10px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">What we check</h3>
+      <ul class="muted" style="font-size:14.5px;color:var(--muted, #5E7489);padding-left:18px;margin:10px 0 0;line-height:1.6">
+        <li>Business registration and permits</li>
+        <li>Water source and abstraction licence</li>
+        <li>Treatment process and equipment</li>
+        <li>KEBS standardisation mark</li>
+        <li>Laboratory test results and date</li>
+        <li>Bottling and storage facility</li>
+      </ul>
+    </div>
+
+    <!-- Card 2: What the numbers mean -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:22px;box-shadow:0 6px 16px rgba(7,36,61,0.06)">
+      <h3 style="margin:0 0 10px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">What the numbers mean</h3>
+      <div class="stack" style="display:flex;flex-direction:column;gap:12px;margin-top:10px;font-size:14.5px">
+        <div>
+          <b style="color:var(--ink, #07243D)">pH 6.5 – 8.5</b>
+          <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+            The acceptable range for drinking water in Kenya. Most purified water sits near 7.
+          </div>
+        </div>
+        <div>
+          <b style="color:var(--ink, #07243D)">TDS under 600 ppm</b>
+          <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+            Total dissolved solids. Lower means fewer minerals and salts; RO water is usually under 100.
+          </div>
+        </div>
+        <div>
+          <b style="color:var(--ink, #07243D)">Test under 90 days old</b>
+          <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+            We flag vendors whose latest lab result is older than this.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: When something is wrong -->
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:22px;box-shadow:0 6px 16px rgba(7,36,61,0.06);display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+        <h3 style="margin:0 0 10px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">When something is wrong</h3>
+        <p class="muted" style="font-size:14.5px;color:var(--muted, #5E7489);line-height:1.55;margin:0 0 16px">
+          Report a taste, smell or seal problem and we hold the vendor's batch while we look into it. You get a refund or replacement, and the result is recorded on the vendor's profile.
+        </p>
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn ghost sm"
+          (click)="reportProblem()"
+        >
+          Report a water problem
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Verified Vendors Near You Section -->
+<section class="section" style="padding:40px 0 60px">
+  <div class="wrap" style="max-width:1100px;margin:0 auto;padding:0 20px">
+    
+    <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px">
+      <h2 style="font-size:24px;margin:0;font-weight:700;color:var(--ink, #07243D)">Verified vendors near you</h2>
+      <a href="javascript:void(0)" (click)="orderFromVendors()" style="color:var(--blue, #1877D2);text-decoration:none;font-weight:600;font-size:14.5px">
+        Order from them &rarr;
+      </a>
+    </div>
+
+    <!-- Table of Vendor Quality Passports -->
+    <div class="card t-scroll" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+      <table style="width:100%;border-collapse:collapse;text-align:left;font-size:14px;min-width:680px">
+        <thead>
+          <tr style="background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);color:var(--muted, #5E7489);font-weight:600">
+            <th style="padding:14px 20px">Vendor</th>
+            <th style="padding:14px 16px">Source</th>
+            <th style="padding:14px 16px">Treatment</th>
+            <th style="padding:14px 16px">pH</th>
+            <th style="padding:14px 16px">TDS</th>
+            <th style="padding:14px 16px">Last lab test</th>
+            <th style="padding:14px 16px">KEBS</th>
+            <th style="padding:14px 20px;text-align:right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of verifiedVendors()" style="border-bottom:1px solid var(--line, #DBE7F1)">
+            <td style="padding:14px 20px">
+              <b style="color:var(--ink, #07243D);display:block">{{ v.name }}</b>
+              <div class="muted" style="font-size:13px;color:var(--muted, #5E7489)">{{ v.location }}</div>
+            </td>
+            <td style="padding:14px 16px;color:var(--ink, #07243D)">{{ v.source }}</td>
+            <td style="padding:14px 16px;color:var(--ink, #07243D)">{{ v.treatment }}</td>
+            <td class="num" style="padding:14px 16px;color:var(--ink, #07243D);font-weight:600">{{ v.ph }}</td>
+            <td class="num" style="padding:14px 16px;color:var(--ink, #07243D);font-weight:600">{{ v.tdsPpm }} ppm</td>
+            <td style="padding:14px 16px;color:var(--ink, #07243D)">{{ v.lastLabTest }}</td>
+            <td style="padding:14px 16px">
+              <span
+                class="badge"
+                [ngClass]="v.kebsStatus === 'active' ? 'ok' : 'warn'"
+                style="padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center"
+              >
+                {{ v.kebsLabel }}
+              </span>
+            </td>
+            <td style="padding:14px 20px;text-align:right">
+              <a
+                href="javascript:void(0)"
+                (click)="viewVendorRecords(v.id)"
+                style="color:var(--blue, #1877D2);text-decoration:none;font-weight:600;font-size:14px"
+              >
+                Records
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="hint" style="font-size:13px;color:var(--muted, #5E7489);margin-top:12px">
+      We publish only what a vendor has documented. Where a field is blank, the vendor has not submitted it.
+    </p>
+
+  </div>
+</section>
