@@ -1,1 +1,98 @@
-<p>vendor-subscription works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Subscription</h1>
+      <span class="ml-auto inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border"
+            [class]="currentPlan() === 'Pro'
+              ? 'bg-[#E2F7F6] text-[#127e7b] border-[#bfe9e7]'
+              : 'bg-[#F1F6FA] text-[#5E7489] border-[#DBE7F1]'">
+        Currently on {{ currentPlan() }}
+      </span>
+    </div>
+
+    <div class="px-7 py-6">
+      <div class="bg-[#E8F2FC] border border-[#c9e0f7] rounded-2xl p-5 mb-6 max-w-[900px]">
+        <b class="text-[14.5px]">Your plan doesn't change how many orders you're assigned.</b>
+        <p class="text-[14.5px] mt-1.5 mb-0">
+          Assignment is based on distance, capacity and reliability. Pro is for running your business, not for winning more orders.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-5 max-w-[900px]">
+        <!-- Free plan -->
+        <div class="bg-white border-2 rounded-2xl p-6 flex flex-col"
+             [class]="currentPlan() === 'Free' ? 'border-[#12946A]' : 'border-[#DBE7F1]'">
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg">Free</h3>
+            @if (currentPlan() === 'Free') {
+              <span class="inline-flex px-2.5 py-1 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da] text-[12px] font-semibold">Your plan</span>
+            }
+          </div>
+          <div class="font-['Bricolage_Grotesque'] text-3xl font-bold mb-4">
+            KSh 0<span class="text-sm font-normal text-[#5E7489]">/month</span>
+          </div>
+          @for (f of freeFeatures; track f.text) {
+            <div class="flex gap-2 items-start text-sm mb-2.5">
+              <span class="text-[#12946A] font-bold">✓</span><span>{{ f.text }}</span>
+            </div>
+          }
+          <button
+            [disabled]="currentPlan() === 'Free'"
+            class="mt-auto px-4 py-2.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold disabled:opacity-45 disabled:cursor-not-allowed hover:enabled:bg-[#F1F6FA]">
+            {{ currentPlan() === 'Free' ? "You're on this plan" : 'Downgrade to Free' }}
+          </button>
+        </div>
+
+        <!-- Pro plan -->
+        <div class="bg-white border-2 rounded-2xl p-6 flex flex-col shadow-lg"
+             [class]="currentPlan() === 'Pro' ? 'border-[#12946A]' : 'border-[#2FC4C0]'">
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg">Pro</h3>
+            <span class="inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold border"
+                  [class]="currentPlan() === 'Pro'
+                    ? 'bg-[#E3F5EE] text-[#12946A] border-[#c5e8da]'
+                    : 'bg-[#E2F7F6] text-[#127e7b] border-[#bfe9e7]'">
+              {{ currentPlan() === 'Pro' ? 'Your plan' : 'Recommended' }}
+            </span>
+          </div>
+          <div class="font-['Bricolage_Grotesque'] text-3xl font-bold mb-4">
+            KSh 1,500<span class="text-sm font-normal text-[#5E7489]">/month</span>
+          </div>
+          @for (f of proFeatures; track f.text) {
+            <div class="flex gap-2 items-start text-sm mb-2.5">
+              <span class="text-[#12946A] font-bold">✓</span><span>{{ f.text }}</span>
+            </div>
+          }
+          <button
+            (click)="upgrade()"
+            [disabled]="currentPlan() === 'Pro' || upgrading()"
+            class="mt-auto px-4 py-2.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4] disabled:opacity-60 disabled:cursor-not-allowed">
+            @if (upgrading()) { Processing… }
+            @else if (currentPlan() === 'Pro') { You're on this plan }
+            @else { Upgrade to Pro }
+          </button>
+          <p class="text-[12px] text-[#5E7489] text-center mt-2.5">Paid by M Pesa. Cancel any time — you keep receiving orders.</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl mt-6 max-w-[900px]">
+        <div class="px-5 py-4 border-b border-[#DBE7F1]">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold">Billing history</h3>
+        </div>
+        @if (currentPlan() === 'Free') {
+          <div class="text-center py-9 px-5">
+            <div class="w-16 h-16 rounded-2xl bg-[#E8F2FC] flex items-center justify-center text-2xl mx-auto mb-3.5">⌸</div>
+            <b class="font-['Bricolage_Grotesque']">No subscription charges yet</b>
+            <p class="text-sm text-[#5E7489] mt-1.5 mb-0">When you upgrade, charges appear here and on your weekly payout statement.</p>
+          </div>
+        } @else {
+          <div class="p-5 flex justify-between text-sm">
+            <span>Pro subscription · this month</span><b>KSh 1,500</b>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>
