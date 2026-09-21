@@ -1,0 +1,56 @@
+<aside class="rider-sidebar">
+  <div class="brand">
+    <span class="brand-icon">💧</span>
+    <span class="brand-name">MajiSafi</span>
+  </div>
+
+  <div class="rider-card">
+    <div class="avatar">{{ riderInitials }}</div>
+    <div class="rider-info">
+      <div class="rider-name">
+        {{ riderName }} <span class="rider-role">· {{ riderRole }}</span>
+      </div>
+      <button class="switch-link" type="button" (click)="switchMode()">switch ⌄</button>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-heading">Deliveries</div>
+    <nav>
+      <a *ngFor="let item of deliveryNav"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-link">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-heading">Account</div>
+    <nav>
+      <a *ngFor="let item of accountNav"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-link">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="nav-section elsewhere">
+    <div class="nav-heading">Elsewhere</div>
+    <nav>
+      <button class="nav-link nav-button" type="button" (click)="goCustomerMode()">
+        <span class="nav-icon">◍</span>
+        <span>Customer mode</span>
+      </button>
+      <button class="nav-link nav-button" type="button" (click)="signOut()">
+        <span class="nav-icon">⏻</span>
+        <span>Sign out</span>
+      </button>
+    </nav>
+  </div>
+</aside>

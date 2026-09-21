@@ -1,0 +1,168 @@
+<div class="rider-layout">
+  <app-rider-sidebar></app-rider-sidebar>
+
+  <main class="rider-main">
+    <header class="page-header">
+      <h1>Profile</h1>
+      <span class="verified-chip">✓ Verified rider</span>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── Profile card ─────────────────────────────────────── -->
+      <section class="hero-card">
+        <div class="avatar">{{ initials() }}</div>
+
+        <div class="hero-info">
+          <h2>{{ profile().fullName }}</h2>
+          <p>{{ profile().riderId }} · Rider since {{ profile().memberSince }}</p>
+        </div>
+
+        <div class="availability">
+          <span class="availability__label" [class.availability__label--on]="online()">
+            {{ online() ? 'Online' : 'Offline' }}
+          </span>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            aria-label="Availability"
+            [attr.aria-checked]="online()"
+            [class.switch--on]="online()"
+            (click)="toggleOnline()">
+            <span class="switch__thumb"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Stats ────────────────────────────────────────────── -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Rating</div>
+          <div class="stat-value">★ {{ profile().rating }}</div>
+          <div class="stat-note">From customer reviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Deliveries</div>
+          <div class="stat-value">{{ profile().totalDeliveries | number }}</div>
+          <div class="stat-note">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">On-time rate</div>
+          <div class="stat-value">{{ profile().onTimeRate }}%</div>
+          <div class="stat-note stat-note--positive">Great work</div>
+        </div>
+      </section>
+
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+
+        <!-- ── Personal details ───────────────────────────────── -->
+        <section class="card">
+          <div class="card__head"><h2>Personal details</h2></div>
+          <div class="card__body form-grid">
+            <div class="field field--full">
+              <label for="fullName">Full name</label>
+              <input id="fullName" type="text" formControlName="fullName" [class.invalid]="hasError('fullName')" />
+              <small class="error" *ngIf="hasError('fullName')">Enter your full name.</small>
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input id="phone" type="tel" formControlName="phone" placeholder="07XX XXX XXX" [class.invalid]="hasError('phone')" />
+              <small class="error" *ngIf="hasError('phone')">Enter a valid Kenyan number.</small>
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" formControlName="email" [class.invalid]="hasError('email')" />
+              <small class="error" *ngIf="hasError('email')">Enter a valid email address.</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Vehicle ────────────────────────────────────────── -->
+        <section class="card">
+          <div class="card__head"><h2>Vehicle</h2></div>
+          <div class="card__body form-grid">
+            <div class="field">
+              <label for="vehicleType">Vehicle type</label>
+              <select id="vehicleType" formControlName="vehicleType">
+                <option *ngFor="let v of vehicleTypes" [value]="v">{{ v }}</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="plate">Number plate</label>
+              <input id="plate" type="text" formControlName="plate" [class.invalid]="hasError('plate')" />
+              <small class="error" *ngIf="hasError('plate')">Enter your number plate.</small>
+            </div>
+
+            <div class="field">
+              <label for="capacity">Capacity (20L jerrycans)</label>
+              <input id="capacity" type="number" min="1" formControlName="capacity" [class.invalid]="hasError('capacity')" />
+              <small class="error" *ngIf="hasError('capacity')">Enter a number between 1 and 50.</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Payout ─────────────────────────────────────────── -->
+        <section class="card">
+          <div class="card__head">
+            <h2>Payout</h2>
+            <span class="pill">Every Friday, 6 pm</span>
+          </div>
+          <div class="card__body form-grid">
+            <div class="field field--full">
+              <label for="mpesaNumber">M-Pesa number</label>
+              <input id="mpesaNumber" type="tel" formControlName="mpesaNumber" placeholder="07XX XXX XXX" [class.invalid]="hasError('mpesaNumber')" />
+              <small class="hint" *ngIf="!hasError('mpesaNumber')">Earnings are sent to this number.</small>
+              <small class="error" *ngIf="hasError('mpesaNumber')">Enter a valid Kenyan number.</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Notifications ──────────────────────────────────── -->
+        <section class="card">
+          <div class="card__head"><h2>Notifications</h2></div>
+          <div class="card__body card__body--list">
+            <label class="toggle-row">
+              <span>
+                <strong>New order alerts</strong>
+                <small>Get notified when a delivery is assigned to you.</small>
+              </span>
+              <input type="checkbox" class="check-switch" formControlName="orderAlerts" />
+            </label>
+
+            <label class="toggle-row">
+              <span>
+                <strong>Payout alerts</strong>
+                <small>Know when your M-Pesa payout is sent.</small>
+              </span>
+              <input type="checkbox" class="check-switch" formControlName="payoutAlerts" />
+            </label>
+
+            <label class="toggle-row">
+              <span>
+                <strong>SMS updates</strong>
+                <small>Receive important updates by text message.</small>
+              </span>
+              <input type="checkbox" class="check-switch" formControlName="smsUpdates" />
+            </label>
+          </div>
+        </section>
+
+        <!-- ── Actions ────────────────────────────────────────── -->
+        <div class="actions">
+          <button type="button" class="btn btn--ghost" [disabled]="form.pristine || saving()" (click)="reset()">
+            Discard
+          </button>
+          <button type="submit" class="btn btn--primary" [disabled]="form.pristine || saving()">
+            {{ saving() ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <div class="toast" *ngIf="toast() as message" role="status">✓ {{ message }}</div>
+</div>

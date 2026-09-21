@@ -1,0 +1,94 @@
+<div class="rider-layout">
+  <app-rider-sidebar></app-rider-sidebar>
+
+  <main class="rider-main">
+    <header class="page-header">
+      <h1>{{ orderId() }}</h1>
+      <span class="status-pill on-the-way">
+        <span class="dot"></span>
+        {{ statusLabel() }}
+      </span>
+    </header>
+
+    <section class="map-card">
+      <div class="map-canvas">
+        <svg class="route-line" viewBox="0 0 660 240" preserveAspectRatio="none">
+          <line x1="130" y1="185" x2="130" y2="90" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 6" />
+          <line x1="130" y1="90" x2="480" y2="90" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 6" />
+        </svg>
+
+        <span class="map-pin you-pin" style="top: 30%; left: 40%;">You</span>
+        <span class="map-pin place-pin" style="top: 12%; left: 68%;">Riverside Court</span>
+        <span class="map-pin place-pin" style="top: 76%; left: 20%;">ABC Water</span>
+      </div>
+
+      <div class="map-footer">
+        <div>
+          <div class="map-distance">{{ distanceRemainingKm() }} km left · about {{ etaMin() }} min</div>
+          <div class="map-address">{{ destinationAddress() }}</div>
+        </div>
+        <button class="btn-primary" type="button" (click)="openInMaps()">Open in Maps</button>
+      </div>
+    </section>
+
+    <section class="delivering-card">
+      <div class="card-header">
+        <h2>Delivering to</h2>
+        <span class="trip-pill">KSh {{ tripEarning() }} for this trip</span>
+      </div>
+
+      <div class="customer-block">
+        <div class="customer-name">{{ customerName() }}</div>
+        <div class="customer-address">{{ customerAddress() }}</div>
+        <div class="customer-note">"{{ customerNote() }}"</div>
+
+        <div class="customer-actions">
+          <button class="btn-outline" type="button" (click)="callCustomer()">Call customer</button>
+          <button class="btn-outline" type="button" (click)="messageCustomer()">Message</button>
+        </div>
+        <div class="customer-hint">The customer's number stays available until this delivery is confirmed.</div>
+      </div>
+    </section>
+
+    <section class="carrying-card">
+      <div class="card-header">
+        <h2>What you're carrying</h2>
+      </div>
+
+      <div class="carried-item" *ngFor="let item of carriedItems()">
+        <span class="carried-label">{{ item.label }}</span>
+        <span class="carried-action">{{ item.actionLabel }}</span>
+      </div>
+
+      <div class="carrying-note">Order is already paid. Do not collect cash.</div>
+    </section>
+
+    <section class="progress-card">
+      <div class="card-header">
+        <h2>Progress</h2>
+      </div>
+
+      <ol class="progress-list">
+        <li class="progress-item" *ngFor="let step of progressSteps()" [ngClass]="step.status">
+          <span class="progress-marker">
+            <span class="progress-icon" *ngIf="step.status === 'done'">✓</span>
+            <span class="progress-icon" *ngIf="step.status === 'current'"></span>
+          </span>
+          <span class="progress-text">
+            <strong>{{ step.label }}</strong>
+            <span class="progress-meta" *ngIf="step.timestamp">{{ step.timestamp }}</span>
+            <span class="progress-meta" *ngIf="step.detail"> · {{ step.detail }}</span>
+          </span>
+        </li>
+      </ol>
+
+      <button
+        class="btn-primary btn-block"
+        type="button"
+        *ngIf="progressSteps()[3]?.status === 'current'"
+        (click)="markArrived()">
+        I've arrived
+      </button>
+    </section>
+  </main>
+</div>
