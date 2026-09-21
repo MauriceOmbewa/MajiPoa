@@ -1,1 +1,132 @@
-<p>vendor-order-detail works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">{{ orderId() }}</h1>
+      <span class="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12.5px] font-semibold border"
+            [class]="status() === 'Delivered'
+              ? 'bg-[#E3F5EE] text-[#12946A] border-[#c5e8da]'
+              : 'bg-[#E8F2FC] text-[#1464B4] border-[#c9e0f7]'">
+        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ status() }}
+      </span>
+      <button class="px-3.5 py-1.5 rounded-full border border-[#f3cecb] bg-white text-[#D6453C] text-sm font-semibold hover:bg-[#FCECEB]">
+        Report a problem
+      </button>
+    </div>
+
+    <div class="px-7 py-6 grid grid-cols-[1fr_340px] gap-4 items-start">
+      <div class="flex flex-col gap-4">
+
+        <!-- Items -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+          <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+            <h3 class="font-['Bricolage_Grotesque'] font-semibold">Items</h3>
+            <span class="text-[13.5px] text-[#5E7489]">Placed 3:42 pm today</span>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[12.5px] text-[#5E7489]">
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Product</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Qty</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Unit</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1] text-right">Line total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (l of lines(); track l.product) {
+                <tr class="border-b border-[#DBE7F1] last:border-0">
+                  <td class="px-5 py-3.5">
+                    {{ l.product }}
+                    @if (l.note) { <div class="text-[13px] text-[#5E7489]">{{ l.note }}</div> }
+                  </td>
+                  <td class="px-5 py-3.5">{{ l.qty }}</td>
+                  <td class="px-5 py-3.5">KSh {{ l.unit }}</td>
+                  <td class="px-5 py-3.5 text-right font-semibold">KSh {{ lineTotal(l) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Fulfilment rail -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-4">Fulfilment</h3>
+          <ul class="list-none p-0 m-0">
+            @for (step of rail(); track step.label; let last = $last) {
+              <li class="grid grid-cols-[26px_1fr] gap-3.5 relative" [class.pb-5]="!last">
+                @if (!last) {
+                  <span class="absolute left-3 top-6 bottom-0 w-0.5"
+                        [class]="step.state === 'done' ? 'bg-[#12946A]' : 'bg-[#DBE7F1]'"></span>
+                }
+                <span [class]="'w-6.5 h-6.5 rounded-full border-2 flex items-center justify-center text-[13px] ' + pipClasses(step.state)">
+                  @if (step.state === 'done') { ✓ } @else if (step.state === 'now') { ● } @else { ○ }
+                </span>
+                <div>
+                  <div class="font-semibold text-[14.5px]">{{ step.label }}</div>
+                  <div class="text-[13px] text-[#5E7489]">{{ step.detail }}</div>
+                </div>
+              </li>
+            }
+          </ul>
+          <div class="flex gap-2 flex-wrap mt-4">
+            <button class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Call rider</button>
+            @if (status() !== 'Delivered') {
+              <button (click)="markDelivered()" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Mark delivered</button>
+            }
+            <button class="px-3.5 py-1.5 rounded-full border border-[#f3cecb] bg-white text-[#D6453C] text-sm font-semibold hover:bg-[#FCECEB]">Cancel order</button>
+          </div>
+        </div>
+
+        <!-- Money -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-4">Money on this order</h3>
+          <div class="flex justify-between py-2 text-[14.5px] border-b border-dashed border-[#DBE7F1]">
+            <span>Customer paid</span><b>KSh {{ orderTotal() }}</b>
+          </div>
+          <div class="flex justify-between py-2 text-[14.5px] border-b border-dashed border-[#DBE7F1]">
+            <span>Delivery fee to rider</span><b>− KSh {{ deliveryFee() }}</b>
+          </div>
+          <div class="flex justify-between py-2 text-[14.5px]">
+            <span>Platform commission ({{ commissionRate() * 100 }}%)</span><b>− KSh {{ commission() }}</b>
+          </div>
+          <div class="flex justify-between pt-3.5 mt-1.5 border-t border-[#DBE7F1] font-['Bricolage_Grotesque'] text-xl font-bold">
+            <span>Your entitlement</span><span>KSh {{ entitlement() }}</span>
+          </div>
+          <p class="text-[12.5px] text-[#5E7489] mt-3">
+            Settles Friday with the rest of this week's orders.
+            <a routerLink="/vendor-payouts" class="text-[#1877D2] hover:underline">See payouts</a>
+          </p>
+        </div>
+      </div>
+
+      <aside class="flex flex-col gap-4">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h4 class="font-semibold text-sm mb-2.5">Delivery</h4>
+          <p class="text-sm mb-1"><b>Maurice O.</b></p>
+          <p class="text-sm text-[#5E7489] leading-relaxed">
+            Riverside Court B12, 3rd floor<br>Argwings Kodhek Rd, Kilimani · 1.2 km
+          </p>
+          <p class="text-[13.5px] text-[#5E7489] mt-2.5 italic">"Blue gate opposite the mosque, tell security you're for B12."</p>
+          <button class="w-full mt-3 px-3.5 py-2 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Call customer</button>
+          <p class="text-[12px] text-[#5E7489] mt-2">You see the customer's number only while this order is active.</p>
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h4 class="font-semibold text-sm mb-2.5">Rider</h4>
+          <div class="flex items-center gap-2.5">
+            <span class="w-10 h-10 rounded-xl bg-[#E8F2FC] flex items-center justify-center text-[13px] font-bold text-[#1464B4]">JK</span>
+            <span class="text-sm"><b>James Kariuki</b><br><span class="text-[#5E7489]">KMFQ 221H · 4.9 ★</span></span>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h4 class="font-semibold text-sm mb-2.5">Customer history</h4>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Orders from you</span><b>12</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Since</span><b>Jun 2026</b></div>
+          <div class="flex justify-between text-sm"><span class="text-[#5E7489]">Average order</span><b>KSh 640</b></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
