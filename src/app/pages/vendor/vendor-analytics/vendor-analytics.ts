@@ -1,5 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar'
 
 export interface DayBar { day: string; pct: number; peak?: boolean; }
 export interface HourBar { label: string; pct: number; orders: number; }
@@ -8,7 +10,7 @@ export interface ShareBar { label: string; pct: number; value: string; }
 @Component({
   selector: 'app-vendor-analytics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, VendorSidebar],
   templateUrl: './vendor-analytics.html',
 })
 export class VendorAnalytics {
