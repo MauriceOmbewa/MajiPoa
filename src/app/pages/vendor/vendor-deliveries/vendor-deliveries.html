@@ -1,1 +1,148 @@
-<p>vendor-deliveries works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Deliveries</h1>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da] text-[12.5px] font-semibold">
+        {{ onRoad().length }} active
+      </span>
+      <button class="ml-auto px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Manage my riders</button>
+    </div>
+
+    <div class="px-7 py-6 grid grid-cols-[1fr_360px] gap-4 items-start">
+      <div class="flex flex-col gap-4">
+
+        <!-- Needs a rider -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+          <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+            <h3 class="font-['Bricolage_Grotesque'] font-semibold">Needs a rider</h3>
+            <span class="inline-flex px-2.5 py-1 rounded-full bg-[#FDF1DE] text-[#C77A11] border border-[#f2ddb8] text-[12.5px] font-semibold">
+              {{ needsRider().length }} waiting
+            </span>
+          </div>
+          <div class="p-5 flex flex-col gap-3">
+            @for (order of needsRider(); track order.id) {
+              <div class="p-4 rounded-xl border border-[#DBE7F1] flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <b class="text-[14.5px]">{{ order.id }} · {{ order.items }}</b>
+                  <div class="text-[13.5px] text-[#5E7489]">{{ order.area }} · ready since {{ order.readySince }}</div>
+                </div>
+                <div class="flex gap-2 items-center">
+                  <select
+                    [ngModel]="order.assignTo"
+                    (ngModelChange)="setAssignChoice(order.id, $event)"
+                    class="px-3 py-2 border border-[#DBE7F1] rounded-lg text-sm bg-white">
+                    @for (opt of assignOptions; track opt) {
+                      <option [value]="opt">{{ opt }}</option>
+                    }
+                  </select>
+                  <button (click)="assign(order)" class="px-3.5 py-2 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Assign</button>
+                </div>
+              </div>
+            } @empty {
+              <p class="text-sm text-[#5E7489] text-center py-4">Every ready order has a rider.</p>
+            }
+          </div>
+        </div>
+
+        <!-- On the road -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+          <div class="px-5 py-4 border-b border-[#DBE7F1]">
+            <h3 class="font-['Bricolage_Grotesque'] font-semibold">On the road</h3>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[12.5px] text-[#5E7489]">
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Order</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Rider</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Destination</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Stage</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">ETA</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (o of onRoad(); track o.id) {
+                <tr class="border-b border-[#DBE7F1] last:border-0">
+                  <td class="px-5 py-3.5"><b>{{ o.id }}</b></td>
+                  <td class="px-5 py-3.5">
+                    {{ o.rider }}
+                    <span [class]="'ml-1.5 inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold border ' + riderKindClasses(o.riderKind)">{{ o.riderKind }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">{{ o.destination }}</td>
+                  <td class="px-5 py-3.5">
+                    <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + stageClasses(o.stage)">{{ o.stage }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">{{ o.eta }}</td>
+                  <td class="px-5 py-3.5"><a routerLink="/vendor-order-detail" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="6" class="text-center py-8 text-[#5E7489]">Nothing on the road right now.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Completed today -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+          <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+            <h3 class="font-['Bricolage_Grotesque'] font-semibold">Completed today</h3>
+            <a href="#" class="text-sm text-[#1877D2] no-underline hover:underline">Full history</a>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[12.5px] text-[#5E7489]">
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Order</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Rider</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Area</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Delivered</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Time taken</th>
+                <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of completed(); track d.id) {
+                <tr class="border-b border-[#DBE7F1] last:border-0">
+                  <td class="px-5 py-3.5">{{ d.id }}</td>
+                  <td class="px-5 py-3.5">{{ d.rider }}</td>
+                  <td class="px-5 py-3.5">{{ d.area }}</td>
+                  <td class="px-5 py-3.5">{{ d.deliveredAt }}</td>
+                  <td class="px-5 py-3.5">{{ d.timeTaken }}</td>
+                  <td class="px-5 py-3.5">{{ d.rating }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="flex flex-col gap-4">
+        <!-- Map placeholder: swap for a real map component (Leaflet/Google Maps) later -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden">
+          <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+            <h4 class="font-semibold text-sm">Live map</h4>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da] text-[11.5px] font-semibold">
+              {{ onRoad().length }} moving
+            </span>
+          </div>
+          <div class="h-[280px] relative"
+               style="background:repeating-linear-gradient(0deg,#e6eef6 0 1px,transparent 1px 34px),repeating-linear-gradient(90deg,#e6eef6 0 1px,transparent 1px 34px),#f6fafd">
+            <span class="absolute left-[30%] top-[80%] -translate-x-1/2 -translate-y-full text-[12px] font-semibold bg-white border border-[#DBE7F1] rounded-full px-2.5 py-1 shadow-sm whitespace-nowrap">Your plant</span>
+            <span class="absolute left-[56%] top-[44%] -translate-x-1/2 -translate-y-full text-[12px] font-semibold bg-white border border-[#c9e0f7] text-[#1877D2] rounded-full px-2.5 py-1 shadow-sm whitespace-nowrap">🛵 James</span>
+            <span class="absolute left-[72%] top-[22%] -translate-x-1/2 -translate-y-full text-[12px] font-semibold bg-white border border-[#c9e0f7] text-[#1877D2] rounded-full px-2.5 py-1 shadow-sm whitespace-nowrap">🛵 Peter</span>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h4 class="font-semibold text-sm mb-3">Delivery settings</h4>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Own riders</span><b>2 active</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Platform riders</span><b>Enabled</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Max distance</span><b>6 km</b></div>
+          <div class="flex justify-between text-sm"><span class="text-[#5E7489]">Your delivery fee</span><b>KSh 80 &lt; 3 km</b></div>
+          <button class="w-full mt-3 px-3.5 py-2 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Edit delivery settings</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
