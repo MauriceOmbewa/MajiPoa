@@ -1,1 +1,112 @@
-<p>vendor-products works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Products</h1>
+      <button class="ml-auto px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Bulk price update</button>
+      <button class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Add product</button>
+    </div>
+
+    <div class="px-7 py-6">
+      <div class="flex gap-1 border-b border-[#DBE7F1] mb-5">
+        @for (tab of tabs; track tab) {
+          <button
+            (click)="setTab(tab)"
+            [class]="activeTab() === tab
+              ? 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#07243D] border-b-2 border-[#1877D2] -mb-px'
+              : 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#5E7489] border-b-2 border-transparent -mb-px hover:text-[#07243D]'">
+            {{ tab }} ({{ counts()[tab] }})
+          </button>
+        }
+      </div>
+
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-x-auto mb-5">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-[12.5px] text-[#5E7489]">
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Product</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Size</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Your price</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Marketplace range</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Available today</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Sold today</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filtered(); track p.id) {
+              <tr class="border-b border-[#DBE7F1] last:border-0" [class.opacity-60]="p.status === 'Paused'">
+                <td class="px-4 py-3.5">
+                  <b>{{ p.name }}</b>
+                  @if (p.note) { <div class="text-[13px] text-[#5E7489]">{{ p.note }}</div> }
+                </td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ p.size }}</td>
+                <td class="px-4 py-3.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[#5E7489]">KSh</span>
+                    <input
+                      type="number"
+                      [ngModel]="p.price"
+                      (ngModelChange)="updatePrice(p.id, $event)"
+                      class="w-20 px-2 py-1.5 border border-[#DBE7F1] rounded-lg text-sm outline-none focus:border-[#1877D2]" />
+                  </div>
+                  <div class="text-[11.5px] text-[#5E7489] mt-1">{{ positionLabel(p) }}</div>
+                </td>
+                <td class="px-4 py-3.5 text-[#5E7489] whitespace-nowrap">KSh {{ p.marketMin }} – {{ p.marketMax }}</td>
+                <td class="px-4 py-3.5">
+                  <div class="flex items-center gap-2">
+                    <div class="inline-flex items-center border border-[#DBE7F1] rounded-full bg-white overflow-hidden">
+                      <button (click)="updateStock(p.id, -1)" class="w-7 h-7 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA]">−</button>
+                      <span class="min-w-[26px] text-center text-xs font-bold">{{ p.availableToday }}</span>
+                      <button (click)="updateStock(p.id, 1)" class="w-7 h-7 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA]">+</button>
+                    </div>
+                    @if (p.availableToday > 0 && p.availableToday <= 2) {
+                      <span class="inline-flex px-2 py-0.5 rounded-full bg-[#FDF1DE] text-[#C77A11] border border-[#f2ddb8] text-[11px] font-semibold">Low</span>
+                    }
+                  </div>
+                </td>
+                <td class="px-4 py-3.5">{{ p.soldToday }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">
+                  <button (click)="togglePause(p)" class="text-[#1877D2] text-sm font-semibold hover:underline">
+                    {{ p.status === 'Paused' ? 'Resume' : 'Pause' }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="7" class="text-center py-10 text-[#5E7489]">Nothing in this tab.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3">Availability</h3>
+          <p class="text-sm text-[#5E7489] mb-3">When you run out, pause the product instead of letting orders come in. Customers see "unavailable," not a failed order.</p>
+          <label class="flex gap-2.5 items-start text-sm mb-2.5">
+            <input type="checkbox" checked class="mt-0.5 accent-[#1877D2]" />
+            <span>Hide a product automatically when stock reaches zero</span>
+          </label>
+          <label class="flex gap-2.5 items-start text-sm mb-2.5">
+            <input type="checkbox" checked class="mt-0.5 accent-[#1877D2]" />
+            <span>Show "only N left today" when stock is under 5</span>
+          </label>
+          <label class="flex gap-2.5 items-start text-sm">
+            <input type="checkbox" class="mt-0.5 accent-[#1877D2]" />
+            <span>Stop taking orders 30 minutes before closing</span>
+          </label>
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3">Pricing</h3>
+          <p class="text-sm text-[#5E7489] mb-3">You set your own prices. MajiSafi shows the marketplace range so you can see where you sit — it never changes your price for you.</p>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Your 20L refill</span><b>KSh 250 · 4th cheapest</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Area average</span><b>KSh 278</b></div>
+          <div class="flex justify-between text-sm mb-3"><span class="text-[#5E7489]">Commission on sales</span><b>8%</b></div>
+          <button class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Set a bulk discount rule</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
