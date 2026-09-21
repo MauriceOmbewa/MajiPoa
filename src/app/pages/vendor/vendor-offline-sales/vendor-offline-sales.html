@@ -1,1 +1,97 @@
-<p>vendor-offline-sales works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Off-platform sales</h1>
+      <span class="inline-flex px-2.5 py-1 rounded-full bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7] text-[12.5px] font-semibold">Pro</span>
+      <span class="ml-auto text-sm text-[#5E7489]">Logged this month: <b class="text-[#07243D]">KSh {{ totalLogged() }}</b></span>
+    </div>
+
+    <div class="px-7 py-6">
+      <div class="bg-[#E8F2FC] border border-[#c9e0f7] rounded-2xl p-5 mb-5">
+        <b class="text-[14.5px]">See your whole business in one place.</b>
+        <p class="text-[14.5px] mt-1.5 mb-0">
+          Log sales you make directly — walk-ins, standing office clients, other apps — so your dashboard and analytics reflect everything, not just MajiSafi-assigned orders. This never affects how MajiSafi assigns you orders.
+        </p>
+      </div>
+
+      <!-- Log a sale -->
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl mb-5">
+        <div class="px-5 py-4 border-b border-[#DBE7F1]">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold">Log a sale</h3>
+        </div>
+        <div class="p-5 grid grid-cols-4 gap-3.5 items-end">
+          <div>
+            <label class="block text-[13.5px] font-semibold text-[#0F3A5C] mb-1.5">Date</label>
+            <input type="date" [ngModel]="formDate()" (ngModelChange)="formDate.set($event)"
+                   class="w-full px-3 py-2.5 border border-[#DBE7F1] rounded-lg text-sm outline-none focus:border-[#1877D2]" />
+          </div>
+          <div>
+            <label class="block text-[13.5px] font-semibold text-[#0F3A5C] mb-1.5">Product</label>
+            <select [ngModel]="formProduct()" (ngModelChange)="formProduct.set($event)"
+                    class="w-full px-3 py-2.5 border border-[#DBE7F1] rounded-lg text-sm bg-white">
+              @for (p of products; track p) { <option [value]="p">{{ p }}</option> }
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13.5px] font-semibold text-[#0F3A5C] mb-1.5">Quantity</label>
+            <input type="number" min="1" [ngModel]="formQty()" (ngModelChange)="formQty.set($event)"
+                   class="w-full px-3 py-2.5 border border-[#DBE7F1] rounded-lg text-sm outline-none focus:border-[#1877D2]" />
+          </div>
+          <div>
+            <label class="block text-[13.5px] font-semibold text-[#0F3A5C] mb-1.5">Amount (KSh)</label>
+            <input type="number" placeholder="e.g. 290" [ngModel]="formAmount()" (ngModelChange)="formAmount.set($event)"
+                   class="w-full px-3 py-2.5 border border-[#DBE7F1] rounded-lg text-sm outline-none focus:border-[#1877D2]" />
+          </div>
+          <div class="col-span-4">
+            <label class="block text-[13.5px] font-semibold text-[#0F3A5C] mb-1.5">Channel</label>
+            <select [ngModel]="formChannel()" (ngModelChange)="formChannel.set($event)"
+                    class="w-full px-3 py-2.5 border border-[#DBE7F1] rounded-lg text-sm bg-white">
+              @for (c of channels; track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+          <button (click)="addSale()" class="col-span-4 px-4 py-2.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">
+            Add sale
+          </button>
+        </div>
+      </div>
+
+      <!-- Logged sales -->
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-[12.5px] text-[#5E7489]">
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Date</th>
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Product</th>
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Qty</th>
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Amount</th>
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Channel</th>
+              <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of sales(); track $index) {
+              <tr class="border-b border-[#DBE7F1] last:border-0">
+                <td class="px-5 py-3.5">{{ s.date }}</td>
+                <td class="px-5 py-3.5">{{ s.product }}</td>
+                <td class="px-5 py-3.5">{{ s.qty }}</td>
+                <td class="px-5 py-3.5 font-semibold">KSh {{ s.amount }}</td>
+                <td class="px-5 py-3.5">{{ s.channel }}</td>
+                <td class="px-5 py-3.5">
+                  <button (click)="removeSale($index)" class="text-[#D6453C] text-sm font-semibold hover:underline">Edit</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-center py-10 text-[#5E7489]">No off-platform sales logged yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[12.5px] text-[#5E7489] mt-3">
+        These figures are self-reported and shown only to you — they don't appear on your
+        <a routerLink="/vendor-payouts" class="text-[#1877D2] hover:underline">MajiSafi payout statement</a>.
+      </p>
+    </div>
+  </main>
+</div>
