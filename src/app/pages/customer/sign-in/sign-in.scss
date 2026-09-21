@@ -1,0 +1,205 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Sign In Styles (SCSS)
+   File: src/app/pages/sign-in/sign-in.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-50: #E0EEFA;
+$aqua: #2FC4C0;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+
+.auth {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+
+  .art {
+    background: linear-gradient(160deg, #07243D, #11557A);
+    color: #ffffff;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h1 {
+      font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      text-decoration: none;
+
+      .drop {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .form {
+    display: grid;
+    place-items: center;
+    padding: 40px 24px;
+    background: #ffffff;
+
+    .inner {
+      width: 100%;
+      max-width: 400px;
+
+      h2 {
+        font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+        letter-spacing: -0.01em;
+      }
+    }
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  input[type="tel"],
+  input[type="text"] {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid $line;
+    font-size: 15px;
+    color: $ink;
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $blue;
+      box-shadow: 0 0 0 3px rgba($blue, 0.12);
+    }
+
+    &:disabled {
+      background: #F4F7FA;
+      color: $muted;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border-radius: 12px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+  }
+
+  &.quiet {
+    background: transparent;
+    border-color: transparent;
+    color: $muted;
+
+    &:hover {
+      color: $ink;
+      background: #F1F6FA;
+    }
+  }
+
+  &.block {
+    display: flex;
+    width: 100%;
+  }
+}
+
+.muted {
+  color: $muted;
+}
+
+.hint {
+  font-size: 12.5px;
+  color: $muted;
+
+  a {
+    color: $blue;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &.center {
+    text-align: center;
+  }
+}
+
+.center {
+  text-align: center;
+
+  a {
+    color: $blue;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 860px) {
+  .auth {
+    grid-template-columns: 1fr;
+
+    .art {
+      display: none;
+    }
+  }
+}

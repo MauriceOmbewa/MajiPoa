@@ -1,1 +1,269 @@
-<p>corporate-accounts works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Corporate Accounts Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-corporate-accounts
+     Files: src/app/pages/corporate-accounts/corporate-accounts.html (.ts, .scss)
+     ========================================================================== -->
+
+<!-- Hero Section with Tank Art & CTAs -->
+<section class="hero" style="background:linear-gradient(165deg,#07243D,#0E4B6E);color:#ffffff;padding:48px 20px 110px">
+  <div class="wrap hero-wrap" style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
+    <div style="max-width:600px">
+      <h1 style="color:#ffffff;font-size:36px;line-height:1.2;margin:0 0 14px;font-weight:700">
+        Water for offices, schools and restaurants.
+      </h1>
+      <p class="lede" style="color:#C6DCEB;font-size:17px;line-height:1.6;margin:0">
+        One account for every floor and branch, monthly invoicing instead of per-order payments, and a statement your finance team will accept.
+      </p>
+      <div class="row" style="display:flex;align-items:center;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <button
+          type="button"
+          class="btn"
+          (click)="scrollToRequestForm()"
+          style="background:var(--aqua, #2FC4C0);color:#04283F;border-color:transparent;font-weight:700"
+        >
+          Request an account
+        </button>
+        <button
+          type="button"
+          class="btn ghost"
+          (click)="orderOnceOff()"
+          style="background:transparent;color:#ffffff;border-color:rgba(255,255,255,0.3)"
+        >
+          Order once-off instead
+        </button>
+      </div>
+    </div>
+
+    <!-- Hero Art: Large 5,000L Delivery Tank Visual -->
+    <div class="hero-art" aria-hidden="true" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:24px 32px;min-width:220px">
+      <div class="tank-visual" style="width:72px;height:90px;background:linear-gradient(180deg,#2FC4C0,#1877D2);border-radius:16px 16px 10px 10px;position:relative;margin-bottom:12px;box-shadow:0 8px 24px rgba(47,196,192,0.3)">
+        <div style="width:24px;height:10px;background:#ffffff;border-radius:4px 4px 0 0;margin:0 auto;opacity:0.9"></div>
+        <div style="position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#ffffff;font-size:11px;font-weight:700;letter-spacing:1px">MajiSafi</div>
+      </div>
+      <div class="label" style="color:#EAF7FF;text-align:center">
+        <b style="font-size:20px;display:block">5,000L</b>
+        <span style="opacity:0.75;font-size:13px">tank delivery</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Floating 4-Column Feature Highlights Overlapping Hero -->
+<div class="wrap" style="max-width:1100px;margin:-64px auto 0;padding:0 20px;position:relative;z-index:3">
+  <div class="grid g4" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));gap:16px">
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(7,36,61,0.06)">
+      <b style="color:var(--ink, #07243D);font-size:15px;display:block">Many delivery points</b>
+      <p class="muted" style="font-size:14px;margin:6px 0 0;color:var(--muted, #5E7489);line-height:1.5">
+        Each floor, branch or site orders separately under one account.
+      </p>
+    </div>
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(7,36,61,0.06)">
+      <b style="color:var(--ink, #07243D);font-size:15px;display:block">Approvals before spend</b>
+      <p class="muted" style="font-size:14px;margin:6px 0 0;color:var(--muted, #5E7489);line-height:1.5">
+        Set who can order and how much, with a monthly limit per site.
+      </p>
+    </div>
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(7,36,61,0.06)">
+      <b style="color:var(--ink, #07243D);font-size:15px;display:block">Invoice, not M Pesa</b>
+      <p class="muted" style="font-size:14px;margin:6px 0 0;color:var(--muted, #5E7489);line-height:1.5">
+        Pay one invoice at month end with a full breakdown by site.
+      </p>
+    </div>
+    <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(7,36,61,0.06)">
+      <b style="color:var(--ink, #07243D);font-size:15px;display:block">Negotiated pricing</b>
+      <p class="muted" style="font-size:14px;margin:6px 0 0;color:var(--muted, #5E7489);line-height:1.5">
+        Volume rates agreed with the vendors who serve your area.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Main Section: Account Structure & Request Form -->
+<section class="section" style="padding:48px 0 60px">
+  <div class="wrap grid split" style="max-width:1100px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start">
+    
+    <!-- Left Column: How a corporate account is structured -->
+    <div>
+      <h2 style="font-size:26px;font-weight:700;color:var(--ink, #07243D);margin:0 0 8px">
+        How a corporate account is structured
+      </h2>
+      <p class="muted" style="font-size:15px;color:var(--muted, #5E7489);margin:0 0 18px;line-height:1.6">
+        One company, many people, many places — with spend visible in one statement.
+      </p>
+
+      <!-- Structure Tree Card -->
+      <div class="card pad" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(7,36,61,0.04)">
+        <b style="font-size:16px;color:var(--ink, #07243D)">Acme Ltd</b>
+        
+        <div class="stack" style="gap:12px;margin-top:14px;padding-left:14px;border-left:2px solid var(--line, #DBE7F1);display:flex;flex-direction:column">
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">Administrator</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+              Adds sites and people, sets limits
+            </div>
+          </div>
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">Procurement user</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+              Places orders for any site
+            </div>
+          </div>
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">Finance user</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+              Sees statements and invoices only
+            </div>
+          </div>
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">Site: Westlands HQ</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+              12 × 20L weekly · limit KSh 40,000/month
+            </div>
+          </div>
+          <div>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">Site: Mombasa Rd warehouse</b>
+            <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+              Tank delivery on request
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Request an account Form -->
+    <div class="card" id="req" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(7,36,61,0.05)">
+      <div class="card-head" style="padding:16px 22px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1)">
+        <h3 style="margin:0;font-size:17px;font-weight:700;color:var(--ink, #07243D)">Request an account</h3>
+      </div>
+      
+      <div class="card-body" style="padding:22px">
+        
+        <!-- Submission Confirmation Banner -->
+        <div *ngIf="isSubmitted()" style="background:#E3F5EE;border:1px solid #12946A;color:#12946A;padding:14px;border-radius:10px;margin-bottom:18px;font-size:14px">
+          <b>Request received!</b> We will review your company details and follow up with corporate pricing within one business day.
+        </div>
+
+        <form (ngSubmit)="submitRequest()">
+          <div class="grid g2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="c" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Company name</label>
+              <input
+                id="c"
+                type="text"
+                [(ngModel)]="formData.companyName"
+                name="companyName"
+                required
+                placeholder="e.g. Acme Africa Ltd"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="k" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">KRA PIN</label>
+              <input
+                id="k"
+                type="text"
+                [(ngModel)]="formData.kraPin"
+                name="kraPin"
+                placeholder="P051…"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+          </div>
+
+          <div class="grid g2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="cn" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Contact person</label>
+              <input
+                id="cn"
+                type="text"
+                [(ngModel)]="formData.contactPerson"
+                name="contactPerson"
+                required
+                placeholder="Name"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="cp" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Phone</label>
+              <input
+                id="cp"
+                type="tel"
+                [(ngModel)]="formData.phone"
+                name="phone"
+                required
+                placeholder="07…"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+          </div>
+
+          <div class="field" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+            <label for="ce" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Work email</label>
+            <input
+              id="ce"
+              type="email"
+              [(ngModel)]="formData.workEmail"
+              name="workEmail"
+              required
+              placeholder="procurement@company.com"
+              style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+            >
+          </div>
+
+          <div class="grid g2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="st" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Sites to serve</label>
+              <input
+                id="st"
+                type="number"
+                min="1"
+                [(ngModel)]="formData.sitesCount"
+                name="sitesCount"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px">
+              <label for="vol" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Estimated 20L jugs per week</label>
+              <input
+                id="vol"
+                type="number"
+                min="0"
+                [(ngModel)]="formData.weeklyVolume"
+                name="weeklyVolume"
+                placeholder="e.g. 25"
+                style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D)"
+              >
+            </div>
+          </div>
+
+          <div class="field" style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+            <label for="nt" style="font-size:13px;font-weight:600;color:var(--ink, #07243D)">Anything else?</label>
+            <textarea
+              id="nt"
+              rows="3"
+              [(ngModel)]="formData.notes"
+              name="notes"
+              placeholder="Delivery windows, access rules, dispenser needs…"
+              style="padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;color:var(--ink, #07243D);font-family:inherit;resize:vertical"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn block"
+            style="width:100%;padding:12px;font-size:14.5px;justify-content:center"
+          >
+            Send request
+          </button>
+          
+          <p class="hint center" style="font-size:12.5px;color:var(--muted, #5E7489);text-align:center;margin:10px 0 0">
+            We come back with pricing and vendor options within one working day.
+          </p>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</section>

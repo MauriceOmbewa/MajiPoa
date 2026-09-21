@@ -1,1 +1,121 @@
-<p>water-passport works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Water Passport Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-water-passport
+     Files: src/app/pages/water-passport/water-passport.html (.ts, .scss)
+     ========================================================================== -->
+
+<!-- Reached by scanning the QR code on a jug. Built narrow: most scans happen on a phone. -->
+<div class="wrap" style="padding:26px 20px 50px;max-width:620px;margin:0 auto">
+
+  <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(7,36,61,0.08)">
+    
+    <!-- QR Scan Header Banner -->
+    <div style="background:linear-gradient(140deg,#0B3358,#11557A);color:#ffffff;padding:26px 24px">
+      <span class="badge aqua" style="margin-bottom:12px;display:inline-flex;padding:4px 10px;border-radius:9999px;font-size:12px;font-weight:600;background:rgba(47,196,192,0.18);color:#2FC4C0;border:1px solid rgba(47,196,192,0.3)">
+        Scanned {{ passportData().scanTime }}
+      </span>
+      <h1 style="color:#ffffff;font-size:26px;line-height:1.25;margin:6px 0 0;font-weight:700">
+        This water is from {{ passportData().vendorName }}
+      </h1>
+      <p style="color:#A8C4DA;margin:8px 0 0;font-size:14.5px">
+        Batch {{ passportData().batchCode }} · bottled {{ passportData().bottledAtDate }}
+      </p>
+    </div>
+
+    <div class="card-body" style="padding:22px 24px">
+      
+      <!-- Trust & Verification Status Badges -->
+      <div class="row wrap-row" style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+        <span class="verified" style="font-size:13.5px;font-weight:600;color:var(--ok, #12946A);display:inline-flex;align-items:center;gap:4px">
+          ✓ Verified vendor
+        </span>
+        <span class="badge ok" style="padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600;background:#E3F5EE;color:#12946A">
+          KEBS S-Mark valid
+        </span>
+        <span class="badge ok" style="padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600;background:#E3F5EE;color:#12946A">
+          Lab test {{ passportData().labTestAgeDays }} days old
+        </span>
+      </div>
+
+      <!-- Source & Process Metadata -->
+      <div class="grid g2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--line, #DBE7F1)">
+        <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+          <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Source</span>
+          <b style="color:var(--ink, #07243D);font-size:14px">{{ passportData().source }}</b>
+        </div>
+        <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+          <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Abstraction permit</span>
+          <b style="color:var(--ink, #07243D);font-size:14px">{{ passportData().permitNumber }}</b>
+        </div>
+        <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+          <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Treatment</span>
+          <b style="color:var(--ink, #07243D);font-size:14px">{{ passportData().treatment }}</b>
+        </div>
+        <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+          <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Bottled at</span>
+          <b style="color:var(--ink, #07243D);font-size:14px">{{ passportData().facilityLocation }}</b>
+        </div>
+      </div>
+
+      <!-- Laboratory Testing Results Table -->
+      <h3 style="margin:20px 0 10px;font-size:16.5px;font-weight:700;color:var(--ink, #07243D)">
+        Latest laboratory result
+      </h3>
+      <div class="t-scroll" style="border:1px solid var(--line, #DBE7F1);border-radius:10px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;text-align:left">
+          <thead>
+            <tr style="background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);color:var(--muted, #5E7489);font-weight:600">
+              <th style="padding:10px 14px">Measure</th>
+              <th style="padding:10px 14px">Result</th>
+              <th style="padding:10px 14px">Kenyan standard</th>
+              <th style="padding:10px 14px;text-align:right"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of labMeasures()" style="border-bottom:1px solid var(--line, #DBE7F1)">
+              <td style="padding:10px 14px;color:var(--ink, #07243D);font-weight:500">{{ m.name }}</td>
+              <td class="num" style="padding:10px 14px;color:var(--ink, #07243D);font-weight:700">{{ m.result }}</td>
+              <td class="muted num" style="padding:10px 14px;color:var(--muted, #5E7489)">{{ m.standard }}</td>
+              <td style="padding:10px 14px;text-align:right">
+                <span class="badge ok" style="padding:2px 7px;border-radius:5px;font-size:11.5px;font-weight:600;background:#E3F5EE;color:#12946A">
+                  Pass
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="hint" style="font-size:12.5px;color:var(--muted, #5E7489);margin:10px 0 0">
+        Tested {{ passportData().labTestDate }} by {{ passportData().labAgency }}, certificate {{ passportData().certificateNumber }}.
+        <a href="javascript:void(0)" (click)="openCertificate()" style="color:var(--blue, #1877D2);text-decoration:none;font-weight:600">
+          Open certificate
+        </a>
+      </p>
+
+      <!-- Customer Action Buttons -->
+      <div class="row wrap-row" style="display:flex;align-items:center;gap:10px;margin-top:22px">
+        <button
+          type="button"
+          class="btn"
+          (click)="reorderWater()"
+        >
+          Order this water again
+        </button>
+        <button
+          type="button"
+          class="btn ghost"
+          (click)="reportIssue()"
+        >
+          Something's wrong with this jug
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="muted center" style="font-size:13px;color:var(--muted, #5E7489);text-align:center;margin:18px 0 0;line-height:1.5">
+    MajiSafi verifies documents submitted by the vendor. We do not test water ourselves.
+  </p>
+</div>

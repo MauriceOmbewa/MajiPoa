@@ -1,1 +1,212 @@
-<p>orders works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Orders Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-orders
+     Files: src/app/pages/orders/orders.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 50px;max-width:900px;margin:0 auto">
+  <h1 style="font-size:30px;margin-bottom:16px;font-weight:700;color:var(--ink, #07243D)">My orders</h1>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs" style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line, #DBE7F1);padding-bottom:10px">
+    <button
+      type="button"
+      [class.on]="currentTab() === 'active'"
+      (click)="setTab('active')"
+      class="tab-btn"
+    >
+      Active ({{ activeOrders().length }})
+    </button>
+    <button
+      type="button"
+      [class.on]="currentTab() === 'past'"
+      (click)="setTab('past')"
+      class="tab-btn"
+    >
+      Past
+    </button>
+    <button
+      type="button"
+      [class.on]="currentTab() === 'recurring'"
+      (click)="setTab('recurring')"
+      class="tab-btn"
+    >
+      Recurring
+    </button>
+    <button
+      type="button"
+      [class.on]="currentTab() === 'cancelled'"
+      (click)="setTab('cancelled')"
+      class="tab-btn"
+    >
+      Cancelled
+    </button>
+  </div>
+
+  <div class="stack" style="display:flex;flex-direction:column;gap:14px">
+    
+    <!-- Active Orders Section -->
+    <ng-container *ngIf="currentTab() === 'active' || currentTab() === 'all'">
+      <!-- Active Order 1 -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">#WM10248</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· today, 3:42 pm · ABC Water</span>
+          </div>
+          <span class="badge info" style="display:inline-flex;align-items:center;gap:6px">
+            <span class="dot"></span>On the way
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            2 × 20L refill, 1 × 500ml case
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Riverside Court, Kilimani · arriving ~4:35 pm
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 1,120</b>
+            <button type="button" class="btn sm" (click)="trackOrder('WM10248')">Track</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Order 2 -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">#WM10249</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· today, 3:42 pm · Blue Spring Water</span>
+          </div>
+          <span class="badge warn" style="display:inline-flex;align-items:center;gap:6px">
+            Preparing
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            1 × 10L bottle
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Riverside Court, Kilimani · arriving ~5:10 pm
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 260</b>
+            <button type="button" class="btn sm ghost" (click)="trackOrder('WM10249')">Track</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Earlier / Past Orders Section -->
+    <ng-container *ngIf="currentTab() === 'active' || currentTab() === 'past'">
+      <h3 style="margin:22px 0 4px;font-size:18px;font-weight:700;color:var(--ink, #07243D)">Earlier</h3>
+
+      <!-- Past Order 1 -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">#WM10192</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· 8 Sep · ABC Water</span>
+          </div>
+          <span class="badge ok" style="display:inline-flex;align-items:center;gap:6px">
+            Delivered
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            2 × 20L refill
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Delivered 4:02 pm · rated 5 ★
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 580</b>
+            <button type="button" class="btn sm ghost" (click)="reorder('WM10192')">Reorder</button>
+            <a href="javascript:void(0)" (click)="viewReceipt('WM10192')" style="font-size:14px;color:var(--blue, #1877D2);text-decoration:none;font-weight:600">Receipt</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Order 2 -->
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">#WM10121</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· 1 Sep · Aqua Fresh</span>
+          </div>
+          <span class="badge ok" style="display:inline-flex;align-items:center;gap:6px">
+            Delivered
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            1 × 20L refill, 1 × 5L pack
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Delivered 11:20 am
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 850</b>
+            <button type="button" class="btn sm ghost" (click)="reorder('WM10121')">Reorder</button>
+            <a href="javascript:void(0)" (click)="viewReceipt('WM10121')" style="font-size:14px;color:var(--blue, #1877D2);text-decoration:none;font-weight:600">Receipt</a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Cancelled / Refunded Section -->
+    <ng-container *ngIf="currentTab() === 'active' || currentTab() === 'cancelled'">
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">#WM10088</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· 25 Aug · Blue Spring Water</span>
+          </div>
+          <span class="badge bad" style="display:inline-flex;align-items:center;gap:6px">
+            Refunded
+          </span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            1 × 20L refill
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Vendor could not deliver · KSh 340 returned to M-Pesa on 25 Aug
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 0</b>
+            <a href="javascript:void(0)" (click)="viewSupportCase('WM10088')" style="font-size:14px;color:var(--blue, #1877D2);text-decoration:none;font-weight:600">View case</a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Recurring Tab Content -->
+    <ng-container *ngIf="currentTab() === 'recurring'">
+      <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+        <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <b style="color:var(--ink, #07243D)">Weekly Home Refill</b>
+            <span class="muted" style="font-size:13.5px;color:var(--muted, #5E7489)">· ABC Water</span>
+          </div>
+          <span class="badge ok">Active schedule</span>
+        </div>
+        <div class="card-body between" style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div style="font-size:14.5px;color:var(--ink, #07243D)">
+            2 × 20L refill
+            <div class="muted" style="font-size:13px;color:var(--muted, #5E7489);margin-top:2px">
+              Every Friday · next on 18 Sep, 8–10 am
+            </div>
+          </div>
+          <div class="row" style="display:flex;align-items:center;gap:12px">
+            <b class="num" style="font-size:16px;color:var(--ink, #07243D)">KSh 580 / wk</b>
+            <button type="button" class="btn sm ghost" (click)="manageRecurringSchedule()">Manage</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

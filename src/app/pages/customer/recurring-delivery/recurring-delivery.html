@@ -1,1 +1,229 @@
-<p>recurring-delivery works!</p>
+<!-- ==========================================================================
+     MajiSafi - Standalone Angular Recurring Delivery Component Template
+     Framework: Angular 17 / 18 / 19 Standalone Component
+     Selector: app-recurring-delivery
+     Files: src/app/pages/recurring-delivery/recurring-delivery.html (.ts, .scss)
+     ========================================================================== -->
+
+<div class="wrap" style="padding:28px 20px 50px;max-width:900px;margin:0 auto">
+  <!-- Header with title & New Schedule trigger -->
+  <div class="between" style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
+    <div>
+      <h1 style="font-size:30px;margin:0;font-weight:700;color:var(--ink, #07243D)">Recurring delivery</h1>
+      <p class="muted" style="margin:4px 0 0;font-size:15px;color:var(--muted, #5E7489)">
+        Water arrives on schedule. Skip or change any delivery before the cut-off.
+      </p>
+    </div>
+    <button type="button" class="btn" (click)="scrollToNewSchedule()">New schedule</button>
+  </div>
+
+  <!-- Active Recurring Schedule Card -->
+  <ng-container *ngFor="let schedule of schedules()">
+    <div class="card" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden;margin-bottom:16px">
+      <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <b style="color:var(--ink, #07243D);font-size:15px">{{ schedule.productTitle }}</b>
+          <div class="muted" style="font-size:13.5px;color:var(--muted, #5E7489);margin-top:2px">
+            {{ schedule.frequencyLabel }} · {{ schedule.addressLabel }}
+          </div>
+        </div>
+        <span class="badge" [ngClass]="schedule.status === 'active' ? 'ok' : 'warn'">
+          {{ schedule.status === 'active' ? 'Active' : 'Paused' }}
+        </span>
+      </div>
+
+      <div class="card-body" style="padding:18px 20px">
+        <div class="grid g4" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:14px;margin-bottom:16px">
+          <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+            <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Next delivery</span>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">{{ schedule.nextDeliveryDate }}</b>
+          </div>
+          <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+            <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Per delivery</span>
+            <b class="num" style="color:var(--ink, #07243D);font-size:14.5px">KSh {{ schedule.priceKsh.toLocaleString() }}</b>
+          </div>
+          <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+            <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Payment</span>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">{{ schedule.paymentMethod }}</b>
+          </div>
+          <div class="stack" style="display:flex;flex-direction:column;gap:3px">
+            <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Deliveries so far</span>
+            <b style="color:var(--ink, #07243D);font-size:14.5px">{{ schedule.deliveriesCompletedCount }}</b>
+          </div>
+        </div>
+
+        <div class="row wrap-row" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button type="button" class="btn ghost sm" (click)="skipDelivery(schedule.id)">
+            Skip {{ schedule.skipShortDate }}
+          </button>
+          <button type="button" class="btn ghost sm" (click)="changeDayOrTime(schedule.id)">
+            Change day or time
+          </button>
+          <button type="button" class="btn ghost sm" (click)="changeQuantity(schedule.id)">
+            Change quantity
+          </button>
+          <button type="button" class="btn ghost sm" (click)="togglePauseSchedule(schedule.id)">
+            {{ schedule.status === 'active' ? 'Pause' : 'Resume' }}
+          </button>
+          <button type="button" class="btn danger sm" (click)="cancelSchedule(schedule.id)">
+            Cancel schedule
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Set up a new schedule Card -->
+  <div class="card" id="new-schedule-form" style="background:#ffffff;border:1px solid var(--line, #DBE7F1);border-radius:16px;overflow:hidden">
+    <div class="card-head" style="padding:14px 20px;background:#FAFBFD;border-bottom:1px solid var(--line, #DBE7F1)">
+      <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--ink, #07243D)">Set up a new schedule</h3>
+    </div>
+    <div class="card-body grid g2" style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <!-- Left Column: Product, Address, Start Date -->
+      <div>
+        <div class="field" style="margin-bottom:14px">
+          <label for="pr" style="display:block;font-size:13px;font-weight:600;color:var(--ink, #07243D);margin-bottom:6px">
+            What should we bring?
+          </label>
+          <select
+            id="pr"
+            [(ngModel)]="newSchedule.product"
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;background:#ffffff;color:var(--ink, #07243D)"
+          >
+            <option value="2x20l-abc">2 × 20L refill — ABC Water (KSh 580)</option>
+            <option value="1x20l-abc">1 × 20L refill — ABC Water (KSh 330)</option>
+            <option value="1x10l-blue">1 × 10L bottle — Blue Spring (KSh 260)</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom:14px">
+          <label for="ad" style="display:block;font-size:13px;font-weight:600;color:var(--ink, #07243D);margin-bottom:6px">
+            Deliver to
+          </label>
+          <select
+            id="ad"
+            [(ngModel)]="newSchedule.address"
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;background:#ffffff;color:var(--ink, #07243D)"
+          >
+            <option value="home">Home · Riverside Court B12, Kilimani</option>
+            <option value="office">Office · Sanlam Tower, Westlands</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom:14px">
+          <label for="st" style="display:block;font-size:13px;font-weight:600;color:var(--ink, #07243D);margin-bottom:6px">
+            Start on
+          </label>
+          <input
+            id="st"
+            type="date"
+            [(ngModel)]="newSchedule.startDate"
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;background:#ffffff;color:var(--ink, #07243D);box-sizing:border-box"
+          >
+        </div>
+      </div>
+
+      <!-- Right Column: Frequency, Time Window, CTA -->
+      <div>
+        <div class="field" style="margin-bottom:14px">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--ink, #07243D);margin-bottom:8px">
+            How often?
+          </label>
+          <div class="stack" style="display:flex;flex-direction:column;gap:8px">
+            <label
+              class="pick"
+              [class.on]="newSchedule.frequency === 'weekly'"
+              style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);cursor:pointer;background:#FAFBFD"
+            >
+              <input
+                type="radio"
+                name="freq"
+                value="weekly"
+                [(ngModel)]="newSchedule.frequency"
+                style="margin-top:3px"
+              >
+              <span>
+                <b style="font-size:14px;color:var(--ink, #07243D);display:block">Every week</b>
+                <span class="muted" style="font-size:13px;color:var(--muted, #5E7489)">Most households with 2–3 people</span>
+              </span>
+            </label>
+
+            <label
+              class="pick"
+              [class.on]="newSchedule.frequency === 'biweekly'"
+              style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);cursor:pointer;background:#FAFBFD"
+            >
+              <input
+                type="radio"
+                name="freq"
+                value="biweekly"
+                [(ngModel)]="newSchedule.frequency"
+                style="margin-top:3px"
+              >
+              <span>
+                <b style="font-size:14px;color:var(--ink, #07243D)">Every two weeks</b>
+              </span>
+            </label>
+
+            <label
+              class="pick"
+              [class.on]="newSchedule.frequency === 'monthly'"
+              style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);cursor:pointer;background:#FAFBFD"
+            >
+              <input
+                type="radio"
+                name="freq"
+                value="monthly"
+                [(ngModel)]="newSchedule.frequency"
+                style="margin-top:3px"
+              >
+              <span>
+                <b style="font-size:14px;color:var(--ink, #07243D)">Every month</b>
+              </span>
+            </label>
+
+            <label
+              class="pick"
+              [class.on]="newSchedule.frequency === 'custom'"
+              style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);cursor:pointer;background:#FAFBFD"
+            >
+              <input
+                type="radio"
+                name="freq"
+                value="custom"
+                [(ngModel)]="newSchedule.frequency"
+                style="margin-top:3px"
+              >
+              <span>
+                <b style="font-size:14px;color:var(--ink, #07243D)">Custom — every … days</b>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:16px">
+          <label for="tw" style="display:block;font-size:13px;font-weight:600;color:var(--ink, #07243D);margin-bottom:6px">
+            Delivery window
+          </label>
+          <select
+            id="tw"
+            [(ngModel)]="newSchedule.deliveryWindow"
+            style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line, #DBE7F1);font-size:14px;background:#ffffff;color:var(--ink, #07243D)"
+          >
+            <option value="8-10">8:00 – 10:00 am</option>
+            <option value="10-12">10:00 am – 12:00 pm</option>
+            <option value="14-16">2:00 – 4:00 pm</option>
+            <option value="16-18">4:00 – 6:00 pm</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn block" (click)="createSchedule()" style="width:100%;margin-bottom:8px">
+          Create schedule
+        </button>
+        <p class="hint center" style="font-size:12.5px;color:var(--muted, #5E7489);text-align:center;margin:0">
+          We charge M Pesa the morning of each delivery. Cancel any time.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,244 @@
+/* ==========================================================================
+   MajiSafi - Standalone Angular Recurring Delivery Styles (SCSS)
+   File: src/app/pages/recurring-delivery/recurring-delivery.scss
+   ========================================================================== */
+
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #07243D;
+  background-color: #F1F6FA;
+  min-height: 100vh;
+}
+
+$ink: #07243D;
+$ink-2: #0F3A5C;
+$blue: #1877D2;
+$blue-600: #1464B4;
+$blue-50: #E8F2FC;
+$aqua: #2FC4C0;
+$aqua-50: #E2F7F6;
+$mist: #F1F6FA;
+$line: #DBE7F1;
+$white: #FFFFFF;
+$muted: #5E7489;
+$ok: #12946A;
+$ok-50: #E3F5EE;
+$warn: #C77A11;
+$warn-50: #FEF6E7;
+$danger: #D9383A;
+$danger-50: #FDE8E8;
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 50px;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: $muted;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(7, 36, 61, 0.05);
+
+  .card-head {
+    padding: 14px 20px;
+    background: #FAFBFD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid $line;
+  }
+
+  .card-body {
+    padding: 18px 20px;
+  }
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.wrap-row {
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #EEF3F8;
+  color: $muted;
+
+  &.ok {
+    background: $ok-50;
+    color: $ok;
+    border: 1px solid rgba($ok, 0.25);
+  }
+
+  &.warn {
+    background: $warn-50;
+    color: $warn;
+    border: 1px solid rgba($warn, 0.25);
+  }
+}
+
+.pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid $line;
+  background: #FAFBFD;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #F4F8FA;
+    border-color: rgba($blue, 0.35);
+  }
+
+  &.on {
+    background: #F0F7FD;
+    border-color: $blue;
+  }
+
+  input[type="radio"] {
+    accent-color: $blue;
+    margin-top: 3px;
+  }
+}
+
+.field {
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: $ink;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid $line;
+    font-size: 14px;
+    background: #ffffff;
+    color: $ink;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $blue;
+      box-shadow: 0 0 0 3px rgba($blue, 0.12);
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: $ink;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $ink-2;
+  }
+
+  &.sm {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 9px;
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $ink;
+    border-color: $line;
+
+    &:hover {
+      background: #F4F8FA;
+      border-color: rgba($blue, 0.4);
+    }
+  }
+
+  &.danger {
+    background: transparent;
+    color: $danger;
+    border-color: rgba($danger, 0.3);
+
+    &:hover {
+      background: $danger-50;
+      border-color: $danger;
+    }
+  }
+
+  &.block {
+    display: flex;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.hint {
+  font-size: 12.5px;
+  color: $muted;
+
+  &.center {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid.g4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .grid.g2 {
+    grid-template-columns: 1fr !important;
+  }
+}
