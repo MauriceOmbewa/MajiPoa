@@ -1,1 +1,117 @@
-<p>vendor-payouts works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Payouts</h1>
+      <select
+        [ngModel]="range()"
+        (ngModelChange)="range.set($event)"
+        class="ml-auto px-3 py-2 border border-[#DBE7F1] rounded-lg text-sm bg-white">
+        @for (r of rangeOptions; track r) { <option [value]="r">{{ r }}</option> }
+      </select>
+      <button class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Download statement</button>
+    </div>
+
+    <div class="px-7 py-6">
+      <div class="grid grid-cols-4 gap-3.5 mb-5">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Next payout</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ nextPayout() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">Friday 18 Sep · M Pesa 0712 345 678</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Pending clearance</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ pendingClearance() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">Orders still out for delivery</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Paid out this month</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ paidThisMonth() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">4 payouts</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Held for disputes</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold text-[#C77A11]">KSh {{ heldForDisputes() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">1 open case</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1fr_320px] gap-4 items-start">
+        <div class="flex flex-col gap-4">
+
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+            <div class="px-5 py-4 border-b border-[#DBE7F1] flex justify-between items-center">
+              <h3 class="font-['Bricolage_Grotesque'] font-semibold">This week's settlement</h3>
+              <span class="inline-flex px-2.5 py-1 rounded-full bg-[#E8F2FC] text-[#1464B4] border border-[#c9e0f7] text-[12.5px] font-semibold">Closes Thursday 11:59 pm</span>
+            </div>
+            <div class="p-5">
+              @for (line of settlement(); track line.label) {
+                <div class="flex justify-between py-2 text-[14.5px] border-b border-dashed border-[#DBE7F1] last:border-0">
+                  <span>{{ line.label }}</span>
+                  <b [class]="line.amount < 0 ? '' : ''">{{ line.amount < 0 ? '− ' : '' }}KSh {{ Math.abs(line.amount) }}</b>
+                </div>
+              }
+              <div class="flex justify-between pt-3.5 mt-1.5 border-t border-[#DBE7F1] font-['Bricolage_Grotesque'] text-xl font-bold">
+                <span>Payable to you</span><span>KSh {{ payable() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-x-auto">
+            <div class="px-5 py-4 border-b border-[#DBE7F1]">
+              <h3 class="font-['Bricolage_Grotesque'] font-semibold">Payout history</h3>
+            </div>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-[12.5px] text-[#5E7489]">
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Date</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Period</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Orders</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Gross</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Deductions</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Paid</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Reference</th>
+                  <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of history(); track p.reference) {
+                  <tr class="border-b border-[#DBE7F1] last:border-0">
+                    <td class="px-4 py-3.5 whitespace-nowrap">{{ p.date }}</td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">{{ p.period }}</td>
+                    <td class="px-4 py-3.5">{{ p.orders }}</td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">KSh {{ p.gross }}</td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">KSh {{ p.deductions }}</td>
+                    <td class="px-4 py-3.5 font-semibold whitespace-nowrap">KSh {{ p.paid }}</td>
+                    <td class="px-4 py-3.5 text-[#5E7489]">{{ p.reference }}</td>
+                    <td class="px-4 py-3.5">
+                      <span class="inline-flex px-2.5 py-1 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da] text-[12.5px] font-semibold">Paid</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="flex flex-col gap-4">
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+            <h4 class="font-semibold text-sm mb-3">Where money goes</h4>
+            <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Settlement number</span><b>0712 345 678</b></div>
+            <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Schedule</span><b>Weekly, Fridays</b></div>
+            <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Commission rate</span><b>8%</b></div>
+            <div class="flex justify-between text-sm"><span class="text-[#5E7489]">Cleared after</span><b>Delivery + 24 hr</b></div>
+            <button class="w-full mt-3 px-3.5 py-2 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Change settlement details</button>
+          </div>
+
+          <div class="bg-[#FDF1DE] border border-[#f2ddb8] rounded-2xl p-5">
+            <h4 class="font-semibold text-sm mb-1.5">1 amount on hold</h4>
+            <p class="text-[13.5px] mb-2">KSh 580 from order #WM10233 is held while a customer complaint is reviewed.</p>
+            <a href="#" class="text-[#C77A11] text-sm font-semibold hover:underline">View the case</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
