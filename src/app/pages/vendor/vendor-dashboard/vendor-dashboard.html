@@ -1,0 +1,120 @@
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Today</h1>
+      <span class="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E3F5EE] text-[#12946A] border border-[#c5e8da] text-[12.5px] font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>Accepting orders
+      </span>
+      <a routerLink="/vendor-products" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold no-underline hover:bg-[#1464B4]">
+        Update stock
+      </a>
+    </div>
+
+    <div class="px-7 py-6">
+      <!-- Stat tiles -->
+      <div class="grid grid-cols-4 gap-3.5 mb-5">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Sales today</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ salesToday() }}</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Orders</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">{{ ordersToday() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">{{ completedToday() }} completed</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Needs your action</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold text-[#C77A11]">{{ needsAction() }}</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Next payout</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh 34,180</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">Friday</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1fr_320px] gap-4 items-start">
+        <div class="flex flex-col gap-4">
+          <!-- Waiting for you -->
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+            <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+              <h3 class="font-['Bricolage_Grotesque'] font-semibold">Waiting for you</h3>
+              <a routerLink="/vendor-orders" class="text-sm text-[#1877D2] no-underline hover:underline">All orders</a>
+            </div>
+            <div class="p-5 flex flex-col gap-3">
+              @for (order of incoming(); track order.id) {
+                <div class="p-4 rounded-xl border border-[#f2ddb8] bg-[#FDF1DE] flex items-center justify-between gap-3">
+                  <div>
+                    <b class="text-[14.5px]">{{ order.id }} · {{ order.items }}</b>
+                    <div class="text-[13.5px] text-[#5E7489]">{{ order.area }} · paid KSh {{ order.total }} · {{ order.minutesAgo }} min ago</div>
+                  </div>
+                  <div class="flex gap-2 shrink-0">
+                    <button (click)="decline(order.id)" class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Decline</button>
+                    <button (click)="accept(order.id)" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Accept</button>
+                  </div>
+                </div>
+              } @empty {
+                <p class="text-sm text-[#5E7489] text-center py-4">Nothing waiting — you're caught up.</p>
+              }
+            </div>
+          </div>
+
+          <!-- In progress -->
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+            <div class="px-5 py-4 border-b border-[#DBE7F1] flex items-center justify-between">
+              <h3 class="font-['Bricolage_Grotesque'] font-semibold">In progress</h3>
+              <a routerLink="/vendor-deliveries" class="text-sm text-[#1877D2] no-underline hover:underline">Deliveries</a>
+            </div>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-[12.5px] text-[#5E7489]">
+                  <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Order</th>
+                  <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Items</th>
+                  <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Area</th>
+                  <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]">Stage</th>
+                  <th class="px-5 py-3 font-semibold border-b border-[#DBE7F1]"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of active(); track o.id) {
+                  <tr class="border-b border-[#DBE7F1] last:border-0">
+                    <td class="px-5 py-3.5"><b>{{ o.id }}</b></td>
+                    <td class="px-5 py-3.5">{{ o.items }}</td>
+                    <td class="px-5 py-3.5">{{ o.area }}</td>
+                    <td class="px-5 py-3.5">
+                      <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + stageClasses(o.stage)">{{ o.stage }}</span>
+                    </td>
+                    <td class="px-5 py-3.5"><a routerLink="/vendor-order-detail" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="flex flex-col gap-4">
+          <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+            <h4 class="font-semibold text-sm mb-3">Stock today</h4>
+            <div class="flex justify-between text-sm mb-1.5"><span>20L filled jugs</span><b>{{ jugsInStock() }}</b></div>
+            <div class="h-2 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-[#1877D2] to-[#2FC4C0]" [style.width.%]="stockPct()"></div>
+            </div>
+            <a routerLink="/vendor-products" class="block text-center mt-3 px-3.5 py-2 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold no-underline hover:bg-[#F1F6FA]">
+              Update stock
+            </a>
+          </div>
+
+          <div class="bg-[#E2F7F6] border border-[#bfe9e7] rounded-2xl p-5">
+            <h4 class="font-semibold text-sm mb-1.5">Lab test due in 17 days</h4>
+            <p class="text-[13.5px] text-[#127e7b] mb-3">Upload a new result before your listings pause.</p>
+            <a routerLink="/vendor-verification" class="inline-block px-3 py-1.5 rounded-full border border-[#127e7b]/30 bg-white text-[13px] font-semibold text-[#127e7b] no-underline">
+              Upload result
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
