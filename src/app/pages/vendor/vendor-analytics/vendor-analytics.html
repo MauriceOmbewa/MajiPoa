@@ -1,1 +1,124 @@
-<p>vendor-analytics works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Analytics</h1>
+      <span class="inline-flex px-2.5 py-1 rounded-full bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7] text-[12.5px] font-semibold">Pro</span>
+      <select
+        [ngModel]="period()"
+        (ngModelChange)="period.set($event)"
+        class="ml-auto px-3 py-2 border border-[#DBE7F1] rounded-lg text-sm bg-white">
+        @for (p of periods; track p) { <option [value]="p">{{ p }}</option> }
+      </select>
+      <button class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Export CSV</button>
+    </div>
+
+    <div class="px-7 py-6">
+      <!-- Stat tiles -->
+      <div class="grid grid-cols-4 gap-3.5 mb-5">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Gross sales</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ grossSales() }}</div>
+          <div class="text-[12.5px] text-[#12946A] mt-1">▲ 18% vs previous 30 days</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Net after commission &amp; delivery</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ netAfterFees() }}</div>
+          <div class="text-[12.5px] text-[#5E7489] mt-1">Commission KSh {{ commissionPaid() }}</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Orders</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">{{ orders() }}</div>
+          <div class="text-[12.5px] text-[#12946A] mt-1">▲ 11%</div>
+        </div>
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-4">
+          <div class="text-[13px] text-[#5E7489] mb-1.5">Average order</div>
+          <div class="font-['Bricolage_Grotesque'] text-2xl font-bold">KSh {{ avgOrder() }}</div>
+          <div class="text-[12.5px] text-[#D6453C] mt-1">▼ 4% — more single-jug orders</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1.6fr_1fr] gap-4 mb-5 items-start">
+        <!-- Sales by day -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <div class="flex justify-between items-center mb-1.5">
+            <h3 class="font-['Bricolage_Grotesque'] font-semibold">Sales by day</h3>
+            <span class="text-[13.5px] text-[#5E7489]">Last 14 days · KSh</span>
+          </div>
+          <div class="flex items-end gap-2.5 h-[190px] pt-2.5">
+            @for (bar of salesByDay(); track bar.day) {
+              <div class="flex-1 flex flex-col justify-end items-center gap-2 h-full">
+                <div class="w-full rounded-t-lg rounded-b-sm" [style.height.%]="bar.pct"
+                     [class]="bar.peak ? 'bg-gradient-to-t from-[#12968F] to-[#48D6D2]' : 'bg-gradient-to-t from-[#1877D2] to-[#4FA3E3]'"></div>
+                <span class="text-xs text-[#5E7489]">{{ bar.day }}</span>
+              </div>
+            }
+          </div>
+          <p class="text-[12.5px] text-[#5E7489] mt-3">Fridays and Saturdays carry 34% of your week. Consider more stock on Thursday night.</p>
+        </div>
+
+        <!-- Busiest hours -->
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3.5">Busiest hours</h3>
+          @for (h of busiestHours(); track h.label) {
+            <div class="grid grid-cols-[130px_1fr_50px] items-center gap-3 text-sm mb-2.5">
+              <span>{{ h.label }}</span>
+              <span class="h-2.5 rounded-full bg-[#F1F6FA] overflow-hidden">
+                <span class="block h-full bg-[#1877D2]" [style.width.%]="h.pct"></span>
+              </span>
+              <b class="text-right">{{ h.orders }}</b>
+            </div>
+          }
+          <p class="text-[12.5px] text-[#5E7489] mt-3">Your average prep time doubles between 3 and 6 pm.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 mb-5 items-start">
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3.5">Top products</h3>
+          @for (p of topProducts(); track p.label) {
+            <div class="grid grid-cols-[110px_1fr_54px] items-center gap-3 text-sm mb-2.5">
+              <span>{{ p.label }}</span>
+              <span class="h-2.5 rounded-full bg-[#F1F6FA] overflow-hidden"><span class="block h-full bg-[#1877D2]" [style.width.%]="p.pct"></span></span>
+              <b class="text-right">{{ p.value }}</b>
+            </div>
+          }
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3.5">Where your orders come from</h3>
+          @for (a of areas(); track a.label) {
+            <div class="grid grid-cols-[110px_1fr_54px] items-center gap-3 text-sm mb-2.5">
+              <span>{{ a.label }}</span>
+              <span class="h-2.5 rounded-full bg-[#F1F6FA] overflow-hidden"><span class="block h-full bg-[#1877D2]" [style.width.%]="a.pct"></span></span>
+              <b class="text-right">{{ a.value }}</b>
+            </div>
+          }
+        </div>
+
+        <div class="bg-white border border-[#DBE7F1] rounded-2xl p-5">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold mb-3.5">Customers</h3>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">New this period</span><b>{{ newCustomers() }}</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Returning</span><b>{{ returningCustomers() }}</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">Repeat rate</span><b>{{ repeatRate() }}%</b></div>
+          <div class="flex justify-between text-sm mb-2"><span class="text-[#5E7489]">On a recurring schedule</span><b>{{ recurringCustomers() }}</b></div>
+          <div class="flex justify-between text-sm"><span class="text-[#5E7489]">Lost (no order in 60 days)</span><b class="text-[#C77A11]">{{ lostCustomers() }}</b></div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl">
+        <div class="px-5 py-4 border-b border-[#DBE7F1] flex justify-between items-center">
+          <h3 class="font-['Bricolage_Grotesque'] font-semibold">Operations</h3>
+          <span class="text-[13.5px] text-[#5E7489]">Where orders are lost</span>
+        </div>
+        <div class="p-5 grid grid-cols-4 gap-4">
+          <div>
+            <span class="text-[13px] text-[#5E7489] block mb-1">Acceptance rate</span>
+            <b class="text-xl">{{ acceptanceRate() }}%</b>
+            <p class="text-[12px] text-[#5E7489] mt-1">Marketplace average 91%</p>
+          </div>
+          <div>
+            <span class="text-[13px] text-[#5E7489] block mb-1">Average prep time</span>
+            <b class="text-xl">{{ avgPrepTime() }} min</b>
+            <p class="text-[12px] text-[#5E7489] mt-1">Average 19 min</p>
