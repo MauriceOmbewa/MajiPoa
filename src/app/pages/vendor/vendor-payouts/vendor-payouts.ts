@@ -1,6 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
 
 export interface SettlementLine {
   label: string;
@@ -20,10 +21,12 @@ export interface PayoutRecord {
 @Component({
   selector: 'app-vendor-payouts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, VendorSidebar],
   templateUrl: './vendor-payouts.html',
 })
 export class VendorPayouts {
+  Math = Math;
+
   rangeOptions = ['This month', 'Last month', 'Last 3 months'];
   range = signal(this.rangeOptions[0]);
 
