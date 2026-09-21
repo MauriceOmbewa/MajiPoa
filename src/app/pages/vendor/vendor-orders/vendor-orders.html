@@ -1,1 +1,76 @@
-<p>vendor-orders works!</p>
+<div class="min-h-screen flex bg-[#F1F6FA] text-[#07243D] font-sans">
+  <app-vendor-sidebar />
+
+  <main class="flex-1 min-w-0">
+    <div class="sticky top-0 z-30 bg-[#F1F6FA]/90 backdrop-blur-md border-b border-[#DBE7F1] px-7 py-4 flex items-center gap-4">
+      <h1 class="font-['Bricolage_Grotesque'] text-xl font-bold">Orders</h1>
+      <input
+        type="search"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+        placeholder="Search order or customer"
+        class="ml-auto w-60 px-3.5 py-2 border border-[#DBE7F1] rounded-full text-sm outline-none focus:border-[#1877D2]" />
+      <button class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Export</button>
+    </div>
+
+    <div class="px-7 py-6">
+      <!-- Status tabs -->
+      <div class="flex gap-1 border-b border-[#DBE7F1] mb-5 flex-wrap">
+        @for (tab of tabs; track tab) {
+          <button
+            (click)="setTab(tab)"
+            [class]="activeTab() === tab
+              ? 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#07243D] border-b-2 border-[#1877D2] -mb-px'
+              : 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#5E7489] border-b-2 border-transparent -mb-px hover:text-[#07243D]'">
+            {{ tab }} ({{ counts()[tab] }})
+          </button>
+        }
+      </div>
+
+      <div class="bg-white border border-[#DBE7F1] rounded-2xl overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-[12.5px] text-[#5E7489]">
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Order</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Placed</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Items</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Customer</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Area</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Payment</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap">Total</th>
+              <th class="px-4 py-3 font-semibold border-b border-[#DBE7F1] whitespace-nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of filtered(); track o.id) {
+              <tr class="border-b border-[#DBE7F1] last:border-0 hover:bg-[#fafcfe]">
+                <td class="px-4 py-3.5"><b>{{ o.id }}</b></td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.placed }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.items }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.customer }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.area }} · {{ o.distanceKm }} km</td>
+                <td class="px-4 py-3.5">
+                  <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + paymentClasses(o.payment)">{{ o.payment }}</span>
+                </td>
+                <td class="px-4 py-3.5 font-semibold whitespace-nowrap">KSh {{ o.total }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">
+                  @if (o.status === 'New') {
+                    <div class="flex gap-2">
+                      <button (click)="accept(o.id)" class="px-3 py-1.5 rounded-full bg-[#1877D2] text-white text-[13px] font-semibold hover:bg-[#1464B4]">Accept</button>
+                      <button (click)="decline(o.id)" class="px-3 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13px] font-semibold hover:bg-[#F1F6FA]">Decline</button>
+                    </div>
+                  } @else {
+                    <a routerLink="/vendor-order-detail" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="8" class="text-center py-10 text-[#5E7489]">No orders in this status right now.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[12.5px] text-[#5E7489] mt-3">Repeated declines lower how often you appear to nearby customers.</p>
+    </div>
+  </main>
+</div>
