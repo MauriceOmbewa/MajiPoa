@@ -2,6 +2,8 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface ProductItem {
   id: string;
@@ -56,7 +58,7 @@ export interface LocationEstate {
 @Component({
   selector: 'app-find-water',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
   templateUrl: './find-water.html',
   styleUrl: './find-water.scss',
 })

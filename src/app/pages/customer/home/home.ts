@@ -15,6 +15,8 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface WaterProduct {
   id: string;
@@ -62,23 +64,12 @@ export interface WaterPassportData {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
 export class HomeComponent {
-  // Navigation State
-  activeNav = signal<string>('discover');
-   private router = inject(Router);
-  navItems = [
-    { label: 'Order water', key: 'find-water' },
-    { label: 'My orders', key: 'orders' },
-    { label: 'Water quality', key: 'water-quality' },
-    { label: 'Help', key: 'help' },
-    { label: 'Vendor', key: 'vendor-shop' },
-    { label: 'Rider', key: 'rider' },
-    { label: 'Admin', key: 'admin' }
-  ];
+  private router = inject(Router);
  
 
   // Estates Available in Nairobi
@@ -285,15 +276,6 @@ export class HomeComponent {
   toastMessage = signal<string | null>(null);
 
   // Methods
-  setActiveNav(key: string): void {
-    this.activeNav.set(key);
-    if (key === 'rider') {
-      this.router.navigateByUrl('/riders/dashboard');
-    } else {
-      this.router.navigate([`/${key}`]);
-    }
-  }
-
   setFilterChip(chip: string): void {
     this.activeFilterChip.set(chip);
     this.selectedNeed.set('all');

@@ -9,6 +9,8 @@ import { Component, signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface SupportCaseItem {
   id: string;
@@ -29,7 +31,7 @@ export interface TicketSubmission {
 @Component({
   selector: 'app-help-complaints',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
   templateUrl: './help-complaints.html',
   styleUrl: './help-complaints.scss',
 })

@@ -6,42 +6,9 @@
      Styling: Tailwind CSS Utility Classes + vendor-details.scss
      ========================================================================== -->
 
-<div class="vendor-details-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased pb-16">
-  <!-- Top Navigation / Breadcrumb Bar -->
-  <header class="bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] sticky top-0 z-30 shadow-xs">
-    <div class="max-w-[1180px] mx-auto px-5 h-[64px] flex items-center justify-between gap-4">
-      <!-- Back to Discover -->
-      <button
-        type="button"
-        (click)="goBack()"
-        class="inline-flex items-center gap-2 text-sm font-semibold text-[#0F3A5C] hover:text-[#1877D2] transition cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        <span>Back to water search</span>
-      </button>
-
-      <!-- Quick Nav Links -->
-      <div class="flex items-center gap-2">
-        <button
-          type="button"
-          (click)="openPassport()"
-          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7] hover:bg-[#d0f1ef] transition cursor-pointer">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
-          <span>Verified KEBS Passport</span>
-        </button>
-
-        <button
-          type="button"
-          (click)="scrollToProducts()"
-          class="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#07243D] text-white hover:bg-[#0F3A5C] transition cursor-pointer">
-          Order Now
-        </button>
-      </div>
-    </div>
-  </header>
+<div class="vendor-details-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased">
+  <!-- Shared Navbar -->
+  <app-navbar />
 
   <!-- Vendor Hero Banner with Deep Blue Gradient -->
   <section class="vendor-hero bg-gradient-to-br from-[#0B3358] via-[#0D446B] to-[#11557A] text-white py-9 px-5 border-b border-[#0F3A5C]">
@@ -593,4 +560,7 @@
       </div>
     </section>
   </main>
+
+  <!-- Shared Footer -->
+  <app-footer />
 </div>

@@ -5,7 +5,9 @@
      Files: src/app/pages/orders/orders.html (.ts, .scss)
      ========================================================================== -->
 
-<div style="padding:28px 20px 50px;max-width:1100px;margin:0 auto">
+<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased">
+  <app-navbar />
+  <div style="padding:28px 20px 50px;max-width:1100px;margin:0 auto">
   <h1 style="font-size:30px;margin-bottom:16px;font-weight:700;color:var(--ink, #07243D)">My orders</h1>
 
   <!-- Two-column grid: main content + sidebar -->
@@ -262,3 +264,6 @@
     <span style="font-size:14px;font-weight:600">{{ toastMessage() }}</span>
   </div>
 }
+
+  <app-footer />
+</div>

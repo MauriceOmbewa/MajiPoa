@@ -5,7 +5,9 @@
      Files: src/app/pages/checkout/checkout.html (.ts, .scss)
      ========================================================================== -->
 
-<div class="wrap" style="padding:26px 20px 60px;max-width:960px">
+<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased">
+  <app-navbar />
+  <div class="wrap" style="padding:26px 20px 60px;max-width:960px">
   <h1 style="font-size:30px;margin-bottom:6px">Checkout</h1>
   <p class="muted" style="margin-bottom:22px">
     You're ordering as a guest.
@@ -321,4 +323,6 @@
       Didn't get the prompt? <a href="javascript:void(0)" (click)="resendPrompt()">Send it again</a> or dial *334#.
     </p>
   </div>
+</div>
+  <app-footer />
 </div>

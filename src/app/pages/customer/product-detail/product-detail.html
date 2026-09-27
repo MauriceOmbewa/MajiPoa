@@ -6,88 +6,9 @@
      Styling: Tailwind CSS Utility Classes + product-detail.scss
      ========================================================================== -->
 
-<div class="product-detail-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased selection:bg-[#E8F2FC] selection:text-[#1877D2] pb-16">
-  <!-- Top Navigation Bar -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] shadow-xs">
-    <div class="max-w-[1180px] mx-auto px-5 h-[68px] flex items-center justify-between gap-4">
-      <!-- Brand Logo -->
-      <a routerLink="/" (click)="navigateTo('home')" class="flex items-center gap-2.5 no-underline group cursor-pointer">
-        <svg class="w-7 h-7 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 2.5S4.5 11 4.5 15.4A7.5 7.5 0 0 0 19.5 15.4C19.5 11 12 2.5 12 2.5Z" fill="url(#pdBrandGrad)"/>
-          <defs>
-            <linearGradient id="pdBrandGrad" x1="4" y1="3" x2="20" y2="21">
-              <stop stop-color="#2FC4C0"/>
-              <stop offset="1" stop-color="#1877D2"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <span class="font-['Bricolage_Grotesque'] font-bold text-[22px] tracking-tight text-[#07243D]">
-          Maji<span class="text-[#1877D2]">Safi</span>
-        </span>
-      </a>
-
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-1">
-        <button
-          type="button"
-          (click)="navigateTo('discover')"
-          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium bg-[#07243D] text-white transition cursor-pointer">
-          Find water
-        </button>
-        <button
-          type="button"
-          (click)="navigateTo('home')"
-          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
-          Home
-        </button>
-        <button
-          type="button"
-          (click)="showToast('Navigating to orders...')"
-          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
-          My orders
-        </button>
-        <button
-          type="button"
-          (click)="openPassport()"
-          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
-          Water quality
-        </button>
-        <button
-          type="button"
-          (click)="showToast('Help & Support: Call 0800 720 000 (Toll Free)')"
-          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
-          Help
-        </button>
-      </nav>
-
-      <!-- Right Header Actions -->
-      <div class="flex items-center gap-2.5 sm:gap-3">
-        <!-- Location Pill -->
-        <button
-          type="button"
-          (click)="showToast('Location selector: ' + locationName())"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] text-[13.5px] text-[#07243D] hover:border-[#1877D2] transition cursor-pointer max-w-[210px] sm:max-w-[260px]">
-          <span>📍</span>
-          <b class="truncate font-semibold">{{ locationName() }}</b>
-          <span class="text-xs text-[#1877D2] underline shrink-0 hidden sm:inline ml-0.5">Change</span>
-        </button>
-
-        <!-- Cart Button -->
-        <button
-          type="button"
-          (click)="openCart()"
-          class="relative w-10 h-10 rounded-full border border-[#DBE7F1] bg-white flex items-center justify-center hover:bg-[#F1F6FA] transition cursor-pointer text-[#07243D]"
-          aria-label="Shopping Cart">
-          <span class="text-base">🛒</span>
-          @if (cartCount() > 0) {
-            <span class="absolute -top-1 -right-1 bg-[#2FC4C0] text-[#043433] text-[11px] font-bold min-w-[19px] h-[19px] rounded-full flex items-center justify-center px-1 shadow-xs ring-2 ring-white">
-              {{ cartCount() }}
-            </span>
-          }
-        </button>
-      </div>
-    </div>
-  </header>
+<div class="product-detail-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased selection:bg-[#E8F2FC] selection:text-[#1877D2]">
+  <!-- Shared Navbar -->
+  <app-navbar />
 
   <!-- Page Body Wrap -->
   <div class="max-w-[1180px] mx-auto px-5 pt-[22px]">
@@ -394,4 +315,7 @@
       <span class="text-sm font-semibold">{{ toastMessage() }}</span>
     </div>
   }
-</div>
+
+  <!-- Shared Footer -->
+  <app-footer />
+</div>>

@@ -8,6 +8,8 @@
 import { Component, signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface WaterLabMeasure {
   id: string;
@@ -38,7 +40,7 @@ export interface WaterPassportDetails {
 @Component({
   selector: 'app-water-passport',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './water-passport.html',
   styleUrl: './water-passport.scss',
 })

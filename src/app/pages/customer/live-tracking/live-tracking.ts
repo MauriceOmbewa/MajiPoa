@@ -1,6 +1,8 @@
 import { Component, signal, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface TrackingStep {
   id: string;
@@ -31,7 +33,7 @@ export interface TrackingInfo {
 @Component({
   selector: 'app-live-tracking',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './live-tracking.html',
   styleUrl: './live-tracking.scss',
 })
