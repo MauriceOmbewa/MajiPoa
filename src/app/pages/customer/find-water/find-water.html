@@ -30,24 +30,25 @@
       <nav class="hidden md:flex items-center gap-1">
         <button
           type="button"
+          (click)="router.navigate(['/find-water'])"
           class="px-3.5 py-2 rounded-full text-[14.5px] font-medium bg-[#07243D] text-white transition cursor-pointer">
           Order water
         </button>
         <button
           type="button"
-          (click)="showToast('Navigating to orders...')"
+          (click)="router.navigate(['/orders'])"
           class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
           My orders
         </button>
         <button
           type="button"
-          (click)="showToast('Viewing water quality lab data...')"
+          (click)="router.navigate(['/water-quality'])"
           class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
           Water quality
         </button>
         <button
           type="button"
-          (click)="showToast('Help & Support: Call 0800 720 000')"
+          (click)="router.navigate(['/help'])"
           class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
           Help
         </button>
@@ -58,7 +59,7 @@
         <!-- Location Pill -->
         <button
           type="button"
-          (click)="openLocationModal()"
+          (click)="router.navigate(['/accountaddress'])"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] text-[13.5px] text-[#07243D] hover:border-[#1877D2] transition cursor-pointer max-w-[210px] sm:max-w-[260px]">
           <span>📍</span>
           <b class="truncate font-semibold">{{ currentEstate().name.split(',')[0] }}</b>
@@ -104,7 +105,7 @@
       </div>
       <button
         type="button"
-        (click)="openLocationModal()"
+        (click)="router.navigate(['/accountaddress'])"
         class="inline-flex items-center justify-center gap-1 px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13.5px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] hover:border-[#1877D2] transition w-fit cursor-pointer">
         <span>📍 Change location</span>
       </button>
@@ -165,7 +166,7 @@
       <div>
         <!-- Products Grid (3 Columns: g3) -->
         @if (filteredProducts().length > 0) {
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" (click)="navigateToProductDetails()">
             @for (product of filteredProducts(); track product.id) {
               <article (click)="navigateToProduct(product)" class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden flex flex-col hover:shadow-md hover:border-[#b8d4ed] transition group cursor-pointer">
                 <!-- Thumbnail -->
@@ -371,7 +372,7 @@
 
           <button
             type="button"
-            (click)="openLocationModal()"
+            (click)="router.navigate(['/accountaddress'])"
             class="w-full mt-3 py-2 rounded-full border border-[#DBE7F1] bg-white text-[13.5px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] hover:border-[#1877D2] transition cursor-pointer">
             Change location
           </button>
@@ -404,7 +405,7 @@
             </button>
             <button
               type="button"
-              (click)="showToast('Discount active: KSh 50 off applied at checkout')"
+              (click)="router.navigate(['/offers'])"  
               class="text-[13px] font-semibold text-[#1877D2] hover:underline cursor-pointer">
               See all offers
             </button>

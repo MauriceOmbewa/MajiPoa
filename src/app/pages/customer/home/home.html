@@ -224,7 +224,7 @@
 
       <!-- Cards Grid -->
       @if (filteredProducts().length > 0) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" (click)="navigateToProductDetails()">
           @for (product of filteredProducts(); track product.id) {
             <article (click)="navigateToProduct(product)" class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden flex flex-col hover:shadow-md hover:border-[#b8d4ed] transition cursor-pointer">
               <!-- Thumb -->

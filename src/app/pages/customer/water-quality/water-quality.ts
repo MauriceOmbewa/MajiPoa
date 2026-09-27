@@ -5,9 +5,9 @@
 // File: src/app/pages/water-quality/water-quality.ts
 // ==========================================================================
 
-import { Component, signal, Output, EventEmitter } from '@angular/core';
+import { Component, signal, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 export interface VendorQualityRecord {
   id: string;
@@ -30,6 +30,7 @@ export interface VendorQualityRecord {
   styleUrl: './water-quality.scss',
 })
 export class WaterQuality {
+  private router = inject(Router);
   // Outputs for parent routing / interactions
   @Output() reportProblemRequested = new EventEmitter<void>();
   @Output() orderFromVendorsRequested = new EventEmitter<void>();
@@ -85,6 +86,7 @@ export class WaterQuality {
   }
 
   viewVendorRecords(vendorId: string) {
+    this.router.navigate(['/water-passport']);
     this.viewVendorRecordsRequested.emit(vendorId);
   }
 }
