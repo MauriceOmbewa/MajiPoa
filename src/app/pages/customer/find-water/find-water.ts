@@ -471,13 +471,14 @@ export class FindWater {
     this.showToast('Location selector: Choose estate in Nairobi');
   }
 
-  private router = inject(Router);
+  readonly router = inject(Router);
 
   openCart(): void {
     this.router.navigate(['/cart']);
   }
 
   openSignInModal(): void {
+    this.router.navigate(['/sign-in']);
     this.showToast('Sign in modal opened');
   }
 
@@ -500,5 +501,9 @@ export class FindWater {
         this.toastMessage.set(null);
       }
     }, 3000);
+  }
+
+  navigateToProductDetails(): void {
+    this.router.navigate(['/product-detail']);
   }
 }

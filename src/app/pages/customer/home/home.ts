@@ -71,11 +71,11 @@ export class HomeComponent {
   activeNav = signal<string>('discover');
    private router = inject(Router);
   navItems = [
-    { label: 'Order water', key: 'discover' },
+    { label: 'Order water', key: 'find-water' },
     { label: 'My orders', key: 'orders' },
-    { label: 'Water quality', key: 'quality' },
-    { label: 'Help', key: 'support' },
-    { label: 'Vendor', key: 'vendor' },
+    { label: 'Water quality', key: 'water-quality' },
+    { label: 'Help', key: 'help' },
+    { label: 'Vendor', key: 'vendor-shop' },
     { label: 'Rider', key: 'rider' },
     { label: 'Admin', key: 'admin' }
   ];
@@ -285,15 +285,14 @@ export class HomeComponent {
   toastMessage = signal<string | null>(null);
 
   // Methods
- setActiveNav(key: string): void {
-  this.activeNav.set(key);
-
-  if (key === 'rider') {
-    this.router.navigateByUrl('/riders/dashboard');
+  setActiveNav(key: string): void {
+    this.activeNav.set(key);
+    if (key === 'rider') {
+      this.router.navigateByUrl('/riders/dashboard');
+    } else {
+      this.router.navigate([`/${key}`]);
+    }
   }
-  // Add similar checks here later for 'vendor' or 'admin' if those
-  // should also navigate to their own dashboards.
-}
 
   setFilterChip(chip: string): void {
     this.activeFilterChip.set(chip);
@@ -446,6 +445,7 @@ export class HomeComponent {
   }
 
   openSignInModal(): void {
+    this.router.navigate(['/sign-in']);
     this.showToast('Sign-in via M-Pesa phone number');
   }
 
@@ -467,5 +467,9 @@ export class HomeComponent {
 
   navigateToCart(): void {
     this.router.navigate(['/cart']);
+  }
+
+  navigateToProductDetails(): void {
+    this.router.navigate(['/product-detail']);
   }
 }
