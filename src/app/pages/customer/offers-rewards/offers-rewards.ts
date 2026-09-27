@@ -8,6 +8,8 @@
 import { Component, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface PointsHistoryEntry {
   id: string;
@@ -32,7 +34,7 @@ export interface PromoOffer {
 @Component({
   selector: 'app-offers-rewards',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './offers-rewards.html',
   styleUrl: './offers-rewards.scss',
 })

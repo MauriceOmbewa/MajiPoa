@@ -1,6 +1,8 @@
 import { Component, signal, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface VendorProfile {
   id: string;
@@ -38,7 +40,7 @@ export interface VendorProductItem {
 @Component({
   selector: 'app-vendor-shop',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './vendor-shop.html',
   styleUrl: './vendor-shop.scss',
 })

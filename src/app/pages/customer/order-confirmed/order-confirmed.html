@@ -5,7 +5,9 @@
      Files: src/app/pages/order-confirmed/order-confirmed.html (.ts, .scss)
      ========================================================================== -->
 
-<div class="wrap" style="padding:40px 20px 60px;max-width:760px;margin:0 auto">
+<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased">
+  <app-navbar />
+  <div class="wrap" style="padding:40px 20px 60px;max-width:760px;margin:0 auto">
   <!-- Payment Received Success Hero Card -->
   <div class="card pad center" style="padding:34px;text-align:center">
     <div style="width:72px;height:72px;border-radius:24px;background:var(--ok-50, #E3F5EE);color:var(--ok, #12946A);display:grid;place-items:center;margin:0 auto 16px;font-size:34px;font-weight:bold">
@@ -90,4 +92,6 @@
     Something wrong with this order?
     <a href="javascript:void(0)" (click)="getHelp()" style="color:var(--blue, #1877D2);text-decoration:underline">Get help</a>
   </p>
+</div>
+  <app-footer />
 </div>

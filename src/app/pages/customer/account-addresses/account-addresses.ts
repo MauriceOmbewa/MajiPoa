@@ -9,6 +9,8 @@ import { Component, signal, computed, Output, EventEmitter } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export type AccountTab = 'profile' | 'addresses' | 'payment' | 'notifications' | 'privacy';
 
@@ -35,7 +37,7 @@ export interface NotificationSettings {
 @Component({
   selector: 'app-account-addresses',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
   templateUrl: './account-addresses.html',
   styleUrl: './account-addresses.scss',
 })

@@ -8,6 +8,8 @@
 import { Component, signal, computed, inject, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface CartItemModel {
   id: string;
@@ -36,7 +38,7 @@ export interface AppliedDiscountModel {
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
 })

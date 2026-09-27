@@ -8,6 +8,8 @@
 import { Component, signal, computed, Output, input,inject, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export type OrdersTab = 'active' | 'past' | 'recurring' | 'cancelled' | 'all';
 
@@ -43,7 +45,7 @@ export interface MonthlyStats {
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './orders.html',
   styleUrl: './orders.scss',
 })

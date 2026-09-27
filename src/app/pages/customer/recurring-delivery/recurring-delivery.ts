@@ -9,6 +9,8 @@ import { Component, signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface RecurringScheduleItem {
   id: string;
@@ -34,7 +36,7 @@ export interface NewScheduleForm {
 @Component({
   selector: 'app-recurring-delivery',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
   templateUrl: './recurring-delivery.html',
   styleUrl: './recurring-delivery.scss',
 })

@@ -8,6 +8,8 @@
 import { Component, signal, computed, inject, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface CheckoutOrderLine {
   id: string;
@@ -24,7 +26,7 @@ export type PaymentMethod = 'mpesa' | 'cod';
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Navbar, Footer],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })
