@@ -55,14 +55,14 @@
                   <tr class="border-b border-[#DBE7F1] last:border-0">
                     <td class="px-4 py-3.5"><b>{{ doc.name }}</b></td>
                     <td class="px-4 py-3.5 text-[#5E7489] whitespace-nowrap">{{ doc.reference }}</td>
-                    <td class="px-4 py-3.5 whitespace-nowrap">{{ doc.submitted }}</td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">{{ formatDate(doc.submittedOn) }}</td>
                     <td class="px-4 py-3.5 whitespace-nowrap">{{ doc.validUntil }}</td>
                     <td class="px-4 py-3.5">
                       <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + statusClasses(doc.status)">{{ doc.status }}</span>
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap">
                       <a href="#" class="text-[#1877D2] text-sm font-semibold hover:underline">
-                        {{ doc.status === 'Not submitted' ? 'Upload' : (doc.status === 'Expiring' ? 'Replace' : 'View') }}
+                        {{ doc.status === 'NOT_SUBMITTED' ? 'Upload' : (doc.status === 'EXPIRING' ? 'Replace' : 'View') }}
                       </a>
                     </td>
                   </tr>
@@ -110,7 +110,7 @@
             <div class="px-5 py-4 border-t border-[#DBE7F1] flex justify-between items-center">
               <span class="text-[13.5px] text-[#5E7489]">Quality figures are taken from your approved lab result and can't be edited by hand.</span>
               <div class="flex items-center gap-2.5">
-                @if (savedMessage()) { <span class="text-[13px] text-[#12946A] font-semibold">{{ savedMessage() }}</span> }
+                @if (savedMsg()) { <span class="text-[13px] text-[#12946A] font-semibold">{{ savedMsg() }}</span> }
                 <button (click)="saveProfile()" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Save</button>
               </div>
             </div>

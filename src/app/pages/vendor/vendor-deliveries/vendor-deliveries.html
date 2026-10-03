@@ -22,7 +22,7 @@
             </span>
           </div>
           <div class="p-5 flex flex-col gap-3">
-            @for (order of needsRider(); track order.id) {
+            @for (order of needsRider(); track order.orderRef) {
               <div class="p-4 rounded-xl border border-[#DBE7F1] flex items-center justify-between gap-3 flex-wrap">
                 <div>
                   <b class="text-[14.5px]">{{ order.id }} · {{ order.items }}</b>
@@ -31,7 +31,7 @@
                 <div class="flex gap-2 items-center">
                   <select
                     [ngModel]="order.assignTo"
-                    (ngModelChange)="setAssignChoice(order.id, $event)"
+                    (ngModelChange)="setAssignChoice(order.orderRef, $event)"
                     class="px-3 py-2 border border-[#DBE7F1] rounded-lg text-sm bg-white">
                     @for (opt of assignOptions; track opt) {
                       <option [value]="opt">{{ opt }}</option>
@@ -63,16 +63,16 @@
               </tr>
             </thead>
             <tbody>
-              @for (o of onRoad(); track o.id) {
+              @for (o of onRoad(); track o.orderRef) {
                 <tr class="border-b border-[#DBE7F1] last:border-0">
                   <td class="px-5 py-3.5"><b>{{ o.id }}</b></td>
                   <td class="px-5 py-3.5">
                     {{ o.rider }}
-                    <span [class]="'ml-1.5 inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold border ' + riderKindClasses(o.riderKind)">{{ o.riderKind }}</span>
+                    <span [class]="'ml-1.5 inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold border ' + riderKindClasses(o.riderKind)">{{ riderKindLabel(o.riderKind) }}</span>
                   </td>
                   <td class="px-5 py-3.5">{{ o.destination }}</td>
                   <td class="px-5 py-3.5">
-                    <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + stageClasses(o.stage)">{{ o.stage }}</span>
+                    <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + stageClasses(o.stage)">{{ stageLabel(o.stage) }}</span>
                   </td>
                   <td class="px-5 py-3.5">{{ o.eta }}</td>
                   <td class="px-5 py-3.5"><a routerLink="/vendor-order-detail" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a></td>
@@ -102,7 +102,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (d of completed(); track d.id) {
+              @for (d of completed(); track d.orderRef) {
                 <tr class="border-b border-[#DBE7F1] last:border-0">
                   <td class="px-5 py-3.5">{{ d.id }}</td>
                   <td class="px-5 py-3.5">{{ d.rider }}</td>

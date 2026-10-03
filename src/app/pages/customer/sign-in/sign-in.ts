@@ -5,12 +5,13 @@
 // File: src/app/pages/sign-in/sign-in.ts
 // ==========================================================================
 
-import { Component, signal, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, signal, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Navbar } from '../../../shared/layout/navbar/navbar';
 import { Footer } from '../../../shared/layout/footer/footer';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -20,7 +21,10 @@ import { Footer } from '../../../shared/layout/footer/footer';
   styleUrl: './sign-in.scss',
 })
 export class SignIn implements OnDestroy {
-  // Outputs for parent routing / integrations
+  private readonly authService = inject(AuthService);
+  private readonly router      = inject(Router);
+
+  // Outputs kept for backward compatibility but no longer needed for Google SSO
   @Output() signedIn = new EventEmitter<{ phone: string }>();
   @Output() googleSignInRequested = new EventEmitter<void>();
   @Output() guestBrowsingRequested = new EventEmitter<void>();
@@ -68,19 +72,22 @@ export class SignIn implements OnDestroy {
   }
 
   continueWithGoogle() {
-    this.googleSignInRequested.emit();
+    // Redirect to Spring Boot's Google OAuth2 initiation endpoint.
+    // Spring Security handles the full OIDC handshake and redirects
+    // back to /auth/callback on this app once authentication succeeds.
+    this.authService.loginWithGoogle();
   }
 
   browseAsGuest() {
-    this.guestBrowsingRequested.emit();
+    this.router.navigate(['/home']);
   }
 
   joinAsVendor() {
-    this.vendorJoinRequested.emit();
+    this.authService.loginWithGoogle();
   }
 
   goHome() {
-    this.navigateHomeRequested.emit();
+    this.router.navigate(['/home']);
   }
 
   openTerms() {

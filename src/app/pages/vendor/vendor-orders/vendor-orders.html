@@ -22,7 +22,7 @@
             [class]="activeTab() === tab
               ? 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#07243D] border-b-2 border-[#1877D2] -mb-px'
               : 'px-3.5 py-2.5 text-[14.5px] font-semibold text-[#5E7489] border-b-2 border-transparent -mb-px hover:text-[#07243D]'">
-            {{ tab }} ({{ counts()[tab] }})
+            {{ tabLabels[tab] }} ({{ counts()[tab] }})
           </button>
         }
       </div>
@@ -42,25 +42,25 @@
             </tr>
           </thead>
           <tbody>
-            @for (o of filtered(); track o.id) {
+            @for (o of filtered(); track o.orderRef) {
               <tr class="border-b border-[#DBE7F1] last:border-0 hover:bg-[#fafcfe]">
-                <td class="px-4 py-3.5"><b>{{ o.id }}</b></td>
-                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.placed }}</td>
-                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.items }}</td>
-                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.customer }}</td>
+                <td class="px-4 py-3.5"><b>{{ o.orderRef }}</b></td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.placedAgo }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ itemsSummary(o) }}</td>
+                <td class="px-4 py-3.5 whitespace-nowrap">{{ o.customerName }}</td>
                 <td class="px-4 py-3.5 whitespace-nowrap">{{ o.area }} · {{ o.distanceKm }} km</td>
                 <td class="px-4 py-3.5">
-                  <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + paymentClasses(o.payment)">{{ o.payment }}</span>
+                  <span [class]="'inline-flex px-2.5 py-1 rounded-full text-[12.5px] font-semibold border ' + paymentClasses(o.paymentStatus)">{{ paymentLabel(o.paymentStatus) }}</span>
                 </td>
                 <td class="px-4 py-3.5 font-semibold whitespace-nowrap">KSh {{ o.total }}</td>
                 <td class="px-4 py-3.5 whitespace-nowrap">
-                  @if (o.status === 'New') {
+                  @if (o.status === 'NEW') {
                     <div class="flex gap-2">
-                      <button (click)="accept(o.id)" class="px-3 py-1.5 rounded-full bg-[#1877D2] text-white text-[13px] font-semibold hover:bg-[#1464B4]">Accept</button>
-                      <button (click)="decline(o.id)" class="px-3 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13px] font-semibold hover:bg-[#F1F6FA]">Decline</button>
+                      <button (click)="accept(o.orderRef)" class="px-3 py-1.5 rounded-full bg-[#1877D2] text-white text-[13px] font-semibold hover:bg-[#1464B4]">Accept</button>
+                      <button (click)="decline(o.orderRef)" class="px-3 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13px] font-semibold hover:bg-[#F1F6FA]">Decline</button>
                     </div>
                   } @else {
-                    <a routerLink="/vendor-order-detail" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a>
+                    <a [routerLink]="['/vendor-order-detail']" [queryParams]="{ref: o.orderRef}" class="text-[#1877D2] text-sm no-underline hover:underline">Open</a>
                   }
                 </td>
               </tr>

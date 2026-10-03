@@ -1,22 +1,13 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
+import { VendorApiService } from '../../../shared/services/vendor-api.service';
+import { ProductDto, ProductStatus } from '../../../shared/models/api.models';
 
-export type ProductStatus = 'Selling' | 'Paused' | 'Out of stock';
-
-export interface Product {
-  id: string;
-  name: string;
-  note?: string;
-  size: string;
-  price: number;
-  marketMin: number;
-  marketMax: number;
-  availableToday: number;
-  soldToday: number;
-  status: ProductStatus;
-}
+const STATUS_DISPLAY: Record<ProductStatus, string> = {
+  SELLING: 'Selling', PAUSED: 'Paused', OUT_OF_STOCK: 'Out of stock',
+};
 
 @Component({
   selector: 'app-vendor-products',
@@ -24,51 +15,60 @@ export interface Product {
   imports: [CommonModule, FormsModule, VendorSidebar],
   templateUrl: './vendor-products.html',
 })
-export class VendorProducts {
-  activeTab = signal<ProductStatus>('Selling');
-  tabs: ProductStatus[] = ['Selling', 'Paused', 'Out of stock'];
+export class VendorProducts implements OnInit {
+  private readonly api = inject(VendorApiService);
 
-  products = signal<Product[]>([
-    { id: 'p1', name: '20L refill — hard jug', note: 'Customer returns an empty jug', size: '20 L', price: 250, marketMin: 230, marketMax: 320, availableToday: 14, soldToday: 22, status: 'Selling' },
-    { id: 'p2', name: '20L new jug + water', note: 'Jug included', size: '20 L', price: 1150, marketMin: 1100, marketMax: 1400, availableToday: 2, soldToday: 3, status: 'Selling' },
-    { id: 'p3', name: '500ml bottled water', note: 'Sealed case of 24', size: 'Case', price: 620, marketMin: 580, marketMax: 750, availableToday: 9, soldToday: 6, status: 'Selling' },
-    { id: 'p4', name: 'Tank delivery', note: 'Quoted per request', size: '5,000 L', price: 6500, marketMin: 6000, marketMax: 9000, availableToday: 0, soldToday: 1, status: 'Selling' },
-    { id: 'p5', name: '10L bottle', size: '10 L', price: 180, marketMin: 170, marketMax: 240, availableToday: 0, soldToday: 0, status: 'Paused' },
-  ]);
+  loading   = signal(true);
+  error     = signal<string | null>(null);
+  activeTab = signal<ProductStatus>('SELLING');
+  tabs: ProductStatus[] = ['SELLING', 'PAUSED', 'OUT_OF_STOCK'];
+  readonly tabLabels = STATUS_DISPLAY;
+
+  products = signal<ProductDto[]>([]);
 
   counts = computed(() => {
-    const c: Record<ProductStatus, number> = { Selling: 0, Paused: 0, 'Out of stock': 0 };
+    const c = { SELLING: 0, PAUSED: 0, OUT_OF_STOCK: 0 } as Record<ProductStatus, number>;
     this.products().forEach(p => c[p.status]++);
     return c;
   });
 
   filtered = computed(() => this.products().filter(p => p.status === this.activeTab()));
 
-  setTab(tab: ProductStatus): void {
-    this.activeTab.set(tab);
+  ngOnInit(): void {
+    this.api.getProducts().subscribe({
+      next: ps => { this.products.set(ps); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load products.'); this.loading.set(false); },
+    });
   }
 
-  updateStock(id: string, delta: number): void {
-    this.products.update(list => list.map(p =>
-      p.id === id ? { ...p, availableToday: Math.max(0, p.availableToday + delta) } : p
-    ));
+  setTab(tab: ProductStatus): void { this.activeTab.set(tab); }
+
+  updateStock(id: number, delta: number): void {
+    this.api.updateStock(id, delta).subscribe({
+      next: updated => this.products.update(list => list.map(x => x.id === updated.id ? updated : x)),
+    });
   }
 
-  updatePrice(id: string, value: string): void {
+  updatePrice(id: number, value: string): void {
     const price = Number(value);
-    if (!isNaN(price)) {
-      this.products.update(list => list.map(p => p.id === id ? { ...p, price } : p));
+    if (!isNaN(price) && price >= 0) {
+      this.api.updatePrice(id, price).subscribe({
+        next: updated => this.products.update(list => list.map(x => x.id === updated.id ? updated : x)),
+      });
     }
   }
 
-  togglePause(product: Product): void {
-    const next: ProductStatus = product.status === 'Paused' ? 'Selling' : 'Paused';
-    this.products.update(list => list.map(p => p.id === product.id ? { ...p, status: next } : p));
+  togglePause(p: ProductDto): void {
+    this.api.togglePause(p.id).subscribe({
+      next: updated => this.products.update(list => list.map(x => x.id === updated.id ? updated : x)),
+    });
   }
 
-  positionLabel(p: Product): string {
+  positionLabel(p: ProductDto): string {
     if (p.price <= p.marketMin) return 'Cheapest in your area';
     if (p.price >= p.marketMax) return 'Highest in your area';
     return 'Mid-range for your area';
   }
+
+  statusLabel(s: ProductStatus): string { return STATUS_DISPLAY[s]; }
 }

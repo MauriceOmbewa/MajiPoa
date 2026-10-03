@@ -1,14 +1,13 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
+import { VendorApiService } from '../../../shared/services/vendor-api.service';
+import { IncomingOrderDto, ActiveOrderDto } from '../../../shared/models/api.models';
 
-export interface IncomingOrder {
-  id: string; items: string; area: string; distanceKm: number; total: number; minutesAgo: number;
-}
-export interface ActiveOrder {
-  id: string; items: string; area: string; stage: 'On the way' | 'Rider assigned' | 'Preparing';
-}
+/** Adapter shape — what the HTML template accesses */
+interface IncomingRow { orderRef: string; items: string; area: string; total: number; minutesAgo: number; }
+interface ActiveRow   { orderRef: string; items: string; area: string; stage: string; }
 
 @Component({
   selector: 'app-vendor-dashboard',
@@ -16,38 +15,66 @@ export interface ActiveOrder {
   imports: [CommonModule, RouterLink, VendorSidebar],
   templateUrl: './vendor-dashboard.html',
 })
-export class VendorDashboard {
-  salesToday = signal(8420);
-  ordersToday = signal(38);
-  completedToday = signal(32);
+export class VendorDashboard implements OnInit {
+  private readonly api = inject(VendorApiService);
 
-  incoming = signal<IncomingOrder[]>([
-    { id: '#WM10262', items: '2 × 20L refill', area: 'Kilimani, 1.4 km', distanceKm: 1.4, total: 580, minutesAgo: 2 },
-    { id: '#WM10261', items: '1 × 500ml case', area: 'Westlands, 5.2 km', distanceKm: 5.2, total: 700, minutesAgo: 6 },
-  ]);
+  loading  = signal(true);
+  error    = signal<string | null>(null);
 
-  active = signal<ActiveOrder[]>([
-    { id: '#WM10248', items: '2 × 20L, 1 case', area: 'Kilimani', stage: 'On the way' },
-    { id: '#WM10251', items: '1 × 20L soft', area: 'Westlands', stage: 'Rider assigned' },
-    { id: '#WM10254', items: '3 × 20L refill', area: 'Yaya', stage: 'Preparing' },
-  ]);
+  salesToday     = signal(0);
+  ordersToday    = signal(0);
+  completedToday = signal(0);
+  jugsInStock    = signal(0);
+  jugsCapacity   = signal(24);
+  incoming       = signal<IncomingRow[]>([]);
+  active         = signal<ActiveRow[]>([]);
 
-  jugsInStock = signal(14);
-  jugsCapacity = signal(24);
-  stockPct = computed(() => Math.round((this.jugsInStock() / this.jugsCapacity()) * 100));
-
+  stockPct    = computed(() => this.jugsCapacity() > 0
+    ? Math.round((this.jugsInStock() / this.jugsCapacity()) * 100) : 0);
   needsAction = computed(() => this.incoming().length);
 
-  accept(orderId: string): void {
-    this.incoming.set(this.incoming().filter(o => o.id !== orderId));
-    this.active.update(list => [...list, { id: orderId, items: '—', area: '—', stage: 'Preparing' }]);
+  ngOnInit(): void {
+    this.api.getDashboard().subscribe({
+      next: d => {
+        this.salesToday.set(d.salesToday);
+        this.ordersToday.set(d.ordersToday);
+        this.completedToday.set(d.completedToday);
+        this.jugsInStock.set(d.jugsInStock);
+        this.jugsCapacity.set(d.jugsCapacity);
+        this.incoming.set(d.incoming.map(o => ({
+          orderRef: o.orderRef, items: o.items,
+          area: o.area, total: o.total, minutesAgo: o.minutesAgo,
+        })));
+        this.active.set(d.active.map(o => ({
+          orderRef: o.orderRef, items: o.items, area: o.area, stage: o.stage,
+        })));
+        this.loading.set(false);
+      },
+      error: () => { this.error.set('Failed to load dashboard.'); this.loading.set(false); },
+    });
   }
 
-  decline(orderId: string): void {
-    this.incoming.set(this.incoming().filter(o => o.id !== orderId));
+  accept(orderRef: string): void {
+    this.api.acceptOrder(orderRef).subscribe({
+      next: updated => {
+        this.incoming.update(list => list.filter(o => o.orderRef !== orderRef));
+        this.active.update(list => [{
+          orderRef: updated.orderRef,
+          items: updated.lines.map(l => `${l.qty} × ${l.productName}`).join(', ') || '—',
+          area: updated.area,
+          stage: 'Preparing',
+        }, ...list]);
+      },
+    });
   }
 
-  stageClasses(stage: ActiveOrder['stage']): string {
+  decline(orderRef: string): void {
+    this.api.declineOrder(orderRef).subscribe({
+      next: () => this.incoming.update(list => list.filter(o => o.orderRef !== orderRef)),
+    });
+  }
+
+  stageClasses(stage: string): string {
     return stage === 'On the way'
       ? 'bg-[#E8F2FC] text-[#1464B4] border-[#c9e0f7]'
       : 'bg-[#FDF1DE] text-[#C77A11] border-[#f2ddb8]';

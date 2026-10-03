@@ -1,16 +1,10 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
-
-export interface OfflineSale {
-  date: string;
-  product: string;
-  qty: number;
-  amount: number;
-  channel: string;
-}
+import { VendorApiService } from '../../../shared/services/vendor-api.service';
+import { OfflineSaleDto } from '../../../shared/models/api.models';
 
 @Component({
   selector: 'app-vendor-offline-sales',
@@ -18,41 +12,57 @@ export interface OfflineSale {
   imports: [CommonModule, FormsModule, RouterLink, VendorSidebar],
   templateUrl: './vendor-offline-sales.html',
 })
-export class VendorOfflineSales {
+export class VendorOfflineSales implements OnInit {
+  private readonly api = inject(VendorApiService);
+
+  loading = signal(true);
+  error   = signal<string | null>(null);
+
   products = ['20L refill', '20L new bottle', '10L refill'];
   channels = ['Walk-in customer', 'Standing office client', 'Another delivery app', 'Other'];
 
-  formDate = signal(new Date().toISOString().slice(0, 10));
+  formDate    = signal(new Date().toISOString().slice(0, 10));
   formProduct = signal(this.products[0]);
-  formQty = signal(1);
-  formAmount = signal<number | null>(null);
+  formQty     = signal(1);
+  formAmount  = signal<number | null>(null);
   formChannel = signal(this.channels[0]);
 
-  sales = signal<OfflineSale[]>([
-    { date: '15 Sep', product: '20L refill', qty: 6, amount: 1740, channel: 'Walk-in customer' },
-    { date: '14 Sep', product: '20L new bottle', qty: 2, amount: 3000, channel: 'Standing office client' },
-    { date: '13 Sep', product: '10L refill', qty: 10, amount: 2200, channel: 'Another delivery app' },
-  ]);
+  sales        = signal<OfflineSaleDto[]>([]);
+  totalLogged  = computed(() => this.sales().reduce((s, x) => s + x.amount, 0));
 
-  totalLogged = computed(() => this.sales().reduce((sum, s) => sum + s.amount, 0));
+  ngOnInit(): void {
+    this.api.getOfflineSales().subscribe({
+      next: s  => { this.sales.set(s); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load sales.'); this.loading.set(false); },
+    });
+  }
 
   addSale(): void {
     const amount = this.formAmount();
     if (!amount || amount <= 0) return;
 
-    const d = new Date(this.formDate());
-    const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-
-    this.sales.update(list => [
-      { date: label, product: this.formProduct(), qty: this.formQty(), amount, channel: this.formChannel() },
-      ...list,
-    ]);
-
-    this.formAmount.set(null);
-    this.formQty.set(1);
+    this.api.createOfflineSale({
+      saleDate: this.formDate(),
+      product:  this.formProduct(),
+      qty:      this.formQty(),
+      amount,
+      channel:  this.formChannel(),
+    }).subscribe({
+      next: sale => {
+        this.sales.update(list => [sale, ...list]);
+        this.formAmount.set(null);
+        this.formQty.set(1);
+      },
+    });
   }
 
-  removeSale(index: number): void {
-    this.sales.update(list => list.filter((_, i) => i !== index));
+  removeSale(id: number): void {
+    this.api.deleteOfflineSale(id).subscribe({
+      next: () => this.sales.update(list => list.filter(s => s.id !== id)),
+    });
+  }
+
+  formatDate(d: string): string {
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   }
 }

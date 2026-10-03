@@ -1,0 +1,62 @@
+<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased flex flex-col">
+  <app-navbar />
+
+  <main class="flex-1 flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-[520px]">
+
+      <!-- Icon -->
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2FC4C0] to-[#1877D2] flex items-center justify-center text-3xl mb-6 shadow-lg">
+        🏪
+      </div>
+
+      <h1 class="text-3xl font-bold mb-3">Sell water on MajiSafi</h1>
+      <p class="text-[#5E7489] text-[15.5px] leading-relaxed mb-8">
+        Join hundreds of vendors delivering clean water across Nairobi.
+        Your vendor workspace gives you orders, deliveries, analytics, and payouts — all in one place.
+      </p>
+
+      <!-- Benefits -->
+      <ul class="space-y-3 mb-8">
+        @for (benefit of benefits; track benefit) {
+          <li class="flex items-start gap-3">
+            <span class="w-5 h-5 rounded-full bg-[#E3F5EE] text-[#12946A] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
+            <span class="text-[14.5px] text-[#07243D]">{{ benefit }}</span>
+          </li>
+        }
+      </ul>
+
+      <!-- Error -->
+      @if (error()) {
+        <div class="mb-4 px-4 py-3 rounded-xl bg-[#FCECEB] text-[#D6453C] text-[13.5px]">
+          {{ error() }}
+        </div>
+      }
+
+      <!-- Actions -->
+      @if (isLoggedIn()) {
+        <button type="button" (click)="confirm()" [disabled]="loading()"
+          class="w-full py-3.5 rounded-2xl bg-[#07243D] text-white font-semibold text-[15px] mb-3 transition hover:bg-[#0F3A5C] disabled:opacity-60 cursor-pointer">
+          {{ loading() ? 'Setting up your workspace…' : 'Activate vendor account' }}
+        </button>
+      } @else {
+        <button type="button" (click)="signIn()"
+          class="w-full py-3.5 rounded-2xl bg-[#07243D] text-white font-semibold text-[15px] mb-3 transition hover:bg-[#0F3A5C] cursor-pointer">
+          Sign in to continue
+        </button>
+      }
+
+      <button type="button" (click)="goBack()"
+        class="w-full py-3 rounded-2xl border border-[#DBE7F1] text-[#5E7489] text-[14px] font-medium hover:bg-[#F1F6FA] transition cursor-pointer">
+        Keep browsing as a customer
+      </button>
+
+      <p class="text-[12px] text-[#7FA0BB] text-center mt-5 leading-relaxed">
+        By activating a vendor account you agree to our
+        <a href="javascript:void(0)" class="underline hover:text-[#1877D2]">vendor terms</a>.
+        You can always switch back to customer view from the menu.
+      </p>
+    </div>
+  </main>
+
+  <app-footer />
+</div>

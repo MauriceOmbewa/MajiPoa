@@ -85,10 +85,10 @@
             <span>Customer paid</span><b>KSh {{ orderTotal() }}</b>
           </div>
           <div class="flex justify-between py-2 text-[14.5px] border-b border-dashed border-[#DBE7F1]">
-            <span>Delivery fee to rider</span><b>− KSh {{ deliveryFee() }}</b>
+            <span>Delivery fee to rider</span><b>− KSh {{ deliveryFee }}</b>
           </div>
           <div class="flex justify-between py-2 text-[14.5px]">
-            <span>Platform commission ({{ commissionRate() * 100 }}%)</span><b>− KSh {{ commission() }}</b>
+            <span>Platform commission ({{ commissionRate * 100 }}%)</span><b>− KSh {{ commission() }}</b>
           </div>
           <div class="flex justify-between pt-3.5 mt-1.5 border-t border-[#DBE7F1] font-['Bricolage_Grotesque'] text-xl font-bold">
             <span>Your entitlement</span><span>KSh {{ entitlement() }}</span>

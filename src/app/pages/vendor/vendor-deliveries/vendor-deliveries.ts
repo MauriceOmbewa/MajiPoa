@@ -1,34 +1,40 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
+import { VendorApiService } from '../../../shared/services/vendor-api.service';
+import { DeliveryStage, RiderKind } from '../../../shared/models/api.models';
 
+/** Shapes matching exactly what the HTML template accesses */
 export interface UnassignedOrder {
-  id: string;
-  items: string;
-  area: string;
+  orderRef:   string;   // used as track key
+  id:         string;   // display label (= orderRef)
+  items:      string;
+  area:       string;
   distanceKm: number;
-  readySince: string;
-  assignTo: string;
+  readySince: string;   // "placedAgo" from order
+  assignTo:   string;
 }
 
 export interface RoadOrder {
-  id: string;
-  rider: string;
-  riderKind: 'Platform' | 'My staff';
+  orderRef:    string;
+  id:          string;  // display
+  rider:       string;
+  riderKind:   RiderKind;
   destination: string;
-  stage: 'Near customer' | 'En route' | 'Customer not reachable';
-  eta: string;
+  stage:       DeliveryStage;
+  eta:         string;
 }
 
 export interface CompletedDelivery {
-  id: string;
-  rider: string;
-  area: string;
+  orderRef:    string;
+  id:          string;  // display
+  rider:       string;
+  area:        string;
   deliveredAt: string;
-  timeTaken: string;
-  rating: string;
+  timeTaken:   string;
+  rating:      string;
 }
 
 @Component({
@@ -37,48 +43,102 @@ export interface CompletedDelivery {
   imports: [CommonModule, FormsModule, RouterLink, VendorSidebar],
   templateUrl: './vendor-deliveries.html',
 })
-export class VendorDeliveries {
-  assignOptions = ['Request a platform rider', 'Assign Peter (my staff)', 'Assign to my pickup van', 'Customer collects'];
+export class VendorDeliveries implements OnInit {
+  private readonly api = inject(VendorApiService);
 
-  needsRider = signal<UnassignedOrder[]>([
-    { id: '#WM10254', items: '3 × 20L refill', area: 'Yaya, 0.8 km', distanceKm: 0.8, readySince: '4:22 pm', assignTo: this.assignOptions[0] },
-    { id: '#WM10259', items: '4 × 20L refill', area: 'Hurlingham, 2.1 km', distanceKm: 2.1, readySince: '4:30 pm', assignTo: this.assignOptions[0] },
-  ]);
+  loading = signal(true);
+  error   = signal<string | null>(null);
 
-  onRoad = signal<RoadOrder[]>([
-    { id: '#WM10248', rider: 'James K.', riderKind: 'Platform', destination: 'Kilimani', stage: 'Near customer', eta: '4:35 pm' },
-    { id: '#WM10251', rider: 'Peter O.', riderKind: 'My staff', destination: 'Westlands', stage: 'En route', eta: '5:05 pm' },
-    { id: '#WM10244', rider: 'James K.', riderKind: 'Platform', destination: 'Kileleshwa', stage: 'Customer not reachable', eta: '—' },
-  ]);
+  assignOptions = ['Request a platform rider', 'Assign my staff rider', 'Assign to my pickup van', 'Customer collects'];
 
-  completed = signal<CompletedDelivery[]>([
-    { id: '#WM10240', rider: 'Peter O.', area: 'Kileleshwa', deliveredAt: '3:18 pm', timeTaken: '41 min', rating: '5 ★' },
-    { id: '#WM10231', rider: 'James K.', area: 'Kilimani', deliveredAt: '2:44 pm', timeTaken: '28 min', rating: '5 ★' },
-    { id: '#WM10228', rider: 'Peter O.', area: 'Hurlingham', deliveredAt: '1:52 pm', timeTaken: '1 hr 6 min', rating: '3 ★' },
-  ]);
+  needsRider  = signal<UnassignedOrder[]>([]);
+  onRoad      = signal<RoadOrder[]>([]);
+  completed   = signal<CompletedDelivery[]>([]);
+  assignChoices = signal<Record<string, string>>({});
 
-  setAssignChoice(orderId: string, choice: string): void {
-    this.needsRider.update(list => list.map(o => o.id === orderId ? { ...o, assignTo: choice } : o));
+  ngOnInit(): void {
+    this.api.getOrders().subscribe({
+      next: orders => {
+        const ready = orders.filter(o => o.status === 'READY');
+        const road  = orders.filter(o => o.status === 'OUT_FOR_DELIVERY');
+        const done  = orders.filter(o => o.status === 'COMPLETED');
+
+        this.needsRider.set(ready.map(o => ({
+          orderRef: o.orderRef, id: o.orderRef,
+          items: o.lines.map(l => `${l.qty} × ${l.productName}`).join(', '),
+          area: o.area, distanceKm: o.distanceKm,
+          readySince: o.placedAgo, assignTo: this.assignOptions[0],
+        })));
+
+        this.onRoad.set(road.map(o => ({
+          orderRef: o.orderRef, id: o.orderRef,
+          rider: o.riderName ?? '—',
+          riderKind: o.riderKind ?? 'PLATFORM',
+          destination: o.area,
+          stage: o.deliveryStage ?? 'EN_ROUTE',
+          eta: '—',
+        })));
+
+        this.completed.set(done.map(o => ({
+          orderRef: o.orderRef, id: o.orderRef,
+          rider: o.riderName ?? '—',
+          area: o.area,
+          deliveredAt: o.placedAgo,
+          timeTaken: '—',
+          rating: '—',
+        })));
+
+        const choices: Record<string, string> = {};
+        ready.forEach(o => choices[o.orderRef] = this.assignOptions[0]);
+        this.assignChoices.set(choices);
+
+        this.loading.set(false);
+      },
+      error: () => { this.error.set('Failed to load deliveries.'); this.loading.set(false); },
+    });
+  }
+
+  setAssignChoice(orderRef: string, choice: string): void {
+    this.assignChoices.update(c => ({ ...c, [orderRef]: choice }));
   }
 
   assign(order: UnassignedOrder): void {
-    this.needsRider.update(list => list.filter(o => o.id !== order.id));
-    const isPlatform = order.assignTo === this.assignOptions[0];
-    this.onRoad.update(list => [
-      { id: order.id, rider: isPlatform ? 'James K.' : 'Peter O.', riderKind: isPlatform ? 'Platform' : 'My staff', destination: order.area.split(',')[0], stage: 'En route', eta: '—' },
-      ...list,
-    ]);
+    const choice     = this.assignChoices()[order.orderRef] ?? this.assignOptions[0];
+    const isPlatform = choice === this.assignOptions[0];
+    const riderName  = isPlatform ? 'Platform rider' : 'My staff';
+    const riderKind: RiderKind = isPlatform ? 'PLATFORM' : 'MY_STAFF';
+
+    this.api.assignRider(order.orderRef, riderName, riderKind).subscribe({
+      next: updated => {
+        this.needsRider.update(list => list.filter(o => o.orderRef !== order.orderRef));
+        this.onRoad.update(list => [{
+          orderRef: updated.orderRef, id: updated.orderRef,
+          rider: updated.riderName ?? riderName,
+          riderKind, destination: updated.area, stage: 'EN_ROUTE', eta: '—',
+        }, ...list]);
+      },
+    });
   }
 
-  stageClasses(stage: RoadOrder['stage']): string {
-    return stage === 'Customer not reachable'
+  stageClasses(stage: DeliveryStage): string {
+    return stage === 'CUSTOMER_NOT_REACHABLE'
       ? 'bg-[#FDF1DE] text-[#C77A11] border-[#f2ddb8]'
       : 'bg-[#E8F2FC] text-[#1464B4] border-[#c9e0f7]';
   }
 
-  riderKindClasses(kind: RoadOrder['riderKind']): string {
-    return kind === 'Platform'
+  stageLabel(stage: DeliveryStage): string {
+    return stage === 'NEAR_CUSTOMER' ? 'Near customer'
+         : stage === 'EN_ROUTE'      ? 'En route'
+         : 'Customer not reachable';
+  }
+
+  riderKindClasses(kind: RiderKind): string {
+    return kind === 'PLATFORM'
       ? 'bg-[#E8F2FC] text-[#1464B4] border-[#c9e0f7]'
       : 'bg-[#F1F6FA] text-[#5E7489] border-[#DBE7F1]';
+  }
+
+  riderKindLabel(kind: RiderKind): string {
+    return kind === 'PLATFORM' ? 'Platform' : 'My staff';
   }
 }

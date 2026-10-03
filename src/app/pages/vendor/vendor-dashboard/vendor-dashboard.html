@@ -44,15 +44,15 @@
               <a routerLink="/vendor-orders" class="text-sm text-[#1877D2] no-underline hover:underline">All orders</a>
             </div>
             <div class="p-5 flex flex-col gap-3">
-              @for (order of incoming(); track order.id) {
+              @for (order of incoming(); track order.orderRef) {
                 <div class="p-4 rounded-xl border border-[#f2ddb8] bg-[#FDF1DE] flex items-center justify-between gap-3">
                   <div>
-                    <b class="text-[14.5px]">{{ order.id }} · {{ order.items }}</b>
+                    <b class="text-[14.5px]">{{ order.orderRef }} · {{ order.items }}</b>
                     <div class="text-[13.5px] text-[#5E7489]">{{ order.area }} · paid KSh {{ order.total }} · {{ order.minutesAgo }} min ago</div>
                   </div>
                   <div class="flex gap-2 shrink-0">
-                    <button (click)="decline(order.id)" class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Decline</button>
-                    <button (click)="accept(order.id)" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Accept</button>
+                    <button (click)="decline(order.orderRef)" class="px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-sm font-semibold hover:bg-[#F1F6FA]">Decline</button>
+                    <button (click)="accept(order.orderRef)" class="px-3.5 py-1.5 rounded-full bg-[#1877D2] text-white text-sm font-semibold hover:bg-[#1464B4]">Accept</button>
                   </div>
                 </div>
               } @empty {
@@ -78,9 +78,9 @@
                 </tr>
               </thead>
               <tbody>
-                @for (o of active(); track o.id) {
+                @for (o of active(); track o.orderRef) {
                   <tr class="border-b border-[#DBE7F1] last:border-0">
-                    <td class="px-5 py-3.5"><b>{{ o.id }}</b></td>
+                    <td class="px-5 py-3.5"><b>{{ o.orderRef }}</b></td>
                     <td class="px-5 py-3.5">{{ o.items }}</td>
                     <td class="px-5 py-3.5">{{ o.area }}</td>
                     <td class="px-5 py-3.5">

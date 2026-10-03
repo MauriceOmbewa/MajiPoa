@@ -1,26 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { VendorSidebar } from '../../../shared/layout/vendor-sidebar/vendor-sidebar';
+import { VendorApiService } from '../../../shared/services/vendor-api.service';
+import { VendorVerificationResponse, DocStatus } from '../../../shared/models/api.models';
 
-export type DocStatus = 'Approved' | 'Expiring' | 'Not submitted';
-
-export interface VendorDocument {
-  name: string;
-  note?: string;
-  reference: string;
-  submitted: string;
-  validUntil: string;
-  status: DocStatus;
-}
-
-export type RailState = 'done' | 'now';
-export interface VerificationStep {
-  label: string;
-  detail: string;
-  state: RailState;
-}
+export type TabName = 'Verification' | 'Details' | 'Delivery areas' | 'Staff' | 'Reviews';
 
 @Component({
   selector: 'app-vendor-verification',
@@ -28,49 +14,93 @@ export interface VerificationStep {
   imports: [CommonModule, FormsModule, RouterLink, VendorSidebar],
   templateUrl: './vendor-verification.html',
 })
-export class VendorVerification {
-  activeTab = signal<'Verification' | 'Details' | 'Delivery areas' | 'Staff' | 'Reviews'>('Verification');
-  tabs: Array<typeof this.activeTab extends () => infer T ? T : never> =
-    ['Verification', 'Details', 'Delivery areas', 'Staff', 'Reviews'];
+export class VendorVerification implements OnInit {
+  private readonly api = inject(VendorApiService);
 
-  documents = signal<VendorDocument[]>([
-    { name: 'Business registration', reference: 'PVT-9K4D22', submitted: '4 Mar 2026', validUntil: '—', status: 'Approved' },
-    { name: 'KEBS standardisation mark', reference: 'SM-2026-4471', submitted: '4 Mar 2026', validUntil: '31 Mar 2027', status: 'Approved' },
-    { name: 'Water abstraction permit', reference: 'WRA/NRB/4471', submitted: '4 Mar 2026', validUntil: '12 Jan 2028', status: 'Approved' },
-    { name: 'Laboratory test result', reference: 'KE-2026-88214 · SGS', submitted: '3 Sep 2026', validUntil: '2 Dec 2026', status: 'Expiring' },
-    { name: 'Public health certificate', reference: '—', submitted: '—', validUntil: '—', status: 'Not submitted' },
-  ]);
+  loading     = signal(true);
+  error       = signal<string | null>(null);
+  savedMsg    = signal<string | null>(null);
 
-  steps = signal<VerificationStep[]>([
-    { label: 'Submitted', detail: '4 Mar 2026', state: 'done' },
-    { label: 'Under review', detail: '5 – 6 Mar 2026', state: 'done' },
-    { label: 'Approved', detail: '6 Mar 2026 · you can sell', state: 'done' },
-    { label: 'Keeping records current', detail: '1 document expiring', state: 'now' },
-  ]);
+  activeTab   = signal<TabName>('Verification');
+  tabs: TabName[] = ['Verification', 'Details', 'Delivery areas', 'Staff', 'Reviews'];
 
-  // Editable business-profile fields (feed the customer-facing water passport)
-  waterSource = signal('Licensed borehole');
-  treatment = signal('Reverse osmosis + UV');
-  ph = signal('7.2');
-  tds = signal('68 ppm');
-  about = signal('Family-run since 2021. We draw from a licensed borehole on Ngong Road and purify by reverse osmosis and UV. Every jug is sealed and batch-coded.');
+  data        = signal<VendorVerificationResponse | null>(null);
 
-  savedMessage = signal<string | null>(null);
+  // Editable form fields — seeded from API data
+  businessName = signal('');
+  waterSource  = signal('');
+  treatment    = signal('');
+  ph           = signal('');
+  tds          = signal('');
+  about        = signal('');
+
+  documents  = computed(() => this.data()?.documents ?? []);
+  planLabel  = computed(() => this.data()?.plan === 'PRO' ? 'Pro' : 'Free');
+
+  /** Verification progress rail shown in the sidebar panel */
+  steps = computed((): Array<{label: string; detail: string; state: 'done' | 'now' | 'upcoming'}> => {
+    const vs = this.data()?.verificationStatus;
+    const approved = vs === 'APPROVED';
+    const suspended = vs === 'SUSPENDED';
+    return [
+      { label: 'Submitted',               detail: 'Documents uploaded',          state: 'done' },
+      { label: 'Under review',            detail: 'MajiSafi ops reviewing',      state: approved || suspended ? 'done' : 'now' },
+      { label: 'Approved',                detail: approved ? 'You can sell' : suspended ? 'Account suspended' : 'Pending', state: approved ? 'done' : suspended ? 'now' : 'upcoming' },
+      { label: 'Keeping records current', detail: 'Renew expiring documents',    state: 'now' },
+    ];
+  });
+
+  pipClasses(state: 'done' | 'now' | 'upcoming'): string {
+    if (state === 'done') return 'bg-[#12946A] border-[#12946A] text-white';
+    if (state === 'now')  return 'border-[#1877D2] text-[#1877D2] shadow-[0_0_0_5px_#E8F2FC]';
+    return 'border-[#DBE7F1] text-[#5E7489] bg-white';
+  }
+
+  ngOnInit(): void {
+    this.api.getVerification().subscribe({
+      next: d => {
+        this.data.set(d);
+        this.businessName.set(d.businessName ?? '');
+        this.waterSource.set(d.waterSource ?? '');
+        this.treatment.set(d.treatment ?? '');
+        this.ph.set(d.phValue ?? '');
+        this.tds.set(d.tdsValue ?? '');
+        this.about.set(d.about ?? '');
+        this.loading.set(false);
+      },
+      error: () => { this.error.set('Failed to load profile.'); this.loading.set(false); },
+    });
+  }
 
   saveProfile(): void {
-    this.savedMessage.set('Saved');
-    setTimeout(() => this.savedMessage.set(null), 2000);
+    this.api.updateProfile({
+      businessName: this.businessName(),
+      waterSource:  this.waterSource(),
+      treatment:    this.treatment(),
+      phValue:      this.ph(),
+      tdsValue:     this.tds(),
+      about:        this.about(),
+    }).subscribe({
+      next: d => {
+        this.data.set(d);
+        this.savedMsg.set('Saved');
+        setTimeout(() => this.savedMsg.set(null), 2000);
+      },
+    });
   }
 
   statusClasses(status: DocStatus): string {
-    if (status === 'Approved') return 'bg-[#E3F5EE] text-[#12946A] border-[#c5e8da]';
-    if (status === 'Expiring') return 'bg-[#FDF1DE] text-[#C77A11] border-[#f2ddb8]';
+    if (status === 'APPROVED')      return 'bg-[#E3F5EE] text-[#12946A] border-[#c5e8da]';
+    if (status === 'EXPIRING')      return 'bg-[#FDF1DE] text-[#C77A11] border-[#f2ddb8]';
     return 'bg-[#F1F6FA] text-[#5E7489] border-[#DBE7F1]';
   }
 
-  pipClasses(state: RailState): string {
-    return state === 'done'
-      ? 'bg-[#12946A] border-[#12946A] text-white'
-      : 'border-[#1877D2] text-[#1877D2] shadow-[0_0_0_5px_#E8F2FC]';
+  statusLabel(s: DocStatus): string {
+    return s === 'NOT_SUBMITTED' ? 'Not submitted' : s === 'EXPIRING' ? 'Expiring' : 'Approved';
+  }
+
+  formatDate(d: string | null): string {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 }

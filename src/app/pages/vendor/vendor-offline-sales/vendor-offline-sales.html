@@ -71,15 +71,15 @@
             </tr>
           </thead>
           <tbody>
-            @for (s of sales(); track $index) {
+            @for (s of sales(); track s.id) {
               <tr class="border-b border-[#DBE7F1] last:border-0">
-                <td class="px-5 py-3.5">{{ s.date }}</td>
+                <td class="px-5 py-3.5">{{ formatDate(s.saleDate) }}</td>
                 <td class="px-5 py-3.5">{{ s.product }}</td>
                 <td class="px-5 py-3.5">{{ s.qty }}</td>
                 <td class="px-5 py-3.5 font-semibold">KSh {{ s.amount }}</td>
                 <td class="px-5 py-3.5">{{ s.channel }}</td>
                 <td class="px-5 py-3.5">
-                  <button (click)="removeSale($index)" class="text-[#D6453C] text-sm font-semibold hover:underline">Edit</button>
+                  <button (click)="removeSale(s.id)" class="text-[#D6453C] text-sm font-semibold hover:underline">Remove</button>
                 </td>
               </tr>
             } @empty {
