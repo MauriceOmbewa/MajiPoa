@@ -1,4 +1,3 @@
-
 <div class="rider-layout">
   <app-rider-sidebar></app-rider-sidebar>
 
@@ -18,7 +17,10 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Avg. rating</div>
-        <div class="stat-value">{{ averageRating() || '—' }} <span *ngIf="averageRating()">★</span></div>
+        <div class="stat-value">
+          {{ averageRating() || '—' }}
+          <span *ngIf="averageRating()">★</span>
+        </div>
       </div>
     </section>
 
@@ -44,45 +46,53 @@
     </section>
 
     <section class="trips-card">
-      <ng-container *ngIf="filteredTrips().length > 0; else emptyState">
-        <table class="trips-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Order</th>
-              <th>From → to</th>
-              <th>Distance</th>
-              <th>Time</th>
-              <th>Earned</th>
-              <th>Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let trip of filteredTrips()" (click)="openTrip(trip)" class="trip-row">
-              <td>
-                <div class="trip-date">{{ trip.dateLabel }}</div>
-                <div class="trip-time">{{ trip.timeLabel }}</div>
-              </td>
-              <td>{{ trip.orderId }}</td>
-              <td>{{ trip.fromLabel }} → {{ trip.toLabel }}</td>
-              <td>{{ trip.distanceKm }} km</td>
-              <td>{{ trip.durationMin }} min</td>
-              <td class="trip-earned">KSh {{ trip.earned }}</td>
-              <td>
-                <span class="trip-stars">
-                  <span *ngFor="let star of ratingStars(trip.rating)">{{ star }}</span>
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="state-msg" *ngIf="loading()">Loading your deliveries…</div>
+      <div class="state-msg error" *ngIf="!loading() && error()">{{ error() }}</div>
+
+      <ng-container *ngIf="!loading() && !error()">
+        <ng-container *ngIf="trips().length > 0; else emptyState">
+          <table class="trips-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Order</th>
+                <th>From → to</th>
+                <th>Distance</th>
+                <th>Time</th>
+                <th>Earned</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let trip of trips()" (click)="openTrip(trip)" class="trip-row">
+                <td>
+                  <div class="trip-date">{{ trip.dateLabel }}</div>
+                  <div class="trip-time">{{ trip.timeLabel }}</div>
+                </td>
+                <td>{{ trip.orderId }}</td>
+                <td>{{ trip.fromLabel }} → {{ trip.toLabel }}</td>
+                <td>{{ trip.distanceKm }} km</td>
+                <td>{{ trip.durationMin }} min</td>
+                <td class="trip-earned">KSh {{ trip.earned }}</td>
+                <td>
+                  <span class="trip-stars" *ngIf="trip.rating !== null; else notRated">
+                    <span *ngFor="let star of ratingStars(trip.rating)">{{ star }}</span>
+                  </span>
+                  <ng-template #notRated>
+                    <span class="not-rated">Not rated</span>
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
       </ng-container>
 
       <ng-template #emptyState>
         <div class="empty-state">
           <div class="empty-icon">🚚</div>
           <h3>No deliveries found</h3>
-          <p>Try a different time range or search term.</p>
+          <p>Deliveries you accept and complete will appear here.</p>
         </div>
       </ng-template>
     </section>

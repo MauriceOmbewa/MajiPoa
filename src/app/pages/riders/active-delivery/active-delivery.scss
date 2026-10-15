@@ -318,3 +318,22 @@
   color: #94a3b8;
   font-weight: 400;
 }
+   .map-canvas { height: 300px; z-index: 0; }
+   .hidden { display: none; }
+
+   :host ::ng-deep .map-pin {
+     display: inline-block;
+     transform: translate(-50%, -100%);
+     background: #fff; border: 1px solid #cbd5e1; border-radius: 999px;
+     padding: 5px 12px; font-size: 12px; font-weight: 600; color: #0f172a;
+     white-space: nowrap; box-shadow: 0 1px 3px rgba(15, 23, 42, .15);
+   }
+   :host ::ng-deep .map-pin.you-pin { border-color: #2563eb; color: #2563eb; }
+
+   .notice {
+     background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+     font-size: 14px; color: #475569;
+     &.error { color: #b91c1c; display: flex; justify-content: space-between; align-items: center; }
+   }
+   .map-notice { background: #fef3c7; color: #92400e; font-size: 13px; padding: 10px 20px; }
+   .btn-primary:disabled { opacity: .6; cursor: not-allowed; }

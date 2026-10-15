@@ -416,3 +416,18 @@
   box-shadow: 0 8px 24px rgba(11, 37, 64, 0.25);
   z-index: 50;
 }
+.state-msg {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+
+  &.error { color: #dc2626; }
+
+  .btn { margin-left: 12px; }
+}
+
+.toast--error {
+  background: #dc2626;
+  color: #fff;
+}

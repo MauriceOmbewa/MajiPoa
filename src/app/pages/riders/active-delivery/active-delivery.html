@@ -3,92 +3,116 @@
 
   <main class="rider-main">
     <header class="page-header">
-      <h1>{{ orderId() }}</h1>
-      <span class="status-pill on-the-way">
+      <h1>{{ orderId() || 'Active delivery' }}</h1>
+      <span class="status-pill on-the-way" *ngIf="delivery() as d">
         <span class="dot"></span>
-        {{ statusLabel() }}
+        {{ d.statusLabel }}
       </span>
     </header>
 
-    <section class="map-card">
-      <div class="map-canvas">
-        <svg class="route-line" viewBox="0 0 660 240" preserveAspectRatio="none">
-          <line x1="130" y1="185" x2="130" y2="90" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 6" />
-          <line x1="130" y1="90" x2="480" y2="90" stroke="#93c5fd" stroke-width="2" stroke-dasharray="6 6" />
-        </svg>
+    <div class="notice error" *ngIf="error()">
+      {{ error() }}
+      <button class="btn-outline" type="button" (click)="load()">Retry</button>
+    </div>
 
-        <span class="map-pin you-pin" style="top: 30%; left: 40%;">You</span>
-        <span class="map-pin place-pin" style="top: 12%; left: 68%;">Riverside Court</span>
-        <span class="map-pin place-pin" style="top: 76%; left: 20%;">ABC Water</span>
-      </div>
+    <div class="notice" *ngIf="loading() && !delivery()">Loading your delivery…</div>
 
-      <div class="map-footer">
+    <div class="notice" *ngIf="completed()">Delivery completed. Nice work!</div>
+
+    <div class="notice" *ngIf="!loading() && !delivery() && !error() && !completed()">
+      You have no active delivery right now. New requests will appear on your dashboard.
+    </div>
+
+    <!-- The map container must always exist so Leaflet can attach to it -->
+    <section class="map-card" [class.hidden]="!delivery()">
+      <div class="map-notice" *ngIf="locationError()">{{ locationError() }}</div>
+      <div #mapEl class="map-canvas"></div>
+
+      <div class="map-footer" *ngIf="delivery() as d">
         <div>
-          <div class="map-distance">{{ distanceRemainingKm() }} km left · about {{ etaMin() }} min</div>
-          <div class="map-address">{{ destinationAddress() }}</div>
+          <div class="map-distance" *ngIf="tripInfo() as t">
+            {{ t.km | number: '1.1-1' }} km left · about {{ t.min }} min
+          </div>
+          <div class="map-address">{{ d.destinationLabel }} · {{ d.destinationAddress }}</div>
         </div>
-        <button class="btn-primary" type="button" (click)="openInMaps()">Open in Maps</button>
+        <button class="btn-primary" type="button" [disabled]="!destination()" (click)="openInMaps()">
+          Open in Maps
+        </button>
       </div>
     </section>
 
-    <section class="delivering-card">
-      <div class="card-header">
-        <h2>Delivering to</h2>
-        <span class="trip-pill">KSh {{ tripEarning() }} for this trip</span>
-      </div>
-
-      <div class="customer-block">
-        <div class="customer-name">{{ customerName() }}</div>
-        <div class="customer-address">{{ customerAddress() }}</div>
-        <div class="customer-note">"{{ customerNote() }}"</div>
-
-        <div class="customer-actions">
-          <button class="btn-outline" type="button" (click)="callCustomer()">Call customer</button>
-          <button class="btn-outline" type="button" (click)="messageCustomer()">Message</button>
+    <ng-container *ngIf="delivery() as d">
+      <section class="delivering-card">
+        <div class="card-header">
+          <h2>Delivering to</h2>
+          <span class="trip-pill">KSh {{ d.fee | number: '1.0-0' }} for this trip</span>
         </div>
-        <div class="customer-hint">The customer's number stays available until this delivery is confirmed.</div>
-      </div>
-    </section>
 
-    <section class="carrying-card">
-      <div class="card-header">
-        <h2>What you're carrying</h2>
-      </div>
+        <div class="customer-block">
+          <div class="customer-name">{{ d.customerName }}</div>
+          <div class="customer-address">
+            {{ d.dropoffUnit ? d.dropoffUnit + ', ' : '' }}{{ d.dropoffAddress }}
+          </div>
+          <div class="customer-note" *ngIf="d.dropoffNotes">"{{ d.dropoffNotes }}"</div>
 
-      <div class="carried-item" *ngFor="let item of carriedItems()">
-        <span class="carried-label">{{ item.label }}</span>
-        <span class="carried-action">{{ item.actionLabel }}</span>
-      </div>
+          <div class="customer-actions" *ngIf="d.customerPhone">
+            <button class="btn-outline" type="button" (click)="callCustomer()">Call customer</button>
+            <button class="btn-outline" type="button" (click)="messageCustomer()">Message</button>
+          </div>
+          <div class="customer-hint">The customer's number stays available until this delivery is confirmed.</div>
+        </div>
+      </section>
 
-      <div class="carrying-note">Order is already paid. Do not collect cash.</div>
-    </section>
+      <section class="carrying-card">
+        <div class="card-header">
+          <h2>{{ atPickupStage() ? 'Check the order at ' + d.vendorName : "What you're carrying" }}</h2>
+        </div>
 
-    <section class="progress-card">
-      <div class="card-header">
-        <h2>Progress</h2>
-      </div>
+        <div class="carried-item" *ngFor="let item of d.items">
+          <label class="carried-label">
+            <input
+              type="checkbox"
+              *ngIf="atPickupStage()"
+              [checked]="item.checked"
+              (change)="toggleItem(item, $event)" />
+            {{ item.quantity }} × {{ item.name }}
+          </label>
+          <span class="carried-action" *ngIf="item.note">{{ item.note }}</span>
+        </div>
 
-      <ol class="progress-list">
-        <li class="progress-item" *ngFor="let step of progressSteps()" [ngClass]="step.status">
-          <span class="progress-marker">
-            <span class="progress-icon" *ngIf="step.status === 'done'">✓</span>
-            <span class="progress-icon" *ngIf="step.status === 'current'"></span>
-          </span>
-          <span class="progress-text">
-            <strong>{{ step.label }}</strong>
-            <span class="progress-meta" *ngIf="step.timestamp">{{ step.timestamp }}</span>
-            <span class="progress-meta" *ngIf="step.detail"> · {{ step.detail }}</span>
-          </span>
-        </li>
-      </ol>
+        <div class="carrying-note" *ngIf="atPickupStage()">Tick every item to confirm pickup.</div>
+        <div class="carrying-note" *ngIf="d.paid">Order is already paid. Do not collect cash.</div>
+        <div class="carrying-note" *ngIf="!d.paid">Collect payment from the customer on delivery.</div>
+      </section>
 
-      <button
-        class="btn-primary btn-block"
-        type="button"
-        *ngIf="progressSteps()[3]?.status === 'current'"
-        (click)="markArrived()">
-        I've arrived
-      </button>
-    </section>
+      <section class="progress-card">
+        <div class="card-header">
+          <h2>Progress</h2>
+        </div>
+
+        <ol class="progress-list">
+          <li class="progress-item" *ngFor="let step of d.timeline" [ngClass]="step.state">
+            <span class="progress-marker">
+              <span class="progress-icon" *ngIf="step.state === 'done'">✓</span>
+              <span class="progress-icon" *ngIf="step.state === 'current'"></span>
+            </span>
+            <span class="progress-text">
+              <strong>{{ step.label }}</strong>
+              <span class="progress-meta" *ngIf="step.at">{{ formatTime(step.at) }}</span>
+              <span class="progress-meta" *ngIf="step.detail"> · {{ step.detail }}</span>
+            </span>
+          </li>
+        </ol>
+
+        <button
+          class="btn-primary btn-block"
+          type="button"
+          *ngIf="d.nextActionLabel"
+          [disabled]="busy() || !canAdvance()"
+          (click)="advance()">
+          {{ busy() ? 'Updating…' : d.nextActionLabel }}
+        </button>
+      </section>
+    </ng-container>
   </main>
 </div>

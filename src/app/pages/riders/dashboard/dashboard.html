@@ -7,118 +7,135 @@
       <div class="header-actions">
         <span class="status-pill" [class.available]="isAvailable()">
           <span class="dot"></span>
-          {{ isAvailable() ? 'Available' : 'Offline' }}
+          {{ statusText() }}
         </span>
-        <button class="btn-outline" type="button" (click)="toggleAvailability()">
+        <button class="btn-outline" type="button" [disabled]="acting() || loading()" (click)="toggleAvailability()">
           {{ isAvailable() ? 'Go offline' : 'Go online' }}
         </button>
       </div>
     </header>
 
-    <section class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">Earned today</div>
-        <div class="stat-value">KSh {{ earnedToday() | number }}</div>
-        <div class="stat-sub">{{ deliveriesToday() }} deliveries</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Online</div>
-        <div class="stat-value">{{ onlineDuration() }}</div>
-        <div class="stat-sub">Since {{ onlineSince() }}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Rating</div>
-        <div class="stat-value">{{ rating() }} ★</div>
-        <div class="stat-sub">{{ ratingSampleLabel() }}</div>
-      </div>
-    </section>
+    <div class="state-msg" *ngIf="loading()">Loading your dashboard…</div>
+    <div class="state-msg error" *ngIf="!loading() && loadError()">
+      {{ loadError() }}
+      <button type="button" class="btn-outline" (click)="retry()">Try again</button>
+    </div>
 
-    <section class="offer-card" *ngIf="currentOffer() as offer">
-      <div class="offer-header">
-        <h2>New delivery offer</h2>
-        <span class="expires-pill">Expires in 0:{{ offer.expiresInSec }}</span>
-      </div>
+    <ng-container *ngIf="!loading() && !loadError()">
 
-      <div class="offer-body">
-        <div class="offer-top">
+      <div class="banner-error" *ngIf="actionError() as msg">{{ msg }}</div>
+
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Earned today</div>
+          <div class="stat-value">KSh {{ earnedToday() | number }}</div>
+          <div class="stat-sub">{{ deliveriesToday() }} deliveries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Online</div>
+          <div class="stat-value">{{ onlineDuration() }}</div>
+          <div class="stat-sub">Since {{ onlineSince() }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Rating</div>
+          <div class="stat-value">{{ rating() }} <span *ngIf="rating() !== '—'">★</span></div>
+          <div class="stat-sub">{{ ratingSampleLabel() }}</div>
+        </div>
+      </section>
+
+      <section class="offer-card" *ngIf="currentOffer() as offer">
+        <div class="offer-header">
+          <h2>New delivery offer</h2>
+          <span class="expires-pill">Expires in {{ offerExpiresLabel() }}</span>
+        </div>
+
+        <div class="offer-body">
+          <div class="offer-top">
+            <div>
+              <div class="offer-price">KSh {{ offer.price | number }}</div>
+              <div class="offer-meta">{{ offer.distanceKm }} km total · about {{ offer.etaMin }} min</div>
+            </div>
+            <div class="offer-tags">
+              <span class="tag" *ngFor="let tag of offer.tags">{{ tag }}</span>
+            </div>
+          </div>
+
+          <div class="offer-route">
+            <div class="route-row">
+              <span class="route-dot pickup">▲</span>
+              <span class="route-text">
+                <strong>Pick up · {{ offer.pickupName }}</strong>
+                {{ offer.pickupLocation }} · {{ offer.pickupDistanceKm }} km from you
+              </span>
+            </div>
+            <div class="route-row">
+              <span class="route-dot dropoff">▼</span>
+              <span class="route-text">
+                <strong>Drop off · {{ offer.dropoffName }}</strong>
+                {{ offer.dropoffLocation }} · {{ offer.dropoffDistanceKm }} km from pickup
+              </span>
+            </div>
+          </div>
+
+          <div class="offer-actions">
+            <button class="btn-primary" type="button" [disabled]="acting() || offerSecondsLeft() === 0" (click)="acceptOffer()">
+              Accept delivery
+            </button>
+            <button class="btn-outline" type="button" [disabled]="acting()" (click)="declineOffer()">Decline</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="current-delivery-card" *ngIf="currentDelivery() as delivery">
+        <div class="card-header">
+          <h2>Your current delivery</h2>
+          <span class="status-pill on-the-way">
+            <span class="dot"></span>
+            {{ delivery.status }}
+          </span>
+        </div>
+        <div class="delivery-row">
           <div>
-            <div class="offer-price">KSh {{ offer.price }}</div>
-            <div class="offer-meta">{{ offer.distanceKm }} km total · about {{ offer.etaMin }} min</div>
+            <div class="delivery-title">{{ delivery.orderId }} · {{ delivery.from }} → {{ delivery.to }}</div>
+            <div class="delivery-meta">
+              {{ delivery.itemsLabel }} · about {{ delivery.etaMin }} min left · KSh {{ delivery.price | number }}
+            </div>
           </div>
-          <div class="offer-tags">
-            <span class="tag" *ngFor="let tag of offer.tags">{{ tag }}</span>
-          </div>
+          <button class="btn-primary" type="button" (click)="openCurrentDelivery()">Open</button>
+        </div>
+      </section>
+
+      <section class="completed-card">
+        <div class="card-header">
+          <h2>Completed today</h2>
+          <a class="link" routerLink="/riders/history">History</a>
         </div>
 
-        <div class="offer-route">
-          <div class="route-row">
-            <span class="route-dot pickup">▲</span>
-            <span class="route-text">
-              <strong>Pick up · {{ offer.pickupName }}</strong>
-              {{ offer.pickupLocation }} · {{ offer.pickupDistanceKm }} km from you
-            </span>
-          </div>
-          <div class="route-row">
-            <span class="route-dot dropoff">▼</span>
-            <span class="route-text">
-              <strong>Drop off · {{ offer.dropoffName }}</strong>
-              {{ offer.dropoffLocation }} · {{ offer.dropoffDistanceKm }} km from pickup
-            </span>
-          </div>
-        </div>
+        <table class="completed-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Order</th>
+              <th>From → to</th>
+              <th>Distance</th>
+              <th>Earned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of completedToday()">
+              <td>{{ row.time }}</td>
+              <td>{{ row.orderId }}</td>
+              <td>{{ row.from }} → {{ row.to }}</td>
+              <td>{{ row.distanceKm }} km</td>
+              <td>KSh {{ row.earned | number }}</td>
+            </tr>
+            <tr *ngIf="completedToday().length === 0">
+              <td colspan="5" class="empty-row">No completed deliveries yet today.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-        <div class="offer-actions">
-          <button class="btn-primary" type="button" (click)="acceptOffer()">Accept delivery</button>
-          <button class="btn-outline" type="button" (click)="declineOffer()">Decline</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="current-delivery-card" *ngIf="currentDelivery() as delivery">
-      <div class="card-header">
-        <h2>Your current delivery</h2>
-        <span class="status-pill on-the-way">
-          <span class="dot"></span>
-          {{ delivery.status }}
-        </span>
-      </div>
-      <div class="delivery-row">
-        <div>
-          <div class="delivery-title">{{ delivery.orderId }} · {{ delivery.from }} → {{ delivery.to }}</div>
-          <div class="delivery-meta">
-            {{ delivery.itemsLabel }} · {{ delivery.etaFromCustomerMin }} min from the customer · KSh {{ delivery.price }}
-          </div>
-        </div>
-        <button class="btn-primary" type="button" (click)="openCurrentDelivery()">Open</button>
-      </div>
-    </section>
-
-    <section class="completed-card">
-      <div class="card-header">
-        <h2>Completed today</h2>
-        <a class="link" routerLink="/riders/history">History</a>
-      </div>
-
-      <table class="completed-table">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Order</th>
-            <th>From → to</th>
-            <th>Distance</th>
-            <th>Earned</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of completedToday()">
-            <td>{{ row.time }}</td>
-            <td>{{ row.orderId }}</td>
-            <td>{{ row.from }} → {{ row.to }}</td>
-            <td>{{ row.distanceKm }} km</td>
-            <td>KSh {{ row.earned }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    </ng-container>
   </main>
 </div>

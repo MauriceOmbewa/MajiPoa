@@ -5,10 +5,10 @@
   </div>
 
   <div class="rider-card">
-    <div class="avatar">{{ riderInitials }}</div>
+    <div class="avatar">{{ riderInitials() }}</div>
     <div class="rider-info">
       <div class="rider-name">
-        {{ riderName }} <span class="rider-role">· {{ riderRole }}</span>
+        {{ riderName() || 'Loading…' }} <span class="rider-role">· {{ riderRole }}</span>
       </div>
       <button class="switch-link" type="button" (click)="switchMode()">switch ⌄</button>
     </div>
