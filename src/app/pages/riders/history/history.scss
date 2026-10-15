@@ -191,3 +191,16 @@
     color: #64748b;
   }
 }
+.state-msg {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+
+  &.error { color: #dc2626; }
+}
+
+.not-rated {
+  color: #94a3b8;
+  font-size: 12px;
+}

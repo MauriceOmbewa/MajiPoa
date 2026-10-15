@@ -234,3 +234,19 @@ table {
     font-size: 13px;
   }
 }
+.state-msg {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+
+  &.error { color: #dc2626; }
+}
+.state-msg {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+
+  &.error { color: #dc2626; }
+}

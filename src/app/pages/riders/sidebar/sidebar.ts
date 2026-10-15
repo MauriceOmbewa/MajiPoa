@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RiderApiService } from '../../../shared/services/rider-api'; // adjust path
 
 interface NavItem {
   label: string;
@@ -16,9 +17,21 @@ interface NavItem {
   styleUrl: './sidebar.scss'
 })
 export class SidebarComponent {
-  riderName = 'James Kariuki';
+  private api = inject(RiderApiService);
+  private router = inject(Router);
+
   riderRole = 'Rider';
-  riderInitials = 'JK';
+
+  riderName = computed(() => this.api.currentProfile()?.fullName ?? '');
+
+  riderInitials = computed(() =>
+    this.riderName()
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0].toUpperCase())
+      .join('') || '–'
+  );
 
   deliveryNav: NavItem[] = [
     { label: 'Dashboard', icon: '▦', route: '/riders/dashboard' },
@@ -31,15 +44,35 @@ export class SidebarComponent {
     { label: 'Profile', icon: '◍', route: '/riders/profile' }
   ];
 
+  constructor() {
+    // Pages that already loaded the profile fill this in; otherwise fetch it once.
+    if (!this.api.currentProfile()) {
+      this.api.profile(0).subscribe({ error: () => {} });
+    }
+  }
+
   switchMode(): void {
-    // TODO: hook up your account-switch logic here
+    this.goCustomerMode();
   }
 
   goCustomerMode(): void {
-    // TODO: navigate to your customer-mode area
+    // ASSUMPTION: the role value is 'CUSTOMER' and the customer area lives at '/'.
+    this.api.switchRole('CUSTOMER').subscribe({
+      next: () => {
+        this.api.currentProfile.set(null);
+        this.router.navigateByUrl('/');
+      },
+      error: () => {
+        // if the role can't be changed, don't strand the rider on a page that will 403
+      }
+    });
   }
 
   signOut(): void {
-    // TODO: hook up your sign-out logic here
+    const done = () => {
+      this.api.currentProfile.set(null);
+      this.router.navigateByUrl('/');
+    };
+    this.api.logout().subscribe({ next: done, error: done });
   }
 }

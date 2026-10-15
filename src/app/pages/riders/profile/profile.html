@@ -4,10 +4,16 @@
   <main class="rider-main">
     <header class="page-header">
       <h1>Profile</h1>
-      <span class="verified-chip">✓ Verified rider</span>
+      <span class="verified-chip" *ngIf="profile().verified">✓ Verified rider</span>
     </header>
 
-    <div class="page-body">
+    <div class="state-msg" *ngIf="loading()">Loading your profile…</div>
+    <div class="state-msg error" *ngIf="!loading() && loadError()">
+      {{ loadError() }}
+      <button type="button" class="btn btn--ghost" (click)="load()">Try again</button>
+    </div>
+
+    <div class="page-body" *ngIf="!loading() && !loadError()">
 
       <!-- ── Profile card ─────────────────────────────────────── -->
       <section class="hero-card">
@@ -39,7 +45,7 @@
       <section class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Rating</div>
-          <div class="stat-value">★ {{ profile().rating }}</div>
+          <div class="stat-value">{{ profile().rating !== null ? '★ ' + profile().rating : '—' }}</div>
           <div class="stat-note">From customer reviews</div>
         </div>
         <div class="stat-card">
@@ -50,7 +56,7 @@
         <div class="stat-card">
           <div class="stat-label">On-time rate</div>
           <div class="stat-value">{{ profile().onTimeRate }}%</div>
-          <div class="stat-note stat-note--positive">Great work</div>
+          <div class="stat-note stat-note--positive" *ngIf="profile().onTimeRate >= 90">Great work</div>
         </div>
       </section>
 
@@ -86,9 +92,11 @@
           <div class="card__body form-grid">
             <div class="field">
               <label for="vehicleType">Vehicle type</label>
-              <select id="vehicleType" formControlName="vehicleType">
+              <select id="vehicleType" formControlName="vehicleType" [class.invalid]="hasError('vehicleType')">
+                <option value="" disabled>Select vehicle</option>
                 <option *ngFor="let v of vehicleTypes" [value]="v">{{ v }}</option>
               </select>
+              <small class="error" *ngIf="hasError('vehicleType')">Choose a vehicle type.</small>
             </div>
 
             <div class="field">
@@ -164,5 +172,7 @@
     </div>
   </main>
 
-  <div class="toast" *ngIf="toast() as message" role="status">✓ {{ message }}</div>
+  <div class="toast" [class.toast--error]="toastIsError()" *ngIf="toast() as message" role="status">
+    {{ toastIsError() ? '✕' : '✓' }} {{ message }}
+  </div>
 </div>
