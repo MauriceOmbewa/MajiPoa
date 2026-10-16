@@ -1,9 +1,9 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { Navbar } from '../../../shared/layout/navbar/navbar';
-import { Footer } from '../../../shared/layout/footer/footer';
+import { OrderForm } from '../order-form/order-form';
+import { WaterProduct } from '../../../../types';
+import { Router, RouterModule } from '@angular/router';
 
 export interface ProductItem {
   id: string;
@@ -58,11 +58,13 @@ export interface LocationEstate {
 @Component({
   selector: 'app-find-water',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
+  imports: [CommonModule, FormsModule, OrderForm, RouterModule],
   templateUrl: './find-water.html',
   styleUrl: './find-water.scss',
 })
 export class FindWater {
+  private readonly router = inject(Router);
+
   // Current Selected Location
   readonly currentEstate = signal<LocationEstate>({
     id: 'kilimani',
@@ -426,17 +428,33 @@ export class FindWater {
   }
 
   // Cart Management
-  addToCart(product: ProductItem): void {
+  addToCart(product: ProductItem | WaterProduct): void {
+    // Normalise WaterProduct into ProductItem shape for local cart storage
+    const item: ProductItem = {
+      id: product.id,
+      name: product.name,
+      size: product.size,
+      category: product.category as ProductItem['category'],
+      vendor: product.vendor,
+      estate: (product as any).estate ?? '',
+      distanceKm: (product as any).distanceKm ?? 0,
+      deliveryTimeMins: (product as any).deliveryTimeMins ?? 0,
+      priceKsh: (product as any).priceKsh ?? (product as any).priceKsh ?? 0,
+      verified: (product as any).verified ?? false,
+      kebsCertified: (product as any).kebsCertified ?? false,
+      ph: (product as any).ph ?? 7,
+      tds: (product as any).tds ?? 0,
+    };
     this.cartItems.update((items) => {
-      const existing = items.find((i) => i.product.id === product.id);
+      const existing = items.find((i) => i.product.id === item.id);
       if (existing) {
         return items.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.product.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
-      return [...items, { product, quantity: 1 }];
+      return [...items, { product: item, quantity: 1 }];
     });
-    this.showToast(`Added ${product.name} to cart`);
+    this.showToast(`Added ${item.name} to cart`);
   }
 
   updateQuantity(productId: string, delta: number): void {
@@ -473,14 +491,12 @@ export class FindWater {
     this.showToast('Location selector: Choose estate in Nairobi');
   }
 
-  readonly router = inject(Router);
-
   openCart(): void {
     this.router.navigate(['/cart']);
+    this.showToast(`Cart opened with ${this.totalCartCount()} items`);
   }
 
   openSignInModal(): void {
-    this.router.navigate(['/sign-in']);
     this.showToast('Sign in modal opened');
   }
 
@@ -489,11 +505,7 @@ export class FindWater {
   }
 
   openVendorShop(vendor: VendorItem): void {
-    this.router.navigate(['/vendor-shop']);
-  }
-
-  navigateToProduct(product: ProductItem): void {
-    this.router.navigate(['/product-detail']);
+    this.showToast(`Viewing shop for ${vendor.name} (${vendor.estate})`);
   }
 
   showToast(msg: string): void {
@@ -503,9 +515,5 @@ export class FindWater {
         this.toastMessage.set(null);
       }
     }, 3000);
-  }
-
-  navigateToProductDetails(): void {
-    this.router.navigate(['/product-detail']);
   }
 }

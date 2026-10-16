@@ -6,12 +6,92 @@
      Styling: Tailwind CSS Utility Classes + find-water.scss
      ========================================================================== -->
 
-<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased selection:bg-[#E8F2FC] selection:text-[#1877D2]">
-  <!-- Shared Navbar -->
-  <app-navbar />
+<div class="min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased selection:bg-[#E8F2FC] selection:text-[#1877D2] pb-16">
+  <!-- Topbar Navigation -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] shadow-xs">
+    <div class="max-w-[1180px] mx-auto px-5 h-[68px] flex items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <a routerLink="/" class="flex items-center gap-2.5 no-underline group">
+        <svg class="w-7 h-7 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.5S4.5 11 4.5 15.4A7.5 7.5 0 0 0 19.5 15.4C19.5 11 12 2.5 12 2.5Z" fill="url(#fwBrandGrad)"/>
+          <defs>
+            <linearGradient id="fwBrandGrad" x1="4" y1="3" x2="20" y2="21">
+              <stop stop-color="#2FC4C0"/>
+              <stop offset="1" stop-color="#1877D2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="font-['Bricolage_Grotesque'] font-bold text-[22px] tracking-tight text-[#07243D]">
+          Maji<span class="text-[#1877D2]">Safi</span>
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1">
+        <button
+          type="button"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium bg-[#07243D] text-white transition cursor-pointer">
+          Order water
+        </button>
+        <button
+          type="button"
+          (click)="showToast('Navigating to orders...')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          My orders
+        </button>
+        <button
+          type="button"
+          (click)="showToast('Viewing water quality lab data...')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Water quality
+        </button>
+        <button
+          type="button"
+          (click)="showToast('Help & Support: Call 0800 720 000')"
+          class="px-3.5 py-2 rounded-full text-[14.5px] font-medium text-[#0F3A5C] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Help
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Location Pill -->
+        <button
+          type="button"
+          (click)="openLocationModal()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F6FA] border border-[#DBE7F1] text-[13.5px] text-[#07243D] hover:border-[#1877D2] transition cursor-pointer max-w-[210px] sm:max-w-[260px]">
+          <span>📍</span>
+          <b class="truncate font-semibold">{{ currentEstate().name.split(',')[0] }}</b>
+          <span class="text-xs text-[#1877D2] underline shrink-0 hidden sm:inline ml-0.5">Change</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button
+          type="button"
+          (click)="openCart()"
+          class="relative w-10 h-10 rounded-full border border-[#DBE7F1] bg-white flex items-center justify-center hover:bg-[#F1F6FA] transition cursor-pointer text-[#07243D]"
+          aria-label="Shopping Cart">
+          <span class="text-base">🛒</span>
+          @if (totalCartCount() > 0) {
+            <span class="absolute -top-1 -right-1 bg-[#2FC4C0] text-[#043433] text-[11px] font-bold min-w-[19px] h-[19px] rounded-full flex items-center justify-center px-1 shadow-xs ring-2 ring-white">
+              {{ totalCartCount() }}
+            </span>
+          }
+        </button>
+
+        <!-- Sign In -->
+        <button
+          type="button"
+          (click)="openSignInModal()"
+          class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[14px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] transition cursor-pointer">
+          Sign in
+        </button>
+      </div>
+    </div>
+  </header>
 
   <!-- Page Main Container -->
-  <main class="max-w-[1180px] mx-auto px-5 pt-[26px] pb-16">
+  <main class="max-w-[1180px] mx-auto px-5 pt-[26px]">
     <!-- Header Row: Title & Location Action -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-[18px]">
       <div>
@@ -24,7 +104,7 @@
       </div>
       <button
         type="button"
-        (click)="router.navigate(['/accountaddress'])"
+        (click)="openLocationModal()"
         class="inline-flex items-center justify-center gap-1 px-3.5 py-1.5 rounded-full border border-[#DBE7F1] bg-white text-[13.5px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] hover:border-[#1877D2] transition w-fit cursor-pointer">
         <span>📍 Change location</span>
       </button>
@@ -83,110 +163,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-[26px] items-start">
       <!-- Left Column: Products Grid & Vendors -->
       <div>
-        <!-- Products Grid (3 Columns: g3) -->
-        @if (filteredProducts().length > 0) {
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" (click)="navigateToProductDetails()">
-            @for (product of filteredProducts(); track product.id) {
-              <article (click)="navigateToProduct(product)" class="bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden flex flex-col hover:shadow-md hover:border-[#b8d4ed] transition group cursor-pointer">
-                <!-- Thumbnail -->
-                <div class="h-[148px] bg-gradient-to-b from-[#EAF4FC] to-[#D8ECF8] relative flex items-center justify-center">
-                  <span class="font-['Bricolage_Grotesque'] text-[34px] font-bold text-[#7FB4DC] group-hover:scale-105 transition-transform duration-200">
-                    {{ product.size }}
-                  </span>
-                  @if (product.tag) {
-                    <span
-                      [class]="product.tagType === 'warn' 
-                        ? 'absolute top-2.5 left-2.5 text-[11.5px] font-bold px-2.5 py-0.5 rounded-full border bg-[#FEF3EB] text-[#C25E12] border-[#fae0cf]'
-                        : product.tagType === 'info'
-                        ? 'absolute top-2.5 left-2.5 text-[11.5px] font-bold px-2.5 py-0.5 rounded-full border bg-[#E8F2FC] text-[#1464B4] border-[#d2e4f7]'
-                        : 'absolute top-2.5 left-2.5 text-[11.5px] font-bold px-2.5 py-0.5 rounded-full border bg-[#E3F5EE] text-[#12946A] border-[#c5e8da]'">
-                      {{ product.tag }}
-                    </span>
-                  }
-                </div>
-
-                <!-- Metadata -->
-                <div class="p-4 flex flex-col gap-1.5 flex-1">
-                  <h3 class="font-semibold text-[15px] text-[#07243D] leading-snug truncate" [title]="product.name">
-                    {{ product.name }}
-                  </h3>
-
-                  <div class="text-[13px] text-[#5E7489] truncate">
-                    {{ product.vendor }} · {{ product.distanceKm }} km · ~{{ product.deliveryTimeMins }} min
-                  </div>
-
-                  <!-- pH & TDS Quality Badge (Clickable to open Passport) -->
-                  <button
-                    type="button"
-                    (click)="openPassport(product)"
-                    class="mt-1 self-start inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E2F7F6] border border-[#bfe9e7] text-[#127e7b] text-[12px] font-semibold hover:bg-[#d5f3f1] transition cursor-pointer"
-                    title="Click to view verified laboratory test certificate">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#127e7b]"></span>
-                    <span>pH {{ product.ph }} · TDS {{ product.tds }}</span>
-                  </button>
-
-                  <div class="mt-2 font-['Bricolage_Grotesque'] font-bold text-[20px] text-[#07243D]">
-                    KSh {{ product.priceKsh }}
-                  </div>
-
-                  <!-- Foot: Details link & Add button -->
-                  <div class="mt-auto pt-3 border-t border-[#DBE7F1]/70 flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      (click)="$event.stopPropagation(); navigateToProduct(product)"
-                      class="text-[13px] font-semibold text-[#1877D2] hover:underline cursor-pointer">
-                      Details
-                    </button>
-
-                    @if (getCartQuantity(product.id) > 0) {
-                      <div class="flex items-center border border-[#DBE7F1] rounded-full bg-white overflow-hidden shadow-2xs">
-                        <button
-                          type="button"
-                          (click)="$event.stopPropagation(); updateQuantity(product.id, -1)"
-                          class="w-7 h-7 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA] cursor-pointer">
-                          -
-                        </button>
-                        <span class="min-w-6 text-center text-xs font-bold text-[#07243D]">
-                          {{ getCartQuantity(product.id) }}
-                        </span>
-                        <button
-                          type="button"
-                          (click)="$event.stopPropagation(); updateQuantity(product.id, 1)"
-                          class="w-7 h-7 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA] cursor-pointer">
-                          +
-                        </button>
-                      </div>
-                    } @else {
-                      <button
-                        type="button"
-                        (click)="$event.stopPropagation(); addToCart(product)"
-                        class="px-4 py-1.5 rounded-full font-semibold text-[13px] bg-[#1877D2] text-white hover:bg-[#1464B4] transition shadow-xs cursor-pointer">
-                        Add
-                      </button>
-                    }
-                  </div>
-                </div>
-              </article>
-            }
-          </div>
-        } @else {
-          <!-- Empty State -->
-          <div class="bg-white border border-[#DBE7F1] rounded-2xl p-10 text-center">
-            <div class="text-3xl mb-2">💧</div>
-            <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] mb-1">
-              No water matches your exact filters
-            </h3>
-            <p class="text-sm text-[#5E7489] mb-4 max-w-md mx-auto">
-              Try resetting some filter chips or selecting "All sizes" to view available verified stations.
-            </p>
-            <button
-              type="button"
-              (click)="resetAllFilters()"
-              class="px-4 py-2 rounded-full bg-[#1877D2] text-white text-xs font-semibold hover:bg-[#1464B4] cursor-pointer">
-              Reset all filters
-            </button>
-          </div>
-        }
+        <!-- Standalone Order Form Component with Size Buttons on Top First -->
+        <app-order-form
+          [layout]="'card'"
+          [title]="'Instant Water Order Form'"
+          [subtitle]="'Size buttons on top decide container & bottle format. Dispatched immediately by certified Nairobi stations in Kilimani.'"
+          (addToCart)="addToCart($event.product)"
+          (directCheckout)="addToCart($event.product); openCart()" />
 
         <!-- Vendors Delivering Here Section -->
         <div class="mt-[34px] mb-[14px]">
@@ -291,7 +274,7 @@
 
           <button
             type="button"
-            (click)="router.navigate(['/accountaddress'])"
+            (click)="openLocationModal()"
             class="w-full mt-3 py-2 rounded-full border border-[#DBE7F1] bg-white text-[13.5px] font-semibold text-[#07243D] hover:bg-[#F1F6FA] hover:border-[#1877D2] transition cursor-pointer">
             Change location
           </button>
@@ -324,7 +307,7 @@
             </button>
             <button
               type="button"
-              (click)="router.navigate(['/offers'])"  
+              (click)="showToast('Discount active: KSh 50 off applied at checkout')"
               class="text-[13px] font-semibold text-[#1877D2] hover:underline cursor-pointer">
               See all offers
             </button>
@@ -341,7 +324,4 @@
       <span class="text-sm font-semibold">{{ toastMessage() }}</span>
     </div>
   }
-
-  <!-- Shared Footer -->
-  <app-footer />
 </div>

@@ -1,14 +1,47 @@
 <!-- ==========================================================================
-     MajiSafi - Standalone Angular Vendor Details Component Template
+     MajiSafi - Standalone Angular Vendor Shop Component Template
      Framework: Angular 17 / 18 / 19 Standalone Component
-     Selector: app-vendor-details
-     Files: src/app/pages/vendor-details/vendor-details.html (.ts, .scss)
-     Styling: Tailwind CSS Utility Classes + vendor-details.scss
+     Selector: app-vendor-shop
+     Files: src/app/pages/vendor-shop/vendor-shop.html (.ts, .scss)
+     Styling: Tailwind CSS Utility Classes + vendor-shop.scss
      ========================================================================== -->
 
-<div class="vendor-details-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased">
-  <!-- Shared Navbar -->
-  <app-navbar />
+<div class="vendor-shop-page min-h-screen bg-[#F1F6FA] text-[#07243D] font-sans antialiased pb-16">
+  <!-- Top Navigation / Breadcrumb Bar -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-[#DBE7F1] sticky top-0 z-30 shadow-xs">
+    <div class="max-w-[1180px] mx-auto px-5 h-[64px] flex items-center justify-between gap-4">
+      <!-- Back to Discover -->
+      <button
+        type="button"
+        (click)="goBack()"
+        class="inline-flex items-center gap-2 text-sm font-semibold text-[#0F3A5C] hover:text-[#1877D2] transition cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        <span>Back to water search</span>
+      </button>
+
+      <!-- Quick Nav Links -->
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="openPassport()"
+          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#E2F7F6] text-[#127e7b] border border-[#bfe9e7] hover:bg-[#d0f1ef] transition cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          <span>Verified KEBS Passport</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="scrollToProducts()"
+          class="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#2FC4C0] text-[#04283f] hover:bg-[#25ab9c] transition cursor-pointer font-bold">
+          Shop Water
+        </button>
+      </div>
+    </div>
+  </header>
 
   <!-- Vendor Hero Banner with Deep Blue Gradient -->
   <section class="vendor-hero bg-gradient-to-br from-[#0B3358] via-[#0D446B] to-[#11557A] text-white py-9 px-5 border-b border-[#0F3A5C]">
@@ -21,8 +54,14 @@
 
         <!-- Vendor Header Meta -->
         <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold tracking-wider uppercase text-[#8ff0ed] bg-[#8ff0ed]/15 px-2.5 py-0.5 rounded-full border border-[#8ff0ed]/30 inline-flex items-center gap-1">
+              Verified Vendor Shop
+            </span>
+            <span class="text-xs text-[#a8c4da]">Depot &amp; Filling Station</span>
+          </div>
           <h1 class="font-['Bricolage_Grotesque'] font-bold text-2xl sm:text-3xl text-white tracking-tight">
-            {{ vendor().name }}
+            {{ vendor().name }} Water Shop
           </h1>
           <p class="text-[#a8c4da] text-[14.5px] mt-1.5 mb-3">
             {{ vendor().estate }}, Nairobi · {{ vendor().distanceKm }} km away · <span class="text-[#8ff0ed] font-medium">open until {{ vendor().closingTime }}</span>
@@ -34,7 +73,7 @@
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
               </svg>
-              Verified vendor
+              Verified vendor shop
             </span>
             <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white/12 border border-white/20 text-[#cfe4f4]">
               <span class="text-[#FBBF24]">★</span> {{ vendor().rating }} · {{ vendor().reviewCount }} ratings
@@ -59,7 +98,7 @@
           type="button"
           (click)="scrollToProducts()"
           class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#2FC4C0] hover:bg-[#25ab9c] text-[#04283f] font-bold text-sm tracking-wide shadow-md transition cursor-pointer text-center">
-          Order from this vendor
+          Order from this shop
         </button>
       </div>
     </div>
@@ -77,7 +116,7 @@
         [class.border-transparent]="activeTab() !== 'products'"
         [class.text-[#5E7489]]="activeTab() !== 'products'"
         class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
-        Products ({{ vendorProducts().length }})
+        Shop Catalog &amp; Order Form ({{ vendorProducts().length }})
       </button>
 
       <button
@@ -99,7 +138,7 @@
         [class.border-transparent]="activeTab() !== 'reviews'"
         [class.text-[#5E7489]]="activeTab() !== 'reviews'"
         class="px-4 py-2.5 border-b-2 font-semibold text-sm transition cursor-pointer whitespace-nowrap hover:text-[#07243D]">
-        Reviews ({{ vendor().reviewCount }})
+        Shop reviews ({{ vendor().reviewCount }})
       </button>
 
       <button
@@ -116,17 +155,27 @@
 
     <!-- ================= TAB 1: PRODUCTS ================= -->
     <section *ngIf="activeTab() === 'products'" id="vendor-products-section">
+      <!-- Standalone Order Form Component with Size Buttons on Top First -->
+      <div class="mb-8">
+        <app-order-form
+          [layout]="'card'"
+          [title]="'Order Water from ' + vendor().name + ' Shop'"
+          [subtitle]="'Select container format on top to decide bottle type for instant delivery from ' + vendor().name + '\'s certified refilling shop & station.'"
+          (addToCart)="addProductToCart($event.product)"
+          (directCheckout)="addProductToCart($event.product)" />
+      </div>
+
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h2 class="font-['Bricolage_Grotesque'] text-xl font-bold text-[#07243D]">Available for Delivery Today</h2>
-          <p class="text-xs text-[#5E7489] mt-0.5">Bring an empty bottle for refills, or select new jug packages.</p>
+          <h2 class="font-['Bricolage_Grotesque'] text-xl font-bold text-[#07243D]">{{ vendor().name }} Product Catalog</h2>
+          <p class="text-xs text-[#5E7489] mt-0.5">Live stock available for instant dispatch in {{ vendor().estate }}.</p>
         </div>
         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E3F5EE] text-[#12946A]">
           ● In stock now
         </span>
       </div>
 
-      <!-- 4-Column Responsive Product Grid matching user specification -->
+      <!-- 4-Column Responsive Product Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <!-- Product 1: 20L refill -->
         <article class="p-card bg-white border border-[#DBE7F1] rounded-2xl overflow-hidden shadow-xs hover:border-[#1877D2]/40 transition flex flex-col justify-between">
@@ -306,7 +355,7 @@
         <!-- Water Quality Quick Card -->
         <div class="card pad bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
           <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] mb-3">
-            Water quality
+            Shop water quality
           </h3>
           <div class="grid grid-cols-2 gap-3 text-[14.5px]">
             <div class="stack flex flex-col">
@@ -339,7 +388,7 @@
         <!-- Delivery & Hours Quick Card -->
         <div class="card pad bg-white border border-[#DBE7F1] rounded-2xl p-6 shadow-xs">
           <h3 class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] mb-3">
-            Delivery &amp; hours
+            Shop delivery &amp; hours
           </h3>
           <div class="space-y-2.5 text-[14.5px]">
             <div class="between flex items-center justify-between">
@@ -441,7 +490,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DBE7F1] pb-5 mb-5">
           <div>
             <h2 class="font-['Bricolage_Grotesque'] font-bold text-2xl text-[#07243D]">
-              Customer Reviews from Kilimani
+              Customer Reviews for {{ vendor().name }} Shop
             </h2>
             <p class="text-sm text-[#5E7489] mt-0.5">Verified deliveries confirmed via M-Pesa transaction reference.</p>
           </div>
@@ -477,7 +526,7 @@
               <span class="text-xs text-[#5E7489]">3 days ago</span>
             </div>
             <p class="text-xs text-[#07243D] leading-relaxed">
-              "We have been using ABC Water for our office water dispenser for 6 months. Always punctual and we love that we can check the water passport batch test results."
+              "We have been using {{ vendor().name }} Shop for our office water dispenser for 6 months. Always punctual and we love that we can check the water passport batch test results."
             </p>
           </div>
 
@@ -490,7 +539,7 @@
               <span class="text-xs text-[#5E7489]">1 week ago</span>
             </div>
             <p class="text-xs text-[#07243D] leading-relaxed">
-              "Smooth M-Pesa payment, instant STK prompt and no extra delivery hidden charges. Best water vendor in Hurlingham/Kilimani area."
+              "Smooth M-Pesa payment, instant STK prompt and no extra delivery hidden charges. Best water shop in Hurlingham/Kilimani area."
             </p>
           </div>
         </div>
@@ -504,7 +553,7 @@
           Coverage Estates &amp; Timings
         </h2>
         <p class="text-sm text-[#5E7489] mb-6">
-          Motorcycle riders equipped with heavy-duty twin racks dispatch directly from the Kilimani central depot.
+          Motorcycle riders equipped with heavy-duty twin racks dispatch directly from the {{ vendor().name }} shop depot.
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
@@ -560,7 +609,4 @@
       </div>
     </section>
   </main>
-
-  <!-- Shared Footer -->
-  <app-footer />
 </div>

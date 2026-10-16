@@ -53,6 +53,7 @@ export const routes: Routes = [
   { path: 'vendor-shop',    loadComponent: () => import('./pages/customer/vendor-shop/vendor-shop').then(m => m.VendorShop) },
   { path: 'water-passport', loadComponent: () => import('./pages/customer/water-passport/water-passport').then(m => m.WaterPassport) },
   { path: 'water-quality',  loadComponent: () => import('./pages/customer/water-quality/water-quality').then(m => m.WaterQuality) },
+  { path: 'order-form',      loadComponent: () => import('./pages/customer/order-form/order-form').then(m => m.OrderForm) },
 
   // ── Customer pages — authenticated ────────────────────────────────────────
   { path: 'orders',           canActivate: [authGuard], loadComponent: () => import('./pages/customer/orders/orders').then(m => m.Orders) },

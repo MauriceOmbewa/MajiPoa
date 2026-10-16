@@ -1,37 +1,1700 @@
 /* ==========================================================================
-   MajiSafi - Standalone Home Component Styles
-   File: src/app/pages/home/home.component.css
+   MAJISAFI — MODERN HOME PAGE
    ========================================================================== */
-@use "sass:color";
+
 :host {
   display: block;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #07243D;
-  background-color: #F1F6FA;
-}
+  min-height: 100vh;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 
-/* Custom font smoothing for high-DPI displays */
-* {
+  color: #07243D;
+  background: #F7FAFC;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle pulse animation for status dots */
-@keyframes ping-subtle {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.4);
-    opacity: 0;
-  }
+* {
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+
+.ms-hero {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 78% 20%,
+      rgba(47, 196, 192, 0.22),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #062B46 0%,
+      #073C5C 48%,
+      #075E6A 100%
+    );
+
+  color: white;
+}
+
+.ms-hero-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.ms-hero-glow-one {
+  width: 300px;
+  height: 300px;
+  background: rgba(47, 196, 192, 0.15);
+  right: 10%;
+  top: 10%;
+}
+
+.ms-hero-glow-two {
+  width: 240px;
+  height: 240px;
+  background: rgba(255, 255, 255, 0.05);
+  left: 15%;
+  bottom: -100px;
+}
+
+
+/* ==========================================================================
+   HERO CONTENT
+   ========================================================================== */
+
+.ms-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 8px 13px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  color: #B7F3EF;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  margin-bottom: 22px;
+}
+
+.ms-status-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #45D5CC;
+
+  box-shadow:
+    0 0 0 5px rgba(69, 213, 204, 0.12);
+
+  animation: status-pulse 2s infinite;
+}
+
+@keyframes status-pulse {
+  0%,
   100% {
-    transform: scale(0.95);
-    opacity: 0;
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.65;
   }
 }
 
-.animate-ping-subtle {
-  animation: ping-subtle 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+.ms-hero-title {
+  max-width: 680px;
+
+  margin: 0;
+
+  font-family: 'Bricolage Grotesque', Inter, sans-serif;
+
+  font-size: clamp(42px, 5vw, 70px);
+  line-height: 1.03;
+  letter-spacing: -0.045em;
+
+  font-weight: 800;
+
+  color: white;
 }
+
+.ms-hero-title span {
+  display: block;
+  color: #70DDD7;
+}
+
+.ms-hero-description {
+  max-width: 600px;
+
+  margin-top: 24px;
+  margin-bottom: 28px;
+
+  color: #C4D9E7;
+
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+
+/* ==========================================================================
+   TRUST PILLS
+   ========================================================================== */
+
+.ms-trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 8px 12px;
+
+  border-radius: 999px;
+
+  color: #D5E8F1;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ms-trust-pill span {
+  color: #5CE0D7;
+}
+
+
+/* ==========================================================================
+   HERO BUTTONS
+   ========================================================================== */
+
+.ms-primary-button,
+.ms-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 52px;
+
+  padding: 0 22px;
+
+  border-radius: 14px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.ms-primary-button {
+  color: #052A43;
+  background: #70DDD7;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.ms-primary-button:hover {
+  transform: translateY(-2px);
+  background: #83E7E1;
+
+  box-shadow:
+    0 16px 35px rgba(0, 0, 0, 0.18);
+}
+
+.ms-secondary-button {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ms-secondary-button:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+
+/* ==========================================================================
+   HERO IMAGE
+   ========================================================================== */
+
+.ms-hero-image-frame {
+  position: relative;
+
+  height: min(590px, 65vw);
+
+  min-height: 450px;
+
+  overflow: hidden;
+
+  border-radius: 32px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  background: #0A3D58;
+
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.25);
+}
+
+.ms-hero-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  transition: transform 700ms ease;
+}
+
+.ms-hero-image-frame:hover .ms-hero-image {
+  transform: scale(1.035);
+}
+
+.ms-image-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 32, 50, 0.02) 20%,
+      rgba(4, 32, 50, 0.25) 65%,
+      rgba(4, 32, 50, 0.72) 100%
+    );
+}
+
+
+/* ==========================================================================
+   FLOATING CARDS
+   ========================================================================== */
+
+.ms-floating-card {
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 15px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(14px);
+
+  border-radius: 16px;
+
+  color: #07243D;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.2);
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+
+  animation: float-card 4s ease-in-out infinite;
+}
+
+.ms-floating-card strong {
+  display: block;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ms-floating-card span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #6A7F90;
+
+  font-size: 11px;
+}
+
+.ms-floating-delivery {
+  left: 8px;
+  top: 16%;
+}
+
+.ms-floating-quality {
+  right: 8px;
+  top: 52%;
+
+  animation-delay: 1.2s;
+}
+
+.ms-floating-icon {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  color: white;
+  background: #0E9C86;
+
+  font-weight: 800;
+}
+
+.ms-quality-ring {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: #087F86;
+
+  background: #DDF7F3;
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+
+/* ==========================================================================
+   SEARCH CARD
+   ========================================================================== */
+
+.ms-search-card {
+  padding: 22px;
+
+  background: white;
+
+  border:
+    1px solid #DFE9EF;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 20px 55px rgba(7, 36, 61, 0.10);
+}
+
+.ms-input-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #31536B;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ms-search-input {
+  width: 100%;
+
+  min-height: 49px;
+
+  padding: 0 15px;
+
+  border:
+    1px solid #D8E4EB;
+
+  border-radius: 12px;
+
+  outline: none;
+
+  background: white;
+
+  color: #07243D;
+
+  font-size: 14px;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.ms-search-input:focus {
+  border-color: #159A9C;
+
+  box-shadow:
+    0 0 0 4px rgba(21, 154, 156, 0.09);
+}
+
+.ms-input-icon {
+  position: absolute;
+
+  left: 14px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #159A9C;
+
+  pointer-events: none;
+}
+
+.ms-input-icon + .ms-search-input {
+  padding-left: 40px;
+}
+
+.ms-search-button {
+  min-height: 49px;
+
+  padding: 0 22px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  color: white;
+
+  background: #087F86;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.ms-search-button:hover {
+  transform: translateY(-1px);
+  background: #066B71;
+}
+
+.ms-location-footer {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 14px;
+  padding-top: 13px;
+
+  border-top: 1px solid #EDF2F5;
+
+  color: #708394;
+
+  font-size: 12px;
+}
+
+.ms-location-link {
+  border: 0;
+  background: transparent;
+
+  color: #087F86;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* ==========================================================================
+   SECTION HEADINGS
+   ========================================================================== */
+
+.ms-section-eyebrow {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #087F86;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  letter-spacing: 0.17em;
+}
+
+.ms-section-title {
+  margin: 0;
+
+  font-family: 'Bricolage Grotesque', Inter, sans-serif;
+
+  color: #07243D;
+
+  font-size: clamp(30px, 4vw, 46px);
+
+  line-height: 1.08;
+
+  letter-spacing: -0.035em;
+
+  font-weight: 800;
+}
+
+.ms-section-description {
+  margin-top: 13px;
+
+  color: #718496;
+
+  font-size: 15px;
+
+  line-height: 1.7;
+}
+
+.ms-outline-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 44px;
+
+  padding: 0 17px;
+
+  border: 1px solid #D4E1E8;
+
+  border-radius: 999px;
+
+  color: #07243D;
+
+  background: white;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 180ms ease;
+}
+
+.ms-outline-button:hover {
+  border-color: #087F86;
+  color: #087F86;
+}
+
+
+/* ==========================================================================
+   WATER SHOWCASE
+   ========================================================================== */
+
+.ms-showcase-wrapper {
+  overflow: hidden;
+
+  padding:
+    5px
+    0
+    20px;
+}
+
+.ms-showcase-track {
+  display: flex;
+
+  width: max-content;
+
+  gap: 20px;
+
+  padding-left: max(
+    20px,
+    calc((100vw - 1240px) / 2)
+  );
+
+  animation: water-slide 38s linear infinite;
+}
+
+.ms-showcase-track:hover {
+  animation-play-state: paused;
+}
+
+.ms-water-showcase-card {
+  width: 310px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  background: white;
+
+  border: 1px solid #E0E9EF;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 10px 30px rgba(7, 36, 61, 0.06);
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.ms-water-showcase-card:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 20px 45px rgba(7, 36, 61, 0.12);
+}
+
+.ms-water-image {
+  position: relative;
+
+  height: 235px;
+
+  overflow: hidden;
+
+  background: #DDEFF1;
+}
+
+.ms-water-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  transition: transform 500ms ease;
+}
+
+.ms-water-showcase-card:hover .ms-water-image img {
+  transform: scale(1.06);
+}
+
+.ms-water-image-gradient {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent 45%,
+      rgba(0, 0, 0, 0.32)
+    );
+}
+
+.ms-size-badge,
+.ms-verified-badge {
+  position: absolute;
+
+  top: 13px;
+
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ms-size-badge {
+  left: 13px;
+
+  color: #07243D;
+  background: white;
+}
+
+.ms-verified-badge {
+  right: 13px;
+
+  color: #087F68;
+  background: #E4F8F1;
+}
+
+@keyframes water-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-38%);
+  }
+}
+
+
+/* ==========================================================================
+   TRUST / WHY MAJISAFI
+   ========================================================================== */
+
+.ms-trust-image {
+  position: relative;
+
+  height: 540px;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  background: #DCEEF0;
+}
+
+.ms-trust-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.ms-trust-image-label {
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px;
+
+  border-radius: 17px;
+
+  background: rgba(7, 36, 61, 0.88);
+
+  backdrop-filter: blur(12px);
+
+  color: white;
+}
+
+.ms-trust-image-label strong {
+  display: block;
+  font-size: 13px;
+}
+
+.ms-trust-image-label span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #B4C8D5;
+
+  font-size: 11px;
+}
+
+.ms-feature-card {
+  display: flex;
+  gap: 13px;
+
+  padding: 18px;
+
+  border:
+    1px solid #E3EBF0;
+
+  border-radius: 17px;
+
+  background: #FAFCFD;
+}
+
+.ms-feature-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  color: #087F86;
+
+  background: #E1F5F3;
+
+  font-weight: 900;
+}
+
+.ms-feature-card h3 {
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  color: #07243D;
+}
+
+.ms-feature-card p {
+  margin: 5px 0 0;
+
+  color: #718496;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* ==========================================================================
+   VALUE CARDS
+   ========================================================================== */
+
+.ms-value-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  min-height: 280px;
+
+  padding: 28px;
+
+  border: 1px solid #DFE8EE;
+
+  border-radius: 23px;
+
+  background: white;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.ms-value-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 18px 40px rgba(7, 36, 61, 0.08);
+}
+
+.ms-value-card h3 {
+  margin: 16px 0 8px;
+
+  font-family: 'Bricolage Grotesque', Inter, sans-serif;
+
+  color: #07243D;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.ms-value-card p {
+  margin: 0;
+
+  color: #718496;
+
+  font-size: 13px;
+
+  line-height: 1.7;
+}
+
+.ms-card-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  color: #087F86;
+
+  background: #E2F5F3;
+
+  font-weight: 900;
+}
+
+.ms-card-button {
+  align-self: flex-start;
+
+  margin-top: 25px;
+
+  min-height: 41px;
+
+  padding: 0 15px;
+
+  border: 1px solid #D9E4EA;
+
+  border-radius: 999px;
+
+  background: white;
+
+  color: #07243D;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 180ms ease;
+}
+
+.ms-card-button:hover {
+  border-color: #087F86;
+  color: #087F86;
+}
+
+.ms-value-card-dark {
+  background: #07243D;
+  border-color: #07243D;
+}
+
+.ms-value-card-dark h3 {
+  color: white;
+}
+
+.ms-value-card-dark p {
+  color: #AFC6D6;
+}
+
+.ms-card-icon-dark {
+  color: #75DED7;
+  background: rgba(112, 221, 215, 0.12);
+}
+
+.ms-card-button-accent {
+  border-color: #70DDD7;
+
+  background: #70DDD7;
+
+  color: #062B46;
+}
+
+.ms-card-button-accent:hover {
+  background: #88E8E2;
+
+  color: #062B46;
+}
+
+/* ==========================================================================
+   IMAGE SECTIONS
+   ========================================================================== */
+
+.ms-section-image {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 100%;
+
+  border-radius: 28px;
+
+  background: #DCEEF0;
+
+  box-shadow:
+    0 20px 55px rgba(7, 36, 61, 0.10);
+}
+
+.ms-section-image > img {
+  width: 100%;
+  height: 100%;
+
+  min-height: 520px;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 700ms ease;
+}
+
+.ms-section-image:hover > img {
+  transform: scale(1.035);
+}
+
+.ms-section-image-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 32, 50, 0.02) 35%,
+      rgba(4, 32, 50, 0.18) 65%,
+      rgba(4, 32, 50, 0.72) 100%
+    );
+
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   VALUE IMAGE
+   ========================================================================== */
+
+.ms-value-image {
+  min-height: 100%;
+}
+
+.ms-image-info-card {
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 17px;
+
+  border-radius: 18px;
+
+  background: rgba(7, 36, 61, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  backdrop-filter: blur(14px);
+
+  color: white;
+}
+
+.ms-image-info-icon {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #70DDD7;
+
+  color: #062B46;
+
+  font-size: 18px;
+}
+
+.ms-image-info-card span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #70DDD7;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: 0.15em;
+}
+
+.ms-image-info-card strong {
+  display: block;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.ms-image-info-card p {
+  margin: 3px 0 0;
+
+  color: #B8CFDC;
+
+  font-size: 11px;
+}
+
+
+/* ==========================================================================
+   HOW IT WORKS IMAGE
+   ========================================================================== */
+
+.ms-how-image {
+  min-height: 560px;
+}
+
+.ms-how-image-badge {
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px;
+
+  border-radius: 17px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.14);
+}
+
+.ms-how-badge-icon {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  color: white;
+
+  background: #087F86;
+
+  font-weight: 900;
+}
+
+.ms-how-image-badge span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #087F86;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+.ms-how-image-badge strong {
+  display: block;
+
+  color: #07243D;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+/* ==========================================================================
+   FINAL CTA
+   ========================================================================== */
+
+.ms-final-cta {
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 85px 0;
+
+  background:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(112, 221, 215, 0.15),
+      transparent 35%
+    ),
+    #062B46;
+
+  color: white;
+}
+
+.ms-final-cta h2 {
+  max-width: 650px;
+
+  margin: 12px 0 18px;
+
+  font-family:
+    'Bricolage Grotesque',
+    Inter,
+    sans-serif;
+
+  font-size: clamp(38px, 5vw, 58px);
+
+  line-height: 1.04;
+
+  letter-spacing: -0.045em;
+
+  font-weight: 800;
+}
+
+.ms-final-cta p {
+  max-width: 540px;
+
+  margin: 0 0 30px;
+
+  color: #B8CFDC;
+
+  font-size: 15px;
+
+  line-height: 1.75;
+}
+
+.ms-final-eyebrow {
+  display: inline-block;
+
+  color: #71E1D8;
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.18em;
+}
+
+.ms-final-image {
+  position: relative;
+
+  min-height: 420px;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.ms-final-image img {
+  width: 100%;
+  height: 100%;
+
+  min-height: 420px;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 700ms ease;
+}
+
+.ms-final-image:hover img {
+  transform: scale(1.035);
+}
+
+.ms-final-image-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6, 43, 70, 0.05),
+      rgba(6, 43, 70, 0.72)
+    );
+}
+
+.ms-final-image-card {
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px;
+
+  border-radius: 17px;
+
+  background: rgba(7, 36, 61, 0.86);
+
+  backdrop-filter: blur(14px);
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.ms-final-image-icon {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #70DDD7;
+
+  color: #062B46;
+
+  font-weight: 900;
+}
+
+.ms-final-image-card span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #71E1D8;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.15em;
+}
+
+.ms-final-image-card strong {
+  display: block;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+
+/* ==========================================================================
+   RESPONSIVE IMAGE SECTIONS
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+
+  .ms-section-image {
+    min-height: 420px;
+  }
+
+  .ms-section-image > img {
+    min-height: 420px;
+  }
+
+  .ms-how-image {
+    min-height: 430px;
+  }
+
+  .ms-final-image {
+    min-height: 400px;
+  }
+
+  .ms-final-image img {
+    min-height: 400px;
+  }
+}
+
+
+@media (max-width: 640px) {
+
+  .ms-section-image {
+    min-height: 350px;
+
+    border-radius: 22px;
+  }
+
+  .ms-section-image > img {
+    min-height: 350px;
+  }
+
+  .ms-how-image {
+    min-height: 360px;
+  }
+
+  .ms-how-image > img {
+    min-height: 360px;
+  }
+
+  .ms-image-info-card,
+  .ms-how-image-badge,
+  .ms-final-image-card {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .ms-final-cta {
+    padding: 70px 0;
+  }
+
+  .ms-final-image {
+    min-height: 350px;
+
+    border-radius: 22px;
+  }
+
+  .ms-final-image img {
+    min-height: 350px;
+  }
+}
+
+
+/* ==========================================================================
+   HOW IT WORKS
+   ========================================================================== */
+
+.ms-step-card {
+  position: relative;
+
+  min-height: 210px;
+
+  padding: 24px;
+
+  border:
+    1px solid #E1EAEF;
+
+  border-radius: 21px;
+
+  background: #FAFCFD;
+
+  transition: 180ms ease;
+}
+
+.ms-step-card:hover {
+  border-color: #B9DCDD;
+
+  background: #F6FBFB;
+
+  transform: translateY(-3px);
+}
+
+.ms-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 48px;
+
+  margin-bottom: 30px;
+
+  border-radius: 14px;
+
+  color: white;
+
+  background: #087F86;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ms-step-card h3 {
+  margin: 0 0 7px;
+
+  color: #07243D;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ms-step-card p {
+  margin: 0;
+
+  color: #718496;
+
+  font-size: 13px;
+
+  line-height: 1.65;
+}
+
+
+/* ==========================================================================
+   FINAL CTA
+   ========================================================================== */
+
+// .ms-final-cta {
+//   position: relative;
+
+//   overflow: hidden;
+
+//   padding: 95px 0;
+
+//   background:
+//     radial-gradient(
+//       circle at 50% 0%,
+//       rgba(112, 221, 215, 0.2),
+//       transparent 40%
+//     ),
+//     #062B46;
+
+//   color: white;
+// }
+
+// .ms-final-cta h2 {
+//   margin: 12px 0;
+
+//   font-family: 'Bricolage Grotesque', Inter, sans-serif;
+
+//   font-size: clamp(34px, 5vw, 55px);
+
+//   line-height: 1.05;
+
+//   letter-spacing: -0.04em;
+
+//   font-weight: 800;
+// }
+
+// .ms-final-cta p {
+//   margin: 0 auto 28px;
+
+//   max-width: 500px;
+
+//   color: #B8CFDC;
+
+//   font-size: 15px;
+// }
+
+// .ms-final-button {
+//   display: inline-flex;
+//   align-items: center;
+//   gap: 10px;
+
+//   min-height: 51px;
+
+//   padding: 0 22px;
+
+//   border: 0;
+
+//   border-radius: 999px;
+
+//   background: #70DDD7;
+
+//   color: #062B46;
+
+//   font-size: 14px;
+//   font-weight: 800;
+
+//   cursor: pointer;
+
+//   transition: 180ms ease;
+// }
+
+// .ms-final-button:hover {
+//   transform: translateY(-2px);
+
+//   background: #88E8E2;
+// }
+
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+
+  .ms-hero-image-frame {
+    height: 500px;
+  }
+
+  .ms-floating-delivery {
+    left: 15px;
+  }
+
+  .ms-floating-quality {
+    right: 15px;
+  }
+
+  .ms-trust-image {
+    height: 450px;
+  }
+}
+
+
+@media (max-width: 640px) {
+
+  .ms-hero {
+    border-radius: 0;
+  }
+
+  .ms-hero-title {
+    font-size: 43px;
+  }
+
+  .ms-hero-description {
+    font-size: 15px;
+  }
+
+  .ms-hero-image-frame {
+    min-height: 390px;
+    height: 390px;
+
+    border-radius: 23px;
+  }
+
+  .ms-floating-card {
+    transform: scale(0.88);
+  }
+
+  .ms-floating-delivery {
+    left: -5px;
+  }
+
+  .ms-floating-quality {
+    right: -5px;
+  }
+
+  .ms-search-card {
+    padding: 17px;
+
+    border-radius: 18px;
+  }
+
+  .ms-location-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ms-water-showcase-card {
+    width: 280px;
+  }
+
+  .ms-water-image {
+    height: 210px;
+  }
+
+  .ms-trust-image {
+    height: 360px;
+
+    border-radius: 22px;
+  }
+
+  .ms-value-card {
+    min-height: 245px;
+  }
+
+  .ms-step-card {
+    min-height: auto;
+  }
+
+  .ms-final-cta {
+    padding: 75px 20px;
+  }
+}
+
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ms-showcase-track {
+    animation: none;
+  }
+
+  .ms-floating-card,
+  .ms-status-dot {
+    animation: none;
+  }
+
+  .ms-hero-image,
+  .ms-water-image img {
+    transition: none;
+  }
+}
+
+
