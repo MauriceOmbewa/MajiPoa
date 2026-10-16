@@ -224,6 +224,19 @@ export class HomeComponent {
     },
   ]);
 
+  waterShowcaseImages: string[] = [ 
+    'assets/images/5liters.png', 
+    'assets/images/10Liters.png',
+     'assets/images/20liters.png', 
+     'assets/images/5liters.png', 
+     'assets/images/500ml.png', 
+     'assets/images/delivery.png', 
+     'assets/images/bulkdelivery.png',
+     'assets/waterrun.jfif',
+     'assets/Calming cobalt.jfif',
+     
+    ];
+
   // Reactive Computed Filtered Products
   filteredProducts = computed(() => {
     let result = this.products();

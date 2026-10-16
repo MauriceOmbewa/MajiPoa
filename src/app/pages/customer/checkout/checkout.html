@@ -229,6 +229,10 @@
             <span>Save this order so I can reorder later — we'll create an account from your phone number after payment</span>
           </label>
 
+          <p *ngIf="checkoutError()" class="hint" style="color:#D6453C">
+            {{ checkoutError() }}
+          </p>
+
           <button
             type="button"
             class="btn block"
@@ -247,32 +251,45 @@
     <!-- Order summary sidebar -->
     <aside class="card pad" style="position:sticky;top:88px">
       <h3 style="margin-bottom:12px">Your order</h3>
-      <div class="stack" style="gap:10px;font-size:14px;margin-bottom:12px">
-        <div *ngFor="let line of orderLines()" class="between">
-          <span>
-            {{ line.quantity }} × {{ line.name }}<br>
-            <span class="muted" style="font-size:13px">{{ line.vendor }}</span>
-          </span>
-          <b class="num">KSh {{ line.subtotalKsh.toLocaleString() }}</b>
-        </div>
+
+      <p *ngIf="loadingCart()" class="muted">
+        Loading your cart...
+      </p>
+
+      <p *ngIf="checkoutError()" class="hint" style="color:#D6453C">
+        {{ checkoutError() }}
+      </p>
+
+      <div
+        *ngIf="!loadingCart() && orderLines().length === 0"
+        class="muted"
+      >
+        Your cart is empty.
+        <a routerLink="/cart">Return to cart</a>
       </div>
 
-      <div class="sum">
-        <span>Water</span>
-        <b class="num">KSh {{ waterSubtotal().toLocaleString() }}</b>
+      <div
+        *ngFor="let line of orderLines()"
+        class="between"
+        style="gap:12px;margin-bottom:12px;font-size:14px"
+      >
+        <span>
+          <b>{{ line.quantity }} × {{ line.name }}</b>
+          <span class="muted" style="display:block;font-size:13px">
+            KSh {{ line.unitPriceKsh.toLocaleString() }} each
+          </span>
+        </span>
+        <b class="num">
+          KSh {{ line.subtotalKsh.toLocaleString() }}
+        </b>
       </div>
-      <div class="sum">
-        <span>Delivery · {{ vendorCount() }} vendors</span>
-        <b class="num">KSh {{ deliveryFee().toLocaleString() }}</b>
-      </div>
-      <div *ngIf="discountAmount() > 0" class="sum">
-        <span>{{ promoCode() }}</span>
-        <b class="num" style="color:var(--ok)">− KSh {{ discountAmount().toLocaleString() }}</b>
-      </div>
+
       <div class="sum total">
         <span>Total</span>
-        <span class="num">KSh {{ totalDue().toLocaleString() }}</span>
-      </div>
+        <span class="num">
+          KSh {{ totalDue().toLocaleString() }}
+        </span>
+      </div>  
 
       <p class="hint" style="margin-top:12px">
         No hidden charges. Refunds go back to the same M-Pesa number.
@@ -307,9 +324,10 @@
       type="button"
       class="btn block"
       style="margin-top:12px;width:100%;cursor:pointer"
-      (click)="confirmPaid()"
+      [disabled]="placingOrder()"
+      (click)="placeOrder()"
     >
-      I've paid
+      {{ placingOrder() ? 'Placing order...' : "I've paid" }}
     </button>
     <button
       type="button"

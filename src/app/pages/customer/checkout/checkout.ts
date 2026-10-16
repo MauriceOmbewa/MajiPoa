@@ -5,7 +5,14 @@
 // File: src/app/pages/checkout/checkout.ts
 // ==========================================================================
 
-import { Component, signal, computed, inject, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import {
+  Component, signal, computed, inject, Input, Output,
+  EventEmitter, OnDestroy, OnInit
+} from '@angular/core';
+import { finalize } from 'rxjs';
+import { CartService } from '../services/cart-service';
+import { OrderService } from '../services/order-service';
+import { OrderResponse } from '../services/order-service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Navbar } from '../../../shared/layout/navbar/navbar';
@@ -13,6 +20,7 @@ import { Footer } from '../../../shared/layout/footer/footer';
 
 export interface CheckoutOrderLine {
   id: string;
+  productId: string;
   name: string;
   vendor: string;
   quantity: number;
@@ -23,6 +31,7 @@ export interface CheckoutOrderLine {
 export type DeliverySlot = 'asap' | 'today_evening' | 'tomorrow_morning';
 export type PaymentMethod = 'mpesa' | 'cod';
 
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -30,7 +39,91 @@ export type PaymentMethod = 'mpesa' | 'cod';
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })
-export class Checkout implements OnDestroy {
+export class Checkout implements OnInit, OnDestroy {
+  private readonly cartService = inject(CartService);
+  private readonly orderService = inject(OrderService);
+
+  orderLines = signal<CheckoutOrderLine[]>([]);
+  loadingCart = signal(false);
+  placingOrder = signal(false);
+  checkoutError = signal('');
+  checkoutSuccess = signal('');
+
+  ngOnInit(): void {
+  this.loadCart();
+}
+
+loadCart(): void {
+  this.loadingCart.set(true);
+  this.checkoutError.set('');
+
+  this.cartService.getCart()
+    .pipe(finalize(() => this.loadingCart.set(false)))
+    .subscribe({
+      next: (cart) => {
+        this.orderLines.set(
+          (cart.items ?? []).map((item) => ({
+            id: item.cartItemId,
+            productId: item.productId,
+            name: item.productName,
+            vendor: 'Water delivery',
+            quantity: item.quantity,
+            unitPriceKsh: item.price,
+            subtotalKsh: item.subtotal
+          }))
+        );
+      },
+      error: (error) => {
+        console.error('Failed to load checkout cart', error);
+        this.checkoutError.set(
+          'Unable to load your cart. Please sign in and try again.'
+        );
+      }
+    });
+}
+
+placeOrder(): void {
+  if (this.placingOrder()) return;
+
+  if (this.orderLines().length === 0) {
+    this.checkoutError.set('Your cart is empty.');
+    return;
+  }
+
+  this.checkoutError.set('');
+  this.checkoutSuccess.set('');
+  this.placingOrder.set(true);
+
+  // Preserve the product names before the backend clears the cart.
+  const checkoutLines = this.orderLines().map((line) => ({ ...line }));
+
+  this.orderService.placeOrder()
+    .pipe(finalize(() => this.placingOrder.set(false)))
+    .subscribe({
+      next: (order) => {
+        this.closeStkModal();
+
+        this.router.navigate(['/order-confirmed'], {
+          state: {
+            orderResponse: order,
+            checkoutLines,
+            phoneNumber: this.phoneNumber()
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Failed to place order', error);
+
+        this.checkoutError.set(
+          error.status === 401
+            ? 'Your session has expired. Please sign in again.'
+            : error.status === 400
+              ? 'Your cart may be empty. Refresh the cart and try again.'
+              : 'We could not place your order. Please try again.'
+        );
+      }
+    });
+}
   // Inputs for host integration
   @Input() set initialLines(lines: CheckoutOrderLine[]) {
     if (lines && lines.length > 0) {
@@ -65,32 +158,9 @@ export class Checkout implements OnDestroy {
   saveForLater = signal<boolean>(true);
 
   // Cart & Discount Signals
-  orderLines = signal<CheckoutOrderLine[]>([
-    {
-      id: 'item-1',
-      name: '20L refill',
-      vendor: 'ABC Water',
-      quantity: 2,
-      unitPriceKsh: 250,
-      subtotalKsh: 500,
-    },
-    {
-      id: 'item-2',
-      name: '500ml case',
-      vendor: 'ABC Water',
-      quantity: 1,
-      unitPriceKsh: 620,
-      subtotalKsh: 620,
-    },
-    {
-      id: 'item-3',
-      name: '10L bottle',
-      vendor: 'Blue Spring',
-      quantity: 1,
-      unitPriceKsh: 180,
-      subtotalKsh: 180,
-    },
-  ]);
+  // orderLines = signal<CheckoutOrderLine[]>([
+    
+  // ]);
 
   promoCode = signal<string>('MAJI50');
   discountAmount = signal<number>(50);
@@ -102,9 +172,14 @@ export class Checkout implements OnDestroy {
   private timerRef: any = null;
 
   // Computeds
-  waterSubtotal = computed(() => {
-    return this.orderLines().reduce((acc, line) => acc + line.subtotalKsh, 0);
-  });
+  // waterSubtotal = computed(() => {
+  //   return this.orderLines().reduce((acc, line) => acc + line.subtotalKsh, 0);
+  // });
+  waterSubtotal = computed(() =>
+  this.orderLines().reduce((total, line) => total + line.subtotalKsh, 0)
+);
+
+ totalDue = computed(() => this.waterSubtotal());
 
   vendorCount = computed(() => {
     const vendors = new Set(this.orderLines().map((l) => l.vendor));
@@ -117,9 +192,9 @@ export class Checkout implements OnDestroy {
     return this.selectedSlot() === 'tomorrow_morning' ? Math.max(0, base - 20) : base;
   });
 
-  totalDue = computed(() => {
-    return Math.max(0, this.waterSubtotal() + this.deliveryFee() - this.discountAmount());
-  });
+  // totalDue = computed(() => {
+  //   return Math.max(0, this.waterSubtotal() + this.deliveryFee() - this.discountAmount());
+  // });
 
   countdownText = computed(() => {
     const s = this.stkRemainingSeconds();

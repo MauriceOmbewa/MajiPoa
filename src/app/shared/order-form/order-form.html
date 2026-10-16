@@ -1,0 +1,67 @@
+<div [class]="layout === 'card'
+  ? 'bg-white border border-[#DBE7F1] rounded-2xl p-5 shadow-xs mb-6'
+  : 'mb-6'">
+
+  <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold text-[#07243D] mb-1">{{ title }}</h3>
+  @if (subtitle) {
+    <p class="text-xs text-[#5E7489] mb-4">{{ subtitle }}</p>
+  }
+
+  <!-- Size Selector Buttons -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    @for (s of sizes; track s.size) {
+      <button
+        type="button"
+        (click)="selectSize(s.size)"
+        [class]="selectedSize() === s.size
+          ? 'px-3.5 py-1.5 rounded-full text-[13px] font-semibold bg-[#07243D] text-white transition cursor-pointer'
+          : 'px-3.5 py-1.5 rounded-full text-[13px] font-semibold bg-[#F1F6FA] border border-[#DBE7F1] text-[#07243D] hover:bg-[#E8F2FC] transition cursor-pointer'">
+        {{ s.label }}
+      </button>
+    }
+  </div>
+
+  @if (selectedProduct()) {
+    <!-- Selected Product Info -->
+    <div class="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-[#F1F6FA] border border-[#DBE7F1] mb-4">
+      <div>
+        <div class="font-semibold text-sm text-[#07243D]">{{ selectedProduct()!.name }}</div>
+        @if (selectedProduct()!.description) {
+          <div class="text-xs text-[#5E7489] mt-0.5">{{ selectedProduct()!.description }}</div>
+        }
+        @if (selectedProduct()!.tag) {
+          <span class="inline-block mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#E3F5EE] text-[#12946A]">
+            {{ selectedProduct()!.tag }}
+          </span>
+        }
+      </div>
+      <div class="font-['Bricolage_Grotesque'] font-bold text-lg text-[#07243D] shrink-0">
+        KSh {{ selectedProduct()!.priceKsh }}
+      </div>
+    </div>
+
+    <!-- Quantity + Actions -->
+    <div class="flex items-center gap-3 flex-wrap">
+      <!-- Stepper -->
+      <div class="flex items-center border border-[#DBE7F1] rounded-full bg-white overflow-hidden">
+        <button type="button" (click)="decrement()"
+          class="w-8 h-8 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA] cursor-pointer">−</button>
+        <span class="min-w-8 text-center text-sm font-bold text-[#07243D]">{{ quantity() }}</span>
+        <button type="button" (click)="increment()"
+          class="w-8 h-8 flex items-center justify-center text-[#5E7489] hover:bg-[#F1F6FA] cursor-pointer">+</button>
+      </div>
+
+      <button type="button" (click)="onAddToCart()"
+        class="flex-1 py-2.5 rounded-full bg-[#1877D2] hover:bg-[#1464B4] text-white font-semibold text-sm transition cursor-pointer">
+        Add to cart · KSh {{ selectedProduct()!.priceKsh * quantity() }}
+      </button>
+
+      <button type="button" (click)="onDirectCheckout()"
+        class="flex-1 py-2.5 rounded-full bg-[#07243D] hover:bg-[#0F3A5C] text-white font-semibold text-sm transition cursor-pointer">
+        Order now
+      </button>
+    </div>
+  } @else {
+    <p class="text-sm text-[#5E7489]">Select a size above to order.</p>
+  }
+</div>

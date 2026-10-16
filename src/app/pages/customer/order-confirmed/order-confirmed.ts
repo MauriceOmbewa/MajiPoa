@@ -1,15 +1,24 @@
+
 // ==========================================================================
 // MajiSafi - Standalone Angular Order Confirmed Component
-// Framework: Angular 17 / 18 / 19 Standalone Component
-// Selector: app-order-confirmed
 // File: src/app/pages/order-confirmed/order-confirmed.ts
 // ==========================================================================
 
-import { Component, signal, inject, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+
 import { Navbar } from '../../../shared/layout/navbar/navbar';
 import { Footer } from '../../../shared/layout/footer/footer';
+import { OrderResponse } from '../services/order-service';
 
 export interface ConfirmedOrderItem {
   name: string;
@@ -32,6 +41,27 @@ export interface ConfirmedOrderDetails {
   phoneNumber: string;
 }
 
+interface CheckoutLineInfo {
+  productId: string;
+  name: string;
+}
+
+interface DisplayOrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  subTotal: number;
+}
+
+interface OrderNavigationState {
+  orderResponse?: OrderResponse;
+  checkoutLines?: CheckoutLineInfo[];
+  phoneNumber?: string;
+  mpesaReceiptCode?: string;
+}
+
 @Component({
   selector: 'app-order-confirmed',
   standalone: true,
@@ -40,10 +70,11 @@ export interface ConfirmedOrderDetails {
   styleUrl: './order-confirmed.scss',
 })
 export class OrderConfirmed {
+  private readonly router = inject(Router);
+
   @Input() set initialOrder(data: Partial<ConfirmedOrderDetails>) {
-    if (data) {
-      this.orderData.update((prev) => ({ ...prev, ...data }));
-    }
+    // Retained for compatibility with existing parent components.
+    // The API response is the source of truth for the confirmed order.
   }
 
   @Input() set initialVendorGroups(groups: VendorDeliveryGroup[]) {
@@ -57,58 +88,90 @@ export class OrderConfirmed {
   @Output() helpRequested = new EventEmitter<string>();
   @Output() homeRequested = new EventEmitter<void>();
 
-  // State Signals
-  orderData = signal<ConfirmedOrderDetails>({
-    orderNumber: 'WM10248',
-    mpesaReceiptCode: 'SJ72K4L9QP',
-    totalKsh: 1410,
-    phoneNumber: '0712 345 678',
-  });
+  // Real order response returned by POST /api/orders.
+  orderData = signal<OrderResponse | null>(null);
 
-  vendorGroups = signal<VendorDeliveryGroup[]>([
-    {
-      vendorName: 'ABC Water',
-      etaTime: '4:35 pm',
-      statusLabel: 'Preparing',
-      statusKey: 'preparing',
-      items: [
-        { name: '2 × 20L refill — hard jug', quantity: 2, subtotalKsh: 500 },
-        { name: '1 × 500ml case of 24', quantity: 1, subtotalKsh: 620 },
-      ],
-    },
-    {
-      vendorName: 'Blue Spring Water',
-      etaTime: '5:10 pm',
-      statusLabel: 'Waiting for vendor',
-      statusKey: 'waiting',
-      items: [
-        { name: '1 × 10L bottle', quantity: 1, subtotalKsh: 180 },
-      ],
-    },
-  ]);
+  // Product names are matched from the checkout cart because
+  // the current OrderResponse contains product IDs, not product names.
+  displayItems = signal<DisplayOrderItem[]>([]);
 
-  smsSent = signal<boolean>(false);
+  phoneNumber = signal('');
+  mpesaReceiptCode = signal('');
+  smsSent = signal(false);
+  missingOrder = signal(false);
 
-  // User Actions
-  private router = inject(Router);
+  // Do not display fake vendor names or estimated delivery times.
+  // Supply actual groups here when the backend supports them.
+  vendorGroups = signal<VendorDeliveryGroup[]>([]);
 
-  trackDelivery() {
-    this.router.navigate(['/live-tracking']);
+  constructor() {
+    const state = window.history.state as OrderNavigationState | null;
+
+    if (!state?.orderResponse) {
+      this.missingOrder.set(true);
+      return;
+    }
+
+    const order = state.orderResponse;
+    const checkoutLines = state.checkoutLines ?? [];
+
+    this.orderData.set(order);
+    this.phoneNumber.set(state.phoneNumber ?? '');
+    this.mpesaReceiptCode.set(state.mpesaReceiptCode ?? '');
+
+    this.displayItems.set(
+      (order.items ?? []).map((item) => {
+        const cartLine = checkoutLines.find(
+          (line) => line.productId === item.productId
+        );
+
+        return {
+          ...item,
+          name: cartLine?.name ?? item.productId,
+        };
+      })
+    );
   }
 
-  getReceiptSms() {
-    this.smsSent.set(true);
+  trackDelivery(): void {
+    const order = this.orderData();
+
+    if (!order) {
+      return;
+    }
+
+    this.router.navigate(['/live-tracking'], {
+      queryParams: { orderId: order.orderId },
+    });
   }
 
-  createAccount() {
-    this.createAccountRequested.emit(this.orderData().phoneNumber);
+  getReceiptSms(): void {
+    // Connect this action to a real receipt-SMS backend endpoint.
+    // Do not show success until the backend confirms the SMS was sent.
+    this.smsSent.set(false);
   }
 
-  dismissAccountPrompt() {
+  createAccount(): void {
+    // Connect this action to the account creation flow.
+    this.createAccountRequested.emit(this.phoneNumber());
+  }
+
+  dismissAccountPrompt(): void {
     this.homeRequested.emit();
+    this.router.navigate(['/']);
   }
 
-  getHelp() {
-    this.helpRequested.emit(this.orderData().orderNumber);
+  getHelp(): void {
+    const order = this.orderData();
+
+    if (!order) {
+      return;
+    }
+
+    this.helpRequested.emit(order.orderId);
+
+    this.router.navigate(['/support'], {
+      queryParams: { orderId: order.orderId },
+    });
   }
 }
