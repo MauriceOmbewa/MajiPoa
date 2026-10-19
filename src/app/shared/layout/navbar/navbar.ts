@@ -1,9 +1,10 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject,OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { RoleService } from '../../services/role.service';
 import { ActiveMode } from '../../models/api.models';
+import { CartService } from '../../../pages/customer/services/cart-service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,10 +13,26 @@ import { ActiveMode } from '../../models/api.models';
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.scss'],
 })
-export class Navbar {
+export class Navbar implements OnInit {
+
+   ngOnInit(): void {
+    if (this.auth.isLoggedIn()) {
+      this.cartService.refreshCart().subscribe({
+        error: (error) => {
+          console.error('Failed to load cart:', error);
+        },
+      });
+    }
+  }
+
   readonly router = inject(Router);
   readonly auth   = inject(AuthService);
   readonly roles  = inject(RoleService);
+  readonly cartService = inject(CartService);
+
+  readonly cartItemCount = computed(
+    () => this.cartService.totalQuantity()
+  );
 
   /** Controls visibility of the user/mode dropdown */
   readonly menuOpen = signal(false);

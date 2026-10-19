@@ -1,0 +1,129 @@
+<!-- ==========================================================================
+     LeafletMapComponent  —  preview | page
+     ========================================================================== -->
+
+<!-- ══════════ PREVIEW MODE ══════════ -->
+@if (mode === 'preview') {
+  <div
+    class="lm-preview"
+    (click)="onPreviewClick()"
+    (keydown.enter)="onPreviewClick()"
+    role="button" tabindex="0"
+    [attr.aria-label]="'Open full map to pin delivery location in ' + estateName()">
+
+    <div class="lm-preview-thumb">
+      <iframe
+        [src]="'https://www.openstreetmap.org/export/embed.html?bbox=' +
+          (currentLng()-0.012) + '%2C' + (currentLat()-0.008) + '%2C' +
+          (currentLng()+0.012) + '%2C' + (currentLat()+0.008) +
+          '&layer=mapnik&marker=' + currentLat() + '%2C' + currentLng()
+          | noSanitize"
+        loading="lazy"
+        frameborder="0"
+        scrolling="no"
+        title="Map preview"
+        aria-hidden="true">
+      </iframe>
+      <div class="lm-preview-shade">
+        <span class="lm-preview-hint">📍 Tap to pin exact location</span>
+      </div>
+    </div>
+
+    <div class="lm-preview-bar">
+      <div>
+        <div class="lm-preview-estate">{{ estateName() }}</div>
+        <div class="lm-preview-street">{{ streetAddress() }}</div>
+      </div>
+      <span class="lm-preview-caret">›</span>
+    </div>
+  </div>
+}
+
+<!-- ══════════ PAGE MODE ══════════ -->
+@if (mode === 'page') {
+  <div class="lm-page">
+
+    <!-- ── Search row ── -->
+    <div class="lm-search-row">
+      <div class="lm-search-wrap">
+        <span class="lm-search-icon">🔍</span>
+        <input
+          type="text"
+          class="lm-search-input"
+          placeholder="Search Nairobi estate (e.g. Kilimani, Westlands, Karen…)"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value); showDropdown.set(true)"
+          (focus)="showDropdown.set(true)"
+          (blur)="showDropdown.set(false)"
+        />
+        @if (searchQuery()) {
+          <button type="button" class="lm-search-clear" (mousedown)="searchQuery.set('')">✕</button>
+        }
+      </div>
+      <button type="button" class="lm-gps-btn" [disabled]="isLocating()" (click)="locateMe()">
+        {{ isLocating() ? '⏳ Locating…' : '🎯 My Location' }}
+      </button>
+
+      <!-- Autocomplete dropdown -->
+      @if (showDropdown() && searchQuery() && filteredPresets().length > 0) {
+        <div class="lm-dropdown">
+          @for (p of filteredPresets(); track p.id) {
+            <button type="button" class="lm-dropdown-item" (mousedown)="selectPreset(p)">
+              <div>
+                <strong>{{ p.name }}</strong>
+                <span class="lm-dd-sub">{{ p.subCounty }} · {{ p.popularStreet }}</span>
+              </div>
+              <span class="lm-dd-pin">Pin 📍</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Quick-pick chips ── -->
+    <div class="lm-chips-row">
+      <span class="lm-chips-label">QUICK:</span>
+      <div class="lm-chips-scroller">
+        @for (p of estatePresets; track p.id) {
+          <button type="button" class="lm-chip" (click)="selectPreset(p)">{{ p.name }}</button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Instruction banner ── -->
+    <div class="lm-instruction">
+      <span class="lm-instr-dot"></span>
+      Click anywhere on the map or drag the pin directly onto your building
+    </div>
+
+    <!-- ── Map canvas (Leaflet renders here) ── -->
+    <div class="lm-canvas-wrap">
+      <!-- Leaflet target element — must have explicit height via CSS -->
+      <div #mapContainer class="lm-canvas"></div>
+
+      <!-- Nudge D-pad  — absolute overlay inside the canvas, bottom-right -->
+      <div class="lm-nudge-overlay">
+        <div class="lm-nudge-label">FINE-TUNE</div>
+        <div class="lm-nudge-pad">
+          <button type="button" class="lm-nb" (click)="nudge( 0.0005,  0)">▲</button>
+          <div class="lm-nudge-mid">
+            <button type="button" class="lm-nb" (click)="nudge(0, -0.0005)">◀</button>
+            <span class="lm-nb-center">●</span>
+            <button type="button" class="lm-nb" (click)="nudge(0,  0.0005)">▶</button>
+          </div>
+          <button type="button" class="lm-nb" (click)="nudge(-0.0005,  0)">▼</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Coordinates bar ── -->
+    <div class="lm-coords-bar">
+      <span class="lm-cl">LAT:</span><code class="lm-cv">{{ currentLat().toFixed(4) }}</code>
+      <span class="lm-cl" style="margin-left:12px">LNG:</span><code class="lm-cv">{{ currentLng().toFixed(4) }}</code>
+      <span class="lm-precision">
+        <span class="lm-pdot"></span>Pin Needle Aligned to Exact Coordinates
+      </span>
+    </div>
+
+  </div>
+}
