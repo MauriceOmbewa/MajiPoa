@@ -1,0 +1,281 @@
+<!-- ==========================================================================
+     MajiSafi – app-map Component Template
+     Modes: page | picker | compact | tracking
+     ========================================================================== -->
+
+<div
+  class="map-component-root"
+  [class.mode-page]="mode === 'page'"
+  [class.mode-picker]="mode === 'picker'"
+  [class.mode-compact]="mode === 'compact'"
+  [class.mode-tracking]="mode === 'tracking'">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TRACKING MODE  — animated rider + vendor pins, no editing
+       ══════════════════════════════════════════════════════════════════════ -->
+  @if (mode === 'tracking') {
+    <div class="tracking-canvas">
+      <!-- Simulated road/grid background -->
+      <div class="tile-underlay">
+        <div class="grid-lines"></div>
+        <div class="river-vector"></div>
+        <div class="highway-vector road-1"></div>
+        <div class="highway-vector road-2"></div>
+        <div class="area-label">{{ estateName() }}, Nairobi</div>
+      </div>
+
+      <!-- SVG animated route path vendor→rider→destination -->
+      <svg class="route-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path
+          [attr.d]="'M 20 76 Q 35 68, ' + _riderX() + ' ' + _riderY() + ' T 80 30'"
+          fill="none"
+          stroke="#1877D2"
+          stroke-width="2.5"
+          stroke-dasharray="6,4"
+          stroke-linecap="round"
+          opacity="0.75"
+        />
+      </svg>
+
+      <!-- Vendor origin pin -->
+      <span class="trk-pin trk-vendor" style="left:20%;top:76%">
+        📦 {{ vendorLabel }}
+      </span>
+
+      <!-- Animated rider pin — position driven by parent -->
+      <span
+        class="trk-pin trk-rider"
+        [style.left]="_riderX() + '%'"
+        [style.top]="_riderY() + '%'">
+        🛵 {{ riderLabel }}
+        @if (minutesAway > 0) {
+          <span class="trk-eta"> · {{ minutesAway }} min</span>
+        }
+      </span>
+
+      <!-- Destination pin -->
+      <span class="trk-pin trk-destination" style="left:80%;top:30%">
+        📍 {{ destinationLabel }}
+      </span>
+
+      <!-- Live badge -->
+      <span class="trk-live-badge">
+        <span class="trk-live-dot"></span>Live
+      </span>
+
+      <!-- Map attribution -->
+      <div class="map-attribution small">
+        <span>Map data © <a href="https://openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> contributors</span>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       PICKER / COMPACT / PAGE MODES — editable pin drop + address form
+       ══════════════════════════════════════════════════════════════════════ -->
+  @if (mode !== 'tracking') {
+
+    <!-- Header (page + picker only) -->
+    @if (mode !== 'compact') {
+      <header class="map-header">
+        <div class="header-titles">
+          <div class="badge-pill">
+            <span class="dot"></span>
+            <span>OpenStreetMap &amp; Google Maps Pinning</span>
+          </div>
+          <h2>{{ title }}</h2>
+          <p>{{ subtitle }}</p>
+        </div>
+
+        @if (allowProviderToggle) {
+          <div class="layer-switch-group">
+            <button type="button" class="layer-btn"
+              [class.active]="mapProvider() === 'openstreetmap'"
+              (click)="setMapProvider('openstreetmap')">🗺️ OpenStreetMap</button>
+            <button type="button" class="layer-btn"
+              [class.active]="mapProvider() === 'google-roads'"
+              (click)="setMapProvider('google-roads')">📍 Google Roads</button>
+            <button type="button" class="layer-btn"
+              [class.active]="mapProvider() === 'google-satellite'"
+              (click)="setMapProvider('google-satellite')">🛰️ Satellite</button>
+          </div>
+        }
+      </header>
+    }
+
+    <!-- Main two-column workspace -->
+    <div class="map-grid">
+
+      <!-- ── Left: canvas + search ── -->
+      <div class="map-viewport-card">
+
+        <!-- Search + GPS bar -->
+        <div class="map-search-bar">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              (focus)="showPresetDropdown.set(true)"
+              placeholder="Search estate (e.g. Kilimani, Westlands, Karen…)"
+              class="search-input" />
+            @if (searchQuery()) {
+              <button type="button" class="clear-btn" (click)="searchQuery.set('')">✕</button>
+            }
+          </div>
+
+          <button type="button" class="locate-me-btn"
+            [disabled]="isLocating()"
+            (click)="locateMe()">
+            {{ isLocating() ? 'Locating…' : '🎯 My Location' }}
+          </button>
+
+          <!-- Estate autocomplete dropdown -->
+          @if (showPresetDropdown() && filteredPresets().length > 0) {
+            <div class="preset-dropdown">
+              <div class="dropdown-header">Select Nairobi Delivery Estate</div>
+              @for (preset of filteredPresets(); track preset.id) {
+                <button type="button" class="dropdown-item"
+                  (click)="selectEstatePreset(preset)">
+                  <div class="item-main">
+                    <strong>{{ preset.name }}</strong>
+                    <span class="sub">{{ preset.subCounty }} · {{ preset.popularStreet }}</span>
+                  </div>
+                  <span class="pin-hint">Pin 📍</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Simulated tile canvas -->
+        <div class="map-canvas-container" [attr.data-provider]="mapProvider()">
+          <div class="tile-underlay"
+            [class.satellite-view]="mapProvider() === 'google-satellite'">
+            <div class="grid-lines"></div>
+            <div class="river-vector"></div>
+            <div class="highway-vector road-1"></div>
+            <div class="highway-vector road-2"></div>
+            <div class="area-label">{{ estateName() }}, Nairobi</div>
+          </div>
+
+          <!-- Centre delivery pin -->
+          <div class="pin-target-wrapper">
+            <div class="pulse-ring"></div>
+            <div class="delivery-pin">
+              <div class="pin-icon-bubble"><span class="water-drop">💧</span></div>
+              <div class="pin-needle"></div>
+              <div class="pin-shadow"></div>
+            </div>
+            <div class="pin-tooltip">
+              <strong>Drop off here</strong>
+              <span>{{ formattedCoordinates() }}</span>
+            </div>
+          </div>
+
+          <!-- Zoom + nudge overlay -->
+          <div class="map-overlay-controls">
+            <div class="zoom-buttons">
+              <button type="button" class="ctrl-btn" (click)="zoomIn()" title="Zoom In">+</button>
+              <span class="zoom-level">{{ zoomLevel() }}z</span>
+              <button type="button" class="ctrl-btn" (click)="zoomOut()" title="Zoom Out">−</button>
+            </div>
+            <div class="nudge-pad" title="Fine-tune pin location">
+              <button type="button" class="nudge-btn up"    (click)="nudgePin( 0.0005, 0)">▲</button>
+              <div class="nudge-mid">
+                <button type="button" class="nudge-btn left"  (click)="nudgePin(0, -0.0005)">◀</button>
+                <span class="nudge-label">Nudge</span>
+                <button type="button" class="nudge-btn right" (click)="nudgePin(0,  0.0005)">▶</button>
+              </div>
+              <button type="button" class="nudge-btn down"  (click)="nudgePin(-0.0005, 0)">▼</button>
+            </div>
+          </div>
+
+          <div class="map-attribution">
+            @if (mapProvider() === 'openstreetmap') {
+              <span>Map data © <a href="https://openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> contributors</span>
+            } @else {
+              <span>Google Maps Imagery © Google · Imagery 2026</span>
+            }
+          </div>
+        </div>
+
+        <!-- Coordinates bar -->
+        <div class="coordinates-footer">
+          <div class="coord-info">
+            <span class="coord-badge">GPS Coordinates</span>
+            <code class="coord-value">{{ formattedCoordinates() }}</code>
+          </div>
+          <div class="precision-badge">
+            <span class="dot-green"></span>
+            <span>High Precision Doorstep Pin</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right: address form + confirm ── -->
+      <div class="address-details-card">
+        <div class="card-title-row">
+          <h3>Doorstep Delivery Details</h3>
+          <span class="badge-status">Instant Verification</span>
+        </div>
+
+        <div class="form-fields">
+          <div class="field-group">
+            <label for="estateInput">Nairobi Estate / Area</label>
+            <input id="estateInput" type="text" [(ngModel)]="estateName"
+              placeholder="e.g. Kilimani, Kileleshwa, Westlands"
+              class="form-control" />
+          </div>
+          <div class="field-group">
+            <label for="streetInput">Street / Road Name</label>
+            <input id="streetInput" type="text" [(ngModel)]="streetAddress"
+              placeholder="e.g. Argwings Kodhek Road"
+              class="form-control" />
+          </div>
+          <div class="field-row">
+            <div class="field-group flex-1">
+              <label for="buildingInput">Building / House</label>
+              <input id="buildingInput" type="text" [(ngModel)]="buildingName"
+                placeholder="e.g. Silver Springs Plaza"
+                class="form-control" />
+            </div>
+            <div class="field-group flex-1">
+              <label for="unitInput">Floor &amp; Unit / Apt</label>
+              <input id="unitInput" type="text" [(ngModel)]="apartmentUnit"
+                placeholder="e.g. Apt 4B, 3rd Floor"
+                class="form-control" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="landmarkInput">Prominent Landmark</label>
+            <input id="landmarkInput" type="text" [(ngModel)]="landmark"
+              placeholder="e.g. Near Yaya Centre petrol station"
+              class="form-control" />
+          </div>
+          <div class="field-group">
+            <label for="notesInput">Rider Delivery Notes / Gate Instructions</label>
+            <textarea id="notesInput" rows="2" [(ngModel)]="deliveryNotes"
+              placeholder="e.g. Gate code, ring bell, deliver to door"
+              class="form-control textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button type="button" class="btn-primary" (click)="confirmLocation()">
+            {{ locationSaved() ? 'Location Saved ✓' : 'Confirm Pinned Location' }}
+          </button>
+          @if (mode !== 'compact') {
+            <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+          }
+        </div>
+
+        <div class="trust-footer">
+          <span class="trust-icon">🛡️</span>
+          <p>MajiSafi riders use live turn-by-turn navigation pinned to your exact building entrance.</p>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

@@ -26,6 +26,9 @@ import {
   AddressDTO,
 } from '../services/customer-service';
 
+import { LeafletMapComponent, PinnedLocation } from '../../../shared/leaflet-map/leaflet-map';
+import { Router } from '@angular/router';
+
 export type AccountTab =
   | 'profile'
   | 'addresses'
@@ -56,12 +59,13 @@ export interface NotificationSettings {
 @Component({
   selector: 'app-account-addresses',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer, LeafletMapComponent],
   templateUrl: './account-addresses.html',
   styleUrl: './account-addresses.scss',
 })
 export class AccountAddresses implements OnInit {
   private readonly customerService = inject(CustomerService);
+  private readonly router          = inject(Router);
 
   @Output() profileSaved = new EventEmitter<UserProfileData>();
   @Output() addressAdded = new EventEmitter<void>();
@@ -72,6 +76,9 @@ export class AccountAddresses implements OnInit {
   @Output() accountDeletionRequested = new EventEmitter<void>();
 
   activeTab = signal<AccountTab>('profile');
+
+  /** Controls the inline map picker expansion in the address form */
+  showAddressMap = signal(false);
 
   isLoading = signal(false);
   isSavingProfile = signal(false);
@@ -107,6 +114,18 @@ export class AccountAddresses implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+  }
+
+  /** Safe lat from "lat,lng" pinLocation string — defaults to Kilimani */
+  get pinLat(): number {
+    const v = parseFloat((this.addressForm.pinLocation ?? '').split(',')[0]);
+    return isNaN(v) ? -1.2921 : v;
+  }
+
+  /** Safe lng from "lat,lng" pinLocation string — defaults to Kilimani */
+  get pinLng(): number {
+    const v = parseFloat((this.addressForm.pinLocation ?? '').split(',')[1]);
+    return isNaN(v) ? 36.7856 : v;
   }
 
   private emptyAddress(): AddressDTO {
@@ -334,6 +353,42 @@ export class AccountAddresses implements OnInit {
         console.error('Failed to remove customer address:', error);
       },
     });
+  }
+
+  /** Navigate to the full-page map to pin address location. */
+  goToPinLocation(): void {
+    // Parse existing pinLocation "lat,lng" if available
+    const pinParts = this.addressForm.pinLocation?.split(',');
+    const lat = pinParts && pinParts.length === 2 ? parseFloat(pinParts[0]) : undefined;
+    const lng = pinParts && pinParts.length === 2 ? parseFloat(pinParts[1]) : undefined;
+    this.router.navigate(['/pin-location'], {
+      queryParams: {
+        returnTo: 'accountaddress',
+        ...(lat && lng ? { lat, lng } : {}),
+        estate: this.addressForm.area || 'Kilimani',
+      }
+    });
+  }
+
+  /** Toggle the inline map picker and scroll it into view */
+  toggleAddressMap(): void {
+    this.showAddressMap.update(v => !v);
+  }
+
+  /**
+   * Called when the user confirms a pin in the inline address map.
+   * Fills in the address form fields and stores lat/lng in pinLocation.
+   */
+  onAddressMapPinned(loc: PinnedLocation): void {
+    // Populate addressForm from the map result
+    if (loc.estateName)    this.addressForm.area     = loc.estateName;
+    if (loc.streetAddress) this.addressForm.street   = loc.streetAddress;
+    if (loc.buildingName)  this.addressForm.building = loc.buildingName;
+    if (loc.landmark)      this.addressForm.landmark = loc.landmark;
+    // Store coordinates as "lat,lng" in the pinLocation field
+    this.addressForm.pinLocation = `${loc.latitude},${loc.longitude}`;
+    // Collapse the map after confirming
+    this.showAddressMap.set(false);
   }
 
   addBusiness(): void {

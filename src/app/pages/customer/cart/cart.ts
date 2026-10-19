@@ -4,6 +4,7 @@ import {
   signal,
   computed,
   inject,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -29,45 +30,44 @@ interface AppliedDiscountModel {
 })
 export class Cart implements OnInit {
   private readonly cartService = inject(CartService);
-  private readonly router = inject(Router);
+  private readonly router      = inject(Router);
 
-  cartItems = signal<CartItemResponse[]>([]);
-  loading = signal(false);
-  errorMessage = signal('');
+  // ── Read directly from the shared CartService signal so items are never
+  //    lost when navigating back to this page. The signal is kept in sync
+  //    by CartService (localStorage + optional API).
+  readonly cartItems = this.cartService.cartItems;
+
+  loading        = signal(false);
+  errorMessage   = signal('');
   successMessage = signal('');
 
-  promoInput = signal('');
-  appliedDiscount = signal<AppliedDiscountModel | null>(null);
-  promoMessage = signal('');
-  promoSuccess = signal(false);
+  promoInput       = signal('');
+  appliedDiscount  = signal<AppliedDiscountModel | null>(null);
+  promoMessage     = signal('');
+  promoSuccess     = signal(false);
 
   totalItemsCount = computed(() =>
-    this.cartItems().reduce(
-      (total, item) => total + item.quantity,
-      0
-    )
+    this.cartItems().reduce((total, item) => total + item.quantity, 0)
   );
 
   waterSubtotal = computed(() =>
-    this.cartItems().reduce(
-      (total, item) => total + item.subtotal,
-      0
-    )
+    this.cartItems().reduce((total, item) => total + item.subtotal, 0)
   );
 
-  // Delivery fees are not included in the current CartResponse DTO.
-  totalDeliveryFee = computed(() => 0);
+  deliveryFee = computed(() =>
+    // Free when subtotal > KSh 2,000, otherwise KSh 80.
+    this.waterSubtotal() > 2000 ? 0 : this.cartItems().length > 0 ? 80 : 0
+  );
 
   totalDue = computed(() => {
     const discount = this.appliedDiscount()?.amountKsh ?? 0;
-
-    return Math.max(
-      0,
-      this.waterSubtotal() + this.totalDeliveryFee() - discount
-    );
+    return Math.max(0, this.waterSubtotal() + this.deliveryFee() - discount);
   });
 
   ngOnInit(): void {
+    // Refresh from the API on page load to stay in sync with the backend.
+    // CartService.getCart() already falls back to localStorage on failure,
+    // so the cart is never blank even when offline.
     this.loadCart();
   }
 
@@ -75,17 +75,20 @@ export class Cart implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.cartService.getCart()
+    this.cartService
+      .getCart()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (cart) => {
-          this.cartItems.set(cart.items ?? []);
-        },
-        error: (error) => {
-          console.error('Failed to load cart', error);
-          this.errorMessage.set(
-            'Unable to load your cart. Please sign in and try again.'
-          );
+        // CartService.getCart() updates the shared signal via _setCart()
+        // so we only need to handle the error case here.
+        error: () => {
+          // If it fails, CartService already served localStorage data.
+          // Show a soft warning rather than a hard error.
+          if (this.cartItems().length === 0) {
+            this.errorMessage.set(
+              'Unable to reach the server. Showing your locally saved cart.'
+            );
+          }
         },
       });
   }
@@ -94,18 +97,23 @@ export class Cart implements OnInit {
     this.errorMessage.set('');
     this.successMessage.set('');
 
+    // CartService.removeFromCart() removes optimistically from the local
+    // signal+storage first, then fires the DELETE to the backend.
     this.cartService.removeFromCart(productId).subscribe({
       next: () => {
-        this.cartItems.update(items =>
-          items.filter(item => item.productId !== productId)
-        );
         this.successMessage.set('Item removed from your cart.');
       },
-      error: (error) => {
-        console.error('Failed to remove cart item', error);
+      error: () => {
         this.errorMessage.set('Could not remove this item. Please try again.');
       },
     });
+  }
+
+  updateQuantity(productId: string, delta: number): void {
+    const item = this.cartItems().find((i) => i.productId === productId);
+    if (!item) return;
+    const newQty = Math.max(1, item.quantity + delta);
+    this.cartService.updateQuantity(productId, newQty).subscribe();
   }
 
   onPromoInputChange(event: Event): void {
@@ -115,7 +123,6 @@ export class Cart implements OnInit {
 
   applyPromo(): void {
     const code = this.promoInput().trim().toUpperCase();
-
     if (code === 'MAJI50') {
       this.appliedDiscount.set({ code, amountKsh: 50 });
       this.promoMessage.set('Code MAJI50 applied (KSh 50 off).');
@@ -136,6 +143,6 @@ export class Cart implements OnInit {
   }
 
   keepShopping(): void {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/find-water']);
   }
 }

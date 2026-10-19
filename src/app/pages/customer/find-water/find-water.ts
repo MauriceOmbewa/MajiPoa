@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { OrderForm } from '../order-form/order-form';
 import { WaterProduct } from '../../../../types';
 import { Router, RouterModule } from '@angular/router';
+import { Navbar } from '../../../shared/layout/navbar/navbar';
+import { Footer } from '../../../shared/layout/footer/footer';
+import { CartService } from '../../customer/services/cart-service';
+import { LocationStateService } from '../../customer/services/location-state.service';
+import { LeafletMapComponent } from '../../../shared/leaflet-map/leaflet-map';
 
 export interface ProductItem {
   id: string;
@@ -58,12 +63,62 @@ export interface LocationEstate {
 @Component({
   selector: 'app-find-water',
   standalone: true,
-  imports: [CommonModule, FormsModule, OrderForm, RouterModule],
+  imports: [CommonModule, FormsModule, OrderForm, RouterModule, Navbar, Footer, LeafletMapComponent],
   templateUrl: './find-water.html',
   styleUrl: './find-water.scss',
 })
 export class FindWater {
-  private readonly router = inject(Router);
+  private readonly router          = inject(Router);
+  private readonly cartService     = inject(CartService);
+  readonly locationState           = inject(LocationStateService);
+
+  /** Navigate to the full-page map picker, returning here after. */
+  openLocationPicker(): void {
+    this.router.navigate(['/pin-location'], {
+      queryParams: {
+        returnTo: 'find-water',
+        lat:      this.locationState.lat(),
+        lng:      this.locationState.lng(),
+        estate:   this.locationState.estateName(),
+      }
+    });
+  }
+
+  // Keep for any remaining template references
+  openLocationModal(): void { this.openLocationPicker(); }
+  closeLocationModal(): void { /* no-op — no modal anymore */ }
+
+  handleAddToCart(event: {
+    product: WaterProduct;
+    quantity: number;
+    options: any;
+  }): void {
+    this.cartService
+      .addToCart({
+        productId:   event.product.id,
+        quantity:    event.quantity,
+        productName: event.product.name,
+        price:       event.product.priceKsh,
+      })
+      .subscribe({
+        next: () => {
+          this.showToast(`${event.product.name} added to cart`);
+        },
+        error: (error) => {
+          console.error('Failed to add product to cart:', error);
+        },
+      });
+  }
+
+  handleDirectCheckout(event: {
+    product: WaterProduct;
+    quantity: number;
+    options: any;
+  }): void {
+    // Connect this to your checkout flow.
+    // Adding an item to the cart does not complete checkout.
+    console.log('Proceed to checkout:', event);
+  }
 
   // Current Selected Location
   readonly currentEstate = signal<LocationEstate>({
@@ -486,10 +541,8 @@ export class FindWater {
     setTimeout(() => this.promoCopied.set(false), 3000);
   }
 
-  // Modal Triggers
-  openLocationModal(): void {
-    this.showToast('Location selector: Choose estate in Nairobi');
-  }
+  // Modal Triggers — real implementation is now at the top of the class
+  // (openLocationModal is defined above; this duplicate toast stub is removed)
 
   openCart(): void {
     this.router.navigate(['/cart']);

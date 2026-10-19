@@ -1,192 +1,215 @@
-<!-- ==========================================================================
-   MajiSafi – Order Form Component Template
-   Matches the full design: dark header, size grid, product card, exchange
-   checkbox, accessory picker, quantity/estate/timing row, price footer.
-   ========================================================================== -->
-
 <div class="order-form-card" [class.layout-compact]="layout() === 'compact'">
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       HEADER — dark gradient, badge, title, subtitle + KEBS pill
-       ═══════════════════════════════════════════════════════════════════════ -->
   @if (showHeading()) {
     <header class="ofh">
       <div class="ofh-left">
         <div class="ofh-badge">
-          <span class="ofh-badge-dot"></span>
-          <span>INSTANT ORDER FORM</span>
-          <span class="ofh-dispatch">· Dispatched from Kilimani</span>
+          <span class="ofh-badge-dot"></span><span>INSTANT ORDER FORM</span
+          ><span class="ofh-dispatch">· Dispatched from Kilimani</span>
         </div>
         <h2 class="ofh-title">{{ title() }}</h2>
         <p class="ofh-sub">{{ subtitle() }}</p>
       </div>
       <div class="ofh-kebs">
-        <span class="ofh-kebs-icon">✦</span>
-        <span class="ofh-kebs-text">KEBS S-Mark<br><span class="ofh-kebs-cert">Certified</span></span>
+        <span class="ofh-kebs-icon">✦</span
+        ><span class="ofh-kebs-text"
+          >KEBS S-Mark<br /><span class="ofh-kebs-cert">Certified</span></span
+        >
       </div>
     </header>
   }
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       BODY
-       ═══════════════════════════════════════════════════════════════════════ -->
   <div class="ofb">
-
-    <!-- ─────────────────────────────────────────────────────────────────────
-         STEP 1 — SIZE SELECTOR GRID
-         ───────────────────────────────────────────────────────────────────── -->
     <section class="of-section">
       <div class="of-step-label">
-        <span class="of-step-num">1</span>
-        <strong>Select Bottle / Container Size</strong>
-        <span class="of-step-hint">Step 1 of 3: Container format</span>
+        <span class="of-step-num">1</span><strong>Select Bottle / Container Size</strong
+        ><span class="of-step-hint">Step 1 of 3: Container format</span>
       </div>
-
       <div class="of-size-grid">
         @for (opt of containerSizes; track opt.id) {
           <button
             type="button"
             class="of-size-btn"
             [class.of-size-btn--active]="selectedSizeId() === opt.id"
-            (click)="selectSize(opt.id)">
-
+            [attr.aria-pressed]="selectedSizeId() === opt.id"
+            (click)="selectSize(opt.id)"
+          >
             @if (selectedSizeId() === opt.id) {
               <span class="of-size-check">✓</span>
             }
             @if (opt.badge) {
               <span class="of-size-badge">{{ opt.badge }}</span>
             }
-
-            <!-- Icon -->
             <div class="of-size-icon">
-              @if (opt.iconType === 'jug') { 🫙 }
-              @if (opt.iconType === 'bottle') { 🍶 }
-              @if (opt.iconType === 'pack') { 🧊 }
-              @if (opt.iconType === 'tanker') { 🚛 }
+              @if (opt.iconType === 'jug') {
+                🫙
+              }
+              @if (opt.iconType === 'bottle') {
+                🍶
+              }
+              @if (opt.iconType === 'pack') {
+                🧊
+              }
+              @if (opt.iconType === 'tanker') {
+                🚛
+              }
             </div>
-
             <div class="of-size-label">{{ opt.sizeLabel }}</div>
             <div class="of-size-vol">{{ opt.volumeDescription }}</div>
-            <div class="of-size-price">FROM <strong>KSh {{ opt.basePrice | number }}</strong></div>
+            <div class="of-size-price">
+              FROM <strong>KSh {{ opt.basePrice | number }}</strong>
+            </div>
           </button>
         }
       </div>
-
-      <!-- Container note banner -->
       <div class="of-note-banner">
-        <span class="of-note-icon">ℹ</span>
-        <span>
-          <strong>{{ activeSizeOption().name }}:</strong>
-          {{ activeSizeOption().containerNote.split(':').slice(1).join(':') || activeSizeOption().containerNote }}
-        </span>
+        <span class="of-note-icon">ℹ</span
+        ><span
+          ><strong>{{ activeSizeOption().name }}:</strong>
+          {{
+            activeSizeOption().containerNote.split(':').slice(1).join(':') ||
+              activeSizeOption().containerNote
+          }}</span
+        >
         @if (activeSizeOption().containerNoteLink) {
-          <span class="of-note-spacer">·</span>
-          <span class="of-note-kebs">✦ KEBS S-Mark</span>
+          <span class="of-note-spacer">·</span><span class="of-note-kebs">✦ KEBS S-Mark</span>
         }
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────────────────────
-         STEP 2 — PRODUCT DETAIL CARD
-         ───────────────────────────────────────────────────────────────────── -->
     <section class="of-product-card">
-      <!-- Product image thumbnail -->
       <div class="of-product-thumb">
-        <span class="of-product-thumb-emoji">{{ activeProduct().imageEmoji }}</span>
-        <span class="of-product-thumb-label">{{ activeProduct().imageLabel }}</span>
+        <span class="of-product-thumb-emoji">{{ activeProduct().imageEmoji }}</span
+        ><span class="of-product-thumb-label">{{ activeProduct().imageLabel }}</span>
       </div>
-
-      <!-- Product info -->
       <div class="of-product-info">
-        <div class="of-product-name-row">
-          <strong class="of-product-name">{{ activeProduct().name }}</strong>
-          @if (activeProduct().verified) {
-            <span class="of-verified-badge">✓ Verified</span>
-          }
-          <span class="of-lab-cert">🧪 {{ activeProduct().labCert }}</span>
+        <div>
+          <div class="of-product-name-row">
+            <strong class="of-product-name">{{ activeProduct().name }}</strong>
+            @if (activeProduct().verified) {
+              <span class="of-verified-badge">✓ Verified</span>
+            }
+            <span class="of-lab-cert">🧪 {{ activeProduct().labCert }}</span>
+          </div>
+          <p class="of-product-source">
+            Source: {{ activeProduct().source }} · {{ activeProduct().treatment }}
+          </p>
         </div>
-
-        <p class="of-product-source">
-          Source: {{ activeProduct().source }} · {{ activeProduct().treatment }}
-        </p>
-
-        <!-- Vendor row + metrics -->
         <div class="of-product-meta-row">
           <div class="of-vendor-select-wrap">
-            <span class="of-meta-label">Licensed Vendor:</span>
-            <select
+            <span class="of-meta-label">Licensed Vendor:</span
+            ><select
               class="of-vendor-select"
               [ngModel]="selectedVendorId()"
-              (ngModelChange)="selectVendor($event)">
+              (ngModelChange)="selectVendor($event)"
+            >
               @for (v of activeVendors(); track v.id) {
-                <option [value]="v.id">{{ v.name }} — KSh {{ v.priceKsh }} · {{ v.deliveryMins }}m</option>
+                <option [value]="v.id">
+                  {{ v.name }} — KSh {{ v.priceKsh | number }} · {{ v.deliveryMins }}m
+                </option>
               }
             </select>
           </div>
-
           <div class="of-metrics">
             <div class="of-metric">
-              <span class="of-metric-label">pH:</span>
-              <span class="of-metric-val">{{ activeProduct().ph }}</span>
+              <span class="of-metric-label">pH</span
+              ><span class="of-metric-val">{{ activeProduct().ph }}</span>
             </div>
             <div class="of-metric-sep">·</div>
             <div class="of-metric">
-              <span class="of-metric-label">TDS</span>
-              <span class="of-metric-val">{{ activeProduct().tds }} ppm</span>
+              <span class="of-metric-label">TDS</span
+              ><span class="of-metric-val">{{ activeProduct().tds }} ppm</span>
             </div>
             <div class="of-metric-sep">·</div>
             <div class="of-metric">
-              <span class="of-metric-label">Delivers</span>
-              <span class="of-metric-val">{{ deliveryTimeLabel() }}</span>
+              <span class="of-metric-label">Delivers</span
+              ><span class="of-metric-val">{{ deliveryTimeLabel() }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────────────────────
-         EXCHANGE CHECKBOX (20L refill only)
-         ───────────────────────────────────────────────────────────────────── -->
+    @if (showBottleTypeSelector()) {
+      <section class="of-bottle-type">
+        <p class="of-bottle-type-title">
+          Choose your bottle type <span>— select the bottle supplied with your order</span>
+        </p>
+        <div class="of-bottle-type-options">
+          <button
+            type="button"
+            class="of-bottle-option"
+            [class.is-selected]="selectedBottleType() === 'soft'"
+            [attr.aria-pressed]="selectedBottleType() === 'soft'"
+            (click)="selectBottleType('soft')"
+          >
+            <span class="of-bottle-option-icon">🧴</span
+            ><span class="of-bottle-option-copy"
+              ><strong>Soft bottle</strong><small>Flexible, lightweight bottle option</small></span
+            >
+            @if (selectedBottleType() === 'soft') {
+              <span class="of-bottle-option-check">✓</span>
+            }
+          </button>
+          <button
+            type="button"
+            class="of-bottle-option"
+            [class.is-selected]="selectedBottleType() === 'hard'"
+            [attr.aria-pressed]="selectedBottleType() === 'hard'"
+            (click)="selectBottleType('hard')"
+          >
+            <span class="of-bottle-option-icon">🍶</span
+            ><span class="of-bottle-option-copy"
+              ><strong>Hard bottle</strong><small>Rigid, reusable bottle option</small></span
+            >
+            @if (selectedBottleType() === 'hard') {
+              <span class="of-bottle-option-check">✓</span>
+            }
+          </button>
+        </div>
+      </section>
+    }
+
     @if (showExchangeCheckbox()) {
       <label class="of-exchange-row">
         <input
           type="checkbox"
           class="of-exchange-check"
           [ngModel]="hasEmptyJug()"
-          (ngModelChange)="hasEmptyJug.set($event)" />
-        <span class="of-exchange-text">
-          I will give an empty 20L bottle to the rider on delivery
-        </span>
+          (ngModelChange)="hasEmptyJug.set($event)"
+        />
+        <span class="of-exchange-text"
+          >I will give an empty 20L bottle to the rider on delivery</span
+        >
         <div class="of-exchange-sub">
           Standard 1-to-1 refill exchange. (If you have no bottle, choose
-          <a class="of-exchange-link" href="javascript:void(0)" (click)="selectSize('20l-new')">20L New Jug</a>).
+          <a
+            class="of-exchange-link"
+            href="javascript:void(0)"
+            (click)="selectSize('20l-new'); $event.preventDefault()"
+            >20L New Jug</a
+          >).
         </div>
       </label>
     }
 
-    <!-- ─────────────────────────────────────────────────────────────────────
-         OPTIONAL DISPENSER ACCESSORY
-         ───────────────────────────────────────────────────────────────────── -->
     <section class="of-accessory-section">
       <div class="of-accessory-label">OPTIONAL DISPENSER ACCESSORY</div>
       <div class="of-accessory-row">
-        <!-- Active / selected accessory shown as pill -->
         <div class="of-accessory-selected">
-          <span>{{ activeAccessory().label }}</span>
-          <button
+          <span>{{ activeAccessory().label }}</span
+          ><button
             type="button"
             class="of-accessory-deselect"
             [class.of-accessory-deselect--hidden]="selectedAccessory() === 'none'"
-            (click)="setAccessory('none')">−</button>
+            aria-label="Remove accessory"
+            (click)="setAccessory('none')"
+          >
+            −
+          </button>
         </div>
-
-        <!-- Add-on chips for non-none accessories -->
         @for (acc of accessories; track acc.id) {
           @if (acc.id !== 'none' && selectedAccessory() !== acc.id) {
-            <button
-              type="button"
-              class="of-accessory-chip"
-              (click)="setAccessory(acc.id)">
+            <button type="button" class="of-accessory-chip" (click)="setAccessory(acc.id)">
               {{ acc.label }}
               <span class="of-accessory-price">+KSh {{ acc.priceAdd | number }}</span>
             </button>
@@ -195,22 +218,30 @@
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────────────────────────────────
-         STEP 3 — QUANTITY + DELIVERY ESTATE + TIMING
-         ───────────────────────────────────────────────────────────────────── -->
     <section class="of-controls-row">
-
-      <!-- Quantity -->
       <div class="of-ctrl-block">
-        <label class="of-ctrl-label">
-          Quantity
-          <span class="of-ctrl-hint">{{ totalVolumeLitres() }} Litres total</span>
-        </label>
+        <label class="of-ctrl-label"
+          >Quantity
+          <span class="of-ctrl-hint">{{ totalVolumeLitres() | number }} Litres total</span></label
+        >
         <div class="of-qty-row">
           <div class="of-stepper">
-            <button type="button" class="of-stepper-btn" (click)="decrementQuantity()">−</button>
-            <span class="of-stepper-val">{{ quantity() }}</span>
-            <button type="button" class="of-stepper-btn" (click)="incrementQuantity()">+</button>
+            <button
+              type="button"
+              class="of-stepper-btn"
+              aria-label="Decrease quantity"
+              (click)="decrementQuantity()"
+            >
+              −</button
+            ><span class="of-stepper-val">{{ quantity() }}</span
+            ><button
+              type="button"
+              class="of-stepper-btn"
+              aria-label="Increase quantity"
+              (click)="incrementQuantity()"
+            >
+              +
+            </button>
           </div>
           <div class="of-quick-qty">
             @for (q of quickQtyOptions; track q) {
@@ -218,21 +249,23 @@
                 type="button"
                 class="of-quick-btn"
                 [class.of-quick-btn--active]="quantity() === q"
-                (click)="setQuickQty(q)">{{ q }}</button>
+                [attr.aria-pressed]="quantity() === q"
+                (click)="setQuickQty(q)"
+              >
+                {{ q }}
+              </button>
             }
           </div>
         </div>
       </div>
-
-      <!-- Delivery Estate -->
       <div class="of-ctrl-block">
-        <label class="of-ctrl-label">
-          <span class="of-ctrl-label-icon">📍</span> Delivery Estate
-        </label>
-        <select
+        <label class="of-ctrl-label"
+          ><span class="of-ctrl-label-icon">📍</span> Delivery Estate</label
+        ><select
           class="of-estate-select"
           [ngModel]="selectedEstateId()"
-          (ngModelChange)="selectedEstateId.set($event)">
+          (ngModelChange)="selectedEstateId.set($event)"
+        >
           @for (estate of deliveryEstates; track estate.id) {
             <option [value]="estate.id">{{ estate.name }} (~{{ estate.deliveryMins }}min)</option>
           }
@@ -241,47 +274,39 @@
           {{ activeEstate().vendorCount }} certified stations available nearby
         </div>
       </div>
-
-      <!-- Timing -->
       <div class="of-ctrl-block">
-        <label class="of-ctrl-label">
-          <span class="of-ctrl-label-icon">🕐</span> When do you need it?
-        </label>
+        <label class="of-ctrl-label"
+          ><span class="of-ctrl-label-icon">🕐</span> When do you need it?</label
+        >
         <div class="of-timing-chips">
           <button
             type="button"
             class="of-timing-chip"
             [class.of-timing-chip--active]="timing() === 'asap'"
-            (click)="setTiming('asap')">
-            <span class="of-timing-icon">⚡</span>
-            <span class="of-timing-main">ASAP</span>
-            <span class="of-timing-sub">{{ deliveryTimeLabel() }}</span>
-          </button>
-          <button
+            (click)="setTiming('asap')"
+          >
+            <span class="of-timing-icon">⚡</span><span class="of-timing-main">ASAP</span
+            ><span class="of-timing-sub">{{ deliveryTimeLabel() }}</span></button
+          ><button
             type="button"
             class="of-timing-chip"
             [class.of-timing-chip--active]="timing() === 'today'"
-            (click)="setTiming('today')">
-            <span class="of-timing-icon">🕒</span>
-            <span class="of-timing-main">Today</span>
-          </button>
-          <button
+            (click)="setTiming('today')"
+          >
+            <span class="of-timing-icon">🕒</span><span class="of-timing-main">Today</span></button
+          ><button
             type="button"
             class="of-timing-chip"
             [class.of-timing-chip--active]="timing() === 'auto'"
-            (click)="setTiming('auto')">
-            <span class="of-timing-icon">🔁</span>
-            <span class="of-timing-main">Auto</span>
-            <span class="of-timing-sub">Weekly −5%</span>
+            (click)="setTiming('auto')"
+          >
+            <span class="of-timing-icon">🔁</span><span class="of-timing-main">Auto</span
+            ><span class="of-timing-sub">Weekly −5%</span>
           </button>
         </div>
       </div>
-
     </section>
 
-    <!-- ─────────────────────────────────────────────────────────────────────
-         FOOTER — price breakdown + CTA buttons
-         ───────────────────────────────────────────────────────────────────── -->
     <footer class="of-footer">
       <div class="of-footer-price">
         <div class="of-price-amount">KSh {{ grandTotal() | number }}</div>
@@ -289,33 +314,28 @@
         <div class="of-price-breakdown">
           <span>{{ lineItemLabel() }}</span>
           @if (deliveryFee() > 0) {
-            <span> + Delivery KSh {{ deliveryFee() }}</span>
+            <span> + Delivery KSh {{ deliveryFee() | number }}</span>
           }
           @if (autoDiscount() > 0) {
-            <span class="of-discount"> − KSh {{ autoDiscount() }} (5% Auto)</span>
+            <span class="of-discount"> − KSh {{ autoDiscount() | number }} (5% Auto)</span>
           }
           @if (accessoryPrice() > 0) {
-            <span> + Accessory KSh {{ accessoryPrice() }}</span>
+            <span> + Accessory KSh {{ accessoryPrice() | number }}</span>
           }
         </div>
       </div>
-
       <div class="of-footer-actions">
         <button type="button" class="of-btn-cart" (click)="onAddToCartSubmit()">
-          <span class="of-btn-icon">🛒</span> Add to Cart
-        </button>
-        <button type="button" class="of-btn-order" (click)="onOrderNowSubmit()">
-          Order Now with M-Pesa →
+          <span class="of-btn-icon">🛒</span> Add to Cart</button
+        ><button type="button" class="of-btn-order" (click)="onOrderNowSubmit()">
+          🟢 Order Now with M-Pesa →
         </button>
       </div>
     </footer>
-
-    <!-- Trust line -->
     <div class="of-trust-row">
-      <span>✓ Pay on delivery or M-Pesa STK push. No credit card required.</span>
-      <span class="of-trust-sep">·</span>
-      <span>MajiSoft Quality Guarantee: Free replacement if seal is broken.</span>
+      <span>✓ Pay on delivery or M-Pesa STK push. No credit card required.</span
+      ><span class="of-trust-sep">·</span
+      ><span>MajiSafi Quality Guarantee: Free replacement if seal is broken.</span>
     </div>
-
-  </div><!-- /ofb -->
-</div><!-- /order-form-card -->
+  </div>
+</div>

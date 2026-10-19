@@ -1,0 +1,148 @@
+<!-- ==========================================================================
+     /pin-location  — full-page geo-pinning
+     ========================================================================== -->
+<div class="min-h-screen bg-[#F1F6FA] font-sans antialiased text-[#07243D]">
+  <app-navbar />
+
+  <div class="pl-wrap">
+
+    <!-- ── Row 1: back btn + badge + title + provider toggle ──────────────── -->
+    <div class="pl-topbar">
+      <div class="pl-topbar-left">
+        <button type="button" class="pl-back" (click)="goBack()">← Back</button>
+        <div>
+          <div class="pl-badge"><span class="pl-bdot"></span>MAJISAFI DOORSTEP GEO-PINNING</div>
+          <h1 class="pl-title">Physical Location Pinning</h1>
+        </div>
+      </div>
+
+      <!-- Provider toggle — top-right, same line as title -->
+      <div class="pl-provider-bar">
+        @for (opt of providerOptions; track opt.id) {
+          <button
+            type="button"
+            class="pl-prov-btn"
+            [class.active]="activeProvider() === opt.id"
+            (click)="setProvider(opt.id)">
+            {{ opt.icon }} {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Row 2: sub-heading ──────────────────────────────────────────────── -->
+    <div class="pl-subhead">
+      <h2 class="pl-sh-title">Exact Doorstep Pin Drop</h2>
+      <p class="pl-sh-sub">
+        Click anywhere on the map or drag the blue water pin.
+        The pin needle points <strong>precisely</strong> to your gate or rooftop,
+        automatically detecting your physical street and estate.
+      </p>
+    </div>
+
+    <!-- ── Row 3: "Currently Pinned" info bar ──────────────────────────────── -->
+    <div class="pl-pinbar">
+      <div class="pl-pinbar-left">
+        <span class="pl-pinbar-icon">📍</span>
+        <div>
+          <span class="pl-pinbar-label">Currently Pinned Physical Location:</span>
+          <strong class="pl-pinbar-addr">{{ estateName() }}, {{ streetAddress() }}</strong>
+        </div>
+      </div>
+      <div class="pl-pinbar-coords">
+        <span class="pl-coord">Lat: <code>{{ seedLat().toFixed(4) }}</code></span>
+        <span class="pl-coord">Lng: <code>{{ seedLng().toFixed(4) }}</code></span>
+      </div>
+    </div>
+
+    <!-- ── Two-column workspace ────────────────────────────────────────────── -->
+    <div class="pl-grid">
+
+      <!-- LEFT: map -->
+      <div class="pl-map-col">
+        <app-leaflet-map
+          mode="page"
+          [initialLat]="seedLat()"
+          [initialLng]="seedLng()"
+          [initialEstate]="seedEstate()"
+          [initialProvider]="activeProvider()"
+          (locationPinned)="onMapAutoPin($event)"
+          (cancelled)="goBack()" />
+      </div>
+
+      <!-- RIGHT: address form -->
+      <aside class="pl-form-col">
+        <div class="pl-form-card">
+
+          <div class="pl-form-head">
+            <div class="pl-form-icon">📍</div>
+            <div>
+              <h3 class="pl-form-title">Doorstep Delivery Details</h3>
+              <span class="pl-form-badge">Auto-Detected</span>
+              <div class="pl-form-sub">Automatically updated from your pinned location</div>
+            </div>
+          </div>
+
+          <div class="pl-fields">
+            <div class="pl-field">
+              <label class="pl-label">Nairobi Estate / Area</label>
+              <input type="text" class="pl-input"
+                placeholder="e.g. Kilimani, Westlands…"
+                [ngModel]="estateName()"
+                (ngModelChange)="estateName.set($event)" />
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Street / Road Name</label>
+              <input type="text" class="pl-input"
+                placeholder="e.g. Argwings Kodhek Road"
+                [ngModel]="streetAddress()"
+                (ngModelChange)="streetAddress.set($event)" />
+            </div>
+            <div class="pl-field-row">
+              <div class="pl-field">
+                <label class="pl-label">Building / Compound</label>
+                <input type="text" class="pl-input"
+                  placeholder="e.g. Silver Springs Plaza"
+                  [ngModel]="buildingName()"
+                  (ngModelChange)="buildingName.set($event)" />
+              </div>
+              <div class="pl-field">
+                <label class="pl-label">Floor &amp; Unit / Apt</label>
+                <input type="text" class="pl-input"
+                  placeholder="e.g. Block B, Apt 4B"
+                  [ngModel]="apartmentUnit()"
+                  (ngModelChange)="apartmentUnit.set($event)" />
+              </div>
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Prominent Landmark (for delivery rider)</label>
+              <input type="text" class="pl-input"
+                placeholder="e.g. Opposite Yaya Centre Petrol Station"
+                [ngModel]="landmark()"
+                (ngModelChange)="landmark.set($event)" />
+            </div>
+            <div class="pl-field">
+              <label class="pl-label">Rider Delivery Notes &amp; Access Code</label>
+              <textarea class="pl-input pl-ta" rows="3"
+                placeholder="e.g. Gate security code: 4402. Please call upon arrival."
+                [ngModel]="deliveryNotes()"
+                (ngModelChange)="deliveryNotes.set($event)"></textarea>
+            </div>
+          </div>
+
+          <button type="button" class="pl-confirm-btn" (click)="confirm()">
+            @if (isSaved()) { ✓ &nbsp;Location Saved } @else { Confirm Pinned Location }
+          </button>
+
+          <p class="pl-trust">
+            <span>🛡️</span>
+            Water riders receive turn-by-turn routing directly to your pinned GPS coordinates.
+          </p>
+
+        </div>
+      </aside>
+    </div>
+
+  </div><!-- /pl-wrap -->
+  <app-footer />
+</div>

@@ -278,12 +278,41 @@
 
               <div class="field">
                 <label for="pinLocation">Map location / pin</label>
+
+                <!-- Map preview thumbnail using real OSM tiles -->
+                <div style="margin-top:4px;margin-bottom:8px">
+                  <app-leaflet-map
+                    mode="preview"
+                    [initialLat]="pinLat"
+                    [initialLng]="pinLng"
+                    [initialEstate]="addressForm.area || 'Kilimani'"
+                    (previewClicked)="goToPinLocation()" />
+                </div>
+
+                <!-- Pinned coordinates badge -->
+                <div *ngIf="addressForm.pinLocation"
+                  style="font-size:12px;color:#12946A;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+                  <span>📍</span>
+                  <span>{{ addressForm.pinLocation }}</span>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="goToPinLocation()"
+                  style="display:inline-flex;align-items:center;gap:7px;
+                         width:100%;padding:9px 16px;border-radius:24px;
+                         border:1.5px solid #DBE7F1;background:#F1F6FA;
+                         font-size:13px;font-weight:600;color:#07243D;
+                         cursor:pointer;justify-content:center">
+                  📍 {{ addressForm.pinLocation ? 'Update map pin' : 'Pin on map' }}
+                </button>
+
+                <!-- Hidden input keeps the value in the form model -->
                 <input
                   id="pinLocation"
                   name="pinLocation"
-                  type="text"
+                  type="hidden"
                   [(ngModel)]="addressForm.pinLocation"
-                  placeholder="Optional map link or coordinates"
                 />
               </div>
 

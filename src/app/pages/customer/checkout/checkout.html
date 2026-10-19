@@ -69,15 +69,24 @@
             ></textarea>
           </div>
 
-          <!-- Interactive Map pin simulator -->
-          <div class="map" (click)="onMapPinMoved($event)" style="height:180px;position:relative;cursor:crosshair">
-            <span
-              class="pin"
-              [style.left]="pinPosition().x + '%'"
-              [style.top]="pinPosition().y + '%'"
-            >
-              Drop pin here
-            </span>
+          <!-- Map preview + navigate to full pin-location page -->
+          <div style="margin-top:8px">
+            <app-leaflet-map
+              mode="preview"
+              [initialLat]="locationState.lat()"
+              [initialLng]="locationState.lng()"
+              [initialEstate]="locationState.estateName()"
+              (previewClicked)="goToPinLocation()" />
+            <button
+              type="button"
+              (click)="goToPinLocation()"
+              style="width:100%;margin-top:8px;padding:9px;border-radius:24px;
+                     border:1.5px solid #DBE7F1;background:#F1F6FA;
+                     font-size:13.5px;font-weight:600;color:#07243D;
+                     cursor:pointer;display:flex;align-items:center;
+                     justify-content:center;gap:6px">
+              📍 Pin exact location on map
+            </button>
           </div>
         </div>
       </div>
