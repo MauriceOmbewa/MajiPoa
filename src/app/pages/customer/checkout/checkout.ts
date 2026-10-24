@@ -6,13 +6,20 @@
 // ==========================================================================
 
 import {
-  Component, signal, computed, inject, Input, Output,
-  EventEmitter, OnDestroy, OnInit
+  Component,
+  signal,
+  computed,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { finalize } from 'rxjs';
 import { CartService } from '../services/cart-service';
 import { OrderService } from '../services/order-service';
-import { OrderResponse } from '../services/order-service';
+import { CustomerOrder } from '../services/order-service';
 import { OrderStateService } from '../services/order-state.service';
 import { LocationStateService } from '../services/location-state.service';
 import { CommonModule } from '@angular/common';
@@ -34,7 +41,6 @@ export interface CheckoutOrderLine {
 export type DeliverySlot = 'asap' | 'today_evening' | 'tomorrow_morning';
 export type PaymentMethod = 'mpesa' | 'cod';
 
-
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -43,11 +49,11 @@ export type PaymentMethod = 'mpesa' | 'cod';
   styleUrl: './checkout.scss',
 })
 export class Checkout implements OnInit, OnDestroy {
-  private readonly cartService    = inject(CartService);
-  private readonly orderService   = inject(OrderService);
-  private readonly orderStateSvc  = inject(OrderStateService);
-  readonly         locationState  = inject(LocationStateService);
-  private readonly router         = inject(Router);
+  private readonly cartService = inject(CartService);
+  private readonly orderService = inject(OrderService);
+  private readonly orderStateSvc = inject(OrderStateService);
+  readonly locationState = inject(LocationStateService);
+  private readonly router = inject(Router);
 
   orderLines = signal<CheckoutOrderLine[]>([]);
   loadingCart = signal(false);
@@ -56,106 +62,116 @@ export class Checkout implements OnInit, OnDestroy {
   checkoutSuccess = signal('');
 
   ngOnInit(): void {
-  this.loadCart();
-}
-
-loadCart(): void {
-  this.loadingCart.set(true);
-  this.checkoutError.set('');
-
-  this.cartService.getCart()
-    .pipe(finalize(() => this.loadingCart.set(false)))
-    .subscribe({
-      next: (cart) => {
-        this.orderLines.set(
-          (cart.items ?? []).map((item) => ({
-            id: item.cartItemId,
-            productId: item.productId,
-            name: item.productName,
-            vendor: 'Water delivery',
-            quantity: item.quantity,
-            unitPriceKsh: item.price,
-            subtotalKsh: item.subtotal
-          }))
-        );
-      },
-      error: (error) => {
-        console.error('Failed to load checkout cart', error);
-        this.checkoutError.set(
-          'Unable to load your cart. Please sign in and try again.'
-        );
-      }
-    });
-}
-
-placeOrder(): void {
-  if (this.placingOrder()) return;
-
-  if (this.orderLines().length === 0) {
-    this.checkoutError.set('Your cart is empty.');
-    return;
+    this.loadCart();
   }
 
-  this.checkoutError.set('');
-  this.checkoutSuccess.set('');
-  this.placingOrder.set(true);
+  loadCart(): void {
+    this.loadingCart.set(true);
+    this.checkoutError.set('');
 
-  this.orderService.placeOrder()
-    .pipe(finalize(() => this.placingOrder.set(false)))
-    .subscribe({
-      next: (order) => {
-        this.closeStkModal();
+    this.cartService
+      .getCart()
+      .pipe(finalize(() => this.loadingCart.set(false)))
+      .subscribe({
+        next: (cart) => {
+          this.orderLines.set(
+            (cart.items ?? []).map((item) => ({
+              id: item.cartItemId,
+              productId: item.productId,
+              name: item.productName,
+              vendor: 'Water delivery',
+              quantity: item.quantity,
+              unitPriceKsh: item.price,
+              subtotalKsh: item.subtotal,
+            })),
+          );
+        },
+        error: (error) => {
+          console.error('Failed to load checkout cart', error);
+          this.checkoutError.set('Unable to load your cart. Please sign in and try again.');
+        },
+      });
+  }
 
-        // Snapshot the checkout lines before the cart is cleared.
-        const checkoutLines = this.orderLines().map((line) => ({ ...line }));
+  placeOrder(): void {
+    if (this.placingOrder()) {
+      return;
+    }
 
-        // Persist order details for live-tracking and order-confirmed pages.
-        // Uses sessionStorage so it survives navigation but not a full tab close.
-        this.orderStateSvc.setOrder({
-          orderId:          order.orderId,
-          orderNumber:      `WM${order.orderId.slice(-5).toUpperCase()}`,
-          totalAmount:      order.totalAmount,
-          deliveryFee:      this.deliveryFee(),
-          phoneNumber:      this.phoneNumber(),
-          mpesaReceiptCode: '',
-          vendorName:       checkoutLines[0]?.vendor ?? 'Water Vendor',
-          deliveryAddress:  this.deliveryAddress(),
-          deliveryEstate:   this.deliveryAddress(),
-          estimatedMins:    this.selectedSlot() === 'asap' ? 45 : 120,
-          items: checkoutLines.map((line) => ({
-            productId:  line.productId,
-            name:       line.name,
-            quantity:   line.quantity,
-            unitPrice:  line.unitPriceKsh,
-            subtotal:   line.subtotalKsh,
-          })),
-          placedAt: new Date().toISOString(),
-        });
+    const lines = this.orderLines();
 
-        // Clear the cart after a successful order.
-        this.cartService.clearCart();
+    if (lines.length === 0) {
+      this.checkoutError.set('Your cart is empty.');
+      return;
+    }
 
-        this.router.navigate(['/order-confirmed'], {
-          state: {
-            orderResponse: order,
-            checkoutLines,
-            phoneNumber: this.phoneNumber()
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Failed to place order', error);
+    this.checkoutError.set('');
+    this.checkoutSuccess.set('');
+    this.placingOrder.set(true);
 
-        this.checkoutError.set(
-          error.status === 401
-            ? 'Your session has expired. Please sign in again.'
-            : error.status === 400
-              ? 'Your cart may be empty. Refresh the cart and try again.'
-              : 'We could not place your order. Please try again.'
-        );
-      }
-    });
-}
+    // Preserve cart item names before the backend clears the cart.
+    const checkoutLines = lines.map((line) => ({
+      productId: String(line.productId),
+      name: line.name,
+    }));
+
+    this.orderService
+      .placeOrder()
+      .pipe(finalize(() => this.placingOrder.set(false)))
+      .subscribe({
+        next: (order: CustomerOrder) => {
+          this.closeStkModal();
+
+          // Save order details for other pages in the application.
+          this.orderStateSvc.setOrder({
+            orderId: String(order.orderId),
+            orderNumber: `WM${String(order.orderId).slice(-5).toUpperCase()}`,
+            totalAmount: order.totalAmount,
+            deliveryFee: this.deliveryFee(),
+            phoneNumber: this.phoneNumber(),
+            mpesaReceiptCode: '',
+            vendorName: lines[0]?.vendor ?? 'Water Vendor',
+            deliveryAddress: this.deliveryAddress(),
+            deliveryEstate: this.deliveryAddress(),
+            estimatedMins: this.selectedSlot() === 'asap' ? 45 : 120,
+            items: lines.map((line) => ({
+              productId: String(line.productId),
+              name: line.name,
+              quantity: line.quantity,
+              unitPrice: line.unitPriceKsh,
+              subtotal: line.subtotalKsh,
+            })),
+            placedAt: new Date().toISOString(),
+          });
+
+          // Clear the cart after the backend successfully creates the order.
+          this.cartService.clearCart();
+
+          // Pass the real API response and checkout item names to confirmation.
+          this.router.navigate(['/order-confirmed'], {
+            state: {
+              orderResponse: order,
+              checkoutLines,
+              phoneNumber: this.phoneNumber(),
+              mpesaReceiptCode: '',
+            },
+          });
+        },
+
+        error: (error) => {
+          console.error('Failed to place order', error);
+
+          this.checkoutError.set(
+            error.status === 401
+              ? 'Your session has expired. Please sign in again.'
+              : error.status === 400
+                ? 'Your cart may be empty. Refresh the cart and try again.'
+                : 'We could not place your order. Please try again.',
+          );
+        },
+      });
+  }
+
   // Inputs for host integration
   @Input() set initialLines(lines: CheckoutOrderLine[]) {
     if (lines && lines.length > 0) {
@@ -174,12 +190,14 @@ placeOrder(): void {
   @Output() signInRequested = new EventEmitter<void>();
 
   // Form Signals — pre-populate from LocationStateService if available
-  deliveryAddress   = signal<string>(this.locationState.streetAddress() || 'Riverside Court, Argwings Kodhek Rd, Kilimani');
-  apartmentNo       = signal<string>('B12');
-  floor             = signal<string>('3rd');
-  riderDirections   = signal<string>('');
+  deliveryAddress = signal<string>(
+    this.locationState.streetAddress() || 'Riverside Court, Argwings Kodhek Rd, Kilimani',
+  );
+  apartmentNo = signal<string>('B12');
+  floor = signal<string>('3rd');
+  riderDirections = signal<string>('');
   // pinPosition kept for template compatibility but no longer the primary source
-  pinPosition       = signal<{ x: number; y: number }>({ x: 52, y: 52 });
+  pinPosition = signal<{ x: number; y: number }>({ x: 52, y: 52 });
 
   customerName = signal<string>('Maurice O.');
   phoneNumber = signal<string>('0712 345 678');
@@ -192,7 +210,7 @@ placeOrder(): void {
 
   // Cart & Discount Signals
   // orderLines = signal<CheckoutOrderLine[]>([
-    
+
   // ]);
 
   promoCode = signal<string>('MAJI50');
@@ -209,10 +227,10 @@ placeOrder(): void {
   //   return this.orderLines().reduce((acc, line) => acc + line.subtotalKsh, 0);
   // });
   waterSubtotal = computed(() =>
-  this.orderLines().reduce((total, line) => total + line.subtotalKsh, 0)
-);
+    this.orderLines().reduce((total, line) => total + line.subtotalKsh, 0),
+  );
 
- totalDue = computed(() => this.waterSubtotal());
+  totalDue = computed(() => this.waterSubtotal());
 
   vendorCount = computed(() => {
     const vendors = new Set(this.orderLines().map((l) => l.vendor));
@@ -269,10 +287,10 @@ placeOrder(): void {
     this.router.navigate(['/pin-location'], {
       queryParams: {
         returnTo: 'checkout',
-        lat:      this.locationState.lat(),
-        lng:      this.locationState.lng(),
-        estate:   this.locationState.estateName(),
-      }
+        lat: this.locationState.lat(),
+        lng: this.locationState.lng(),
+        estate: this.locationState.estateName(),
+      },
     });
   }
 
@@ -280,18 +298,19 @@ placeOrder(): void {
   onMapPinConfirmed(loc: any): void {
     // Update the shared location state so live-tracking + find-water reflect it
     this.locationState.set({
-      lat:           loc.latitude,
-      lng:           loc.longitude,
-      estateName:    loc.estateName,
+      lat: loc.latitude,
+      lng: loc.longitude,
+      estateName: loc.estateName,
       streetAddress: loc.streetAddress,
-      buildingName:  loc.buildingName  ?? '',
+      buildingName: loc.buildingName ?? '',
       apartmentUnit: loc.apartmentUnit ?? '',
-      landmark:      loc.landmark      ?? '',
+      landmark: loc.landmark ?? '',
       deliveryNotes: loc.deliveryNotes ?? '',
     });
     // Update the delivery address text field shown in the checkout form
-    const addrParts = [loc.streetAddress, loc.buildingName, loc.estateName, 'Nairobi']
-      .filter(Boolean);
+    const addrParts = [loc.streetAddress, loc.buildingName, loc.estateName, 'Nairobi'].filter(
+      Boolean,
+    );
     this.deliveryAddress.set(addrParts.join(', '));
     if (loc.deliveryNotes) this.riderDirections.set(loc.deliveryNotes);
   }
@@ -304,7 +323,10 @@ placeOrder(): void {
   updatePhoneNumber(e: Event) {
     const target = e.target as HTMLInputElement;
     this.phoneNumber.set(target.value);
-    if (this.paymentMethod() === 'mpesa' && (!this.mpesaNumber() || this.mpesaNumber() === this.phoneNumber())) {
+    if (
+      this.paymentMethod() === 'mpesa' &&
+      (!this.mpesaNumber() || this.mpesaNumber() === this.phoneNumber())
+    ) {
       this.mpesaNumber.set(target.value);
     }
   }
@@ -360,34 +382,40 @@ placeOrder(): void {
     this.stkProgressPercent.set(15);
   }
 
-  confirmPaid() {
-    this.closeStkModal();
-    // Save whatever is in the cart as a local-only order for display purposes.
-    const lines = this.orderLines();
-    if (lines.length > 0) {
-      this.orderStateSvc.setOrder({
-        orderId:          `local-${Date.now()}`,
-        orderNumber:      `WM${Date.now().toString().slice(-5)}`,
-        totalAmount:      this.totalDue(),
-        deliveryFee:      this.deliveryFee(),
-        phoneNumber:      this.phoneNumber(),
-        mpesaReceiptCode: '',
-        vendorName:       lines[0]?.vendor ?? 'Water Vendor',
-        deliveryAddress:  this.deliveryAddress(),
-        deliveryEstate:   this.deliveryAddress(),
-        estimatedMins:    this.selectedSlot() === 'asap' ? 45 : 120,
-        items: lines.map((line) => ({
-          productId:  line.productId,
-          name:       line.name,
-          quantity:   line.quantity,
-          unitPrice:  line.unitPriceKsh,
-          subtotal:   line.subtotalKsh,
-        })),
-        placedAt: new Date().toISOString(),
-      });
-      this.cartService.clearCart();
-    }
-    this.router.navigate(['/order-confirmed']);
+  // confirmPaid() {
+  //   this.closeStkModal();
+  //   // Save whatever is in the cart as a local-only order for display purposes.
+  //   const lines = this.orderLines();
+  //   if (lines.length > 0) {
+  //     this.orderStateSvc.setOrder({
+  //       orderId: `local-${Date.now()}`,
+  //       orderNumber: `WM${Date.now().toString().slice(-5)}`,
+  //       totalAmount: this.totalDue(),
+  //       deliveryFee: this.deliveryFee(),
+  //       phoneNumber: this.phoneNumber(),
+  //       mpesaReceiptCode: '',
+  //       vendorName: lines[0]?.vendor ?? 'Water Vendor',
+  //       deliveryAddress: this.deliveryAddress(),
+  //       deliveryEstate: this.deliveryAddress(),
+  //       estimatedMins: this.selectedSlot() === 'asap' ? 45 : 120,
+  //       items: lines.map((line) => ({
+  //         productId: line.productId,
+  //         name: line.name,
+  //         quantity: line.quantity,
+  //         unitPrice: line.unitPriceKsh,
+  //         subtotal: line.subtotalKsh,
+  //       })),
+  //       placedAt: new Date().toISOString(),
+  //     });
+  //     this.cartService.clearCart();
+  //   }
+  //   this.router.navigate(['/order-confirmed']);
+  // }
+
+  confirmPaid(): void {
+    this.checkoutError.set(
+      'Payment must be confirmed by M-Pesa before your order can be marked as paid.'
+    );
   }
 
   onSignInClick() {

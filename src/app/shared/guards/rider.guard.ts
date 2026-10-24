@@ -6,9 +6,12 @@ import { map } from 'rxjs';
 
 /**
  * Protects all rider portal routes (/riders/**).
+ *
  * Same two-step pattern as vendorGuard:
  *   1. Logged in?          → no → /sign-in
  *   2. Has RIDER DB role?  → no → /become-rider
+ *
+ * Uses the auth hint to avoid instant redirect on page refresh.
  */
 export const riderGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
@@ -26,5 +29,11 @@ export const riderGuard: CanActivateFn = () => {
   };
 
   if (auth.isLoggedIn()) return check();
+
+  if (!auth.hadSession()) {
+    router.navigate(['/sign-in']);
+    return false;
+  }
+
   return auth.fetchCurrentUser().pipe(map(() => check()));
 };

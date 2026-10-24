@@ -5,10 +5,10 @@
 // File: src/app/pages/sign-in/sign-in.ts
 // ==========================================================================
 
-import { Component, signal, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
+import { Component, signal, Output, EventEmitter, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Navbar } from '../../../shared/layout/navbar/navbar';
 import { Footer } from '../../../shared/layout/footer/footer';
 import { AuthService } from '../../../shared/services/auth.service';
@@ -20,11 +20,12 @@ import { AuthService } from '../../../shared/services/auth.service';
   templateUrl: './sign-in.html',
   styleUrl: './sign-in.scss',
 })
-export class SignIn implements OnDestroy {
+export class SignIn implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router      = inject(Router);
+  private readonly route       = inject(ActivatedRoute);
 
-  // Outputs kept for backward compatibility but no longer needed for Google SSO
+  // Outputs kept for backward compatibility
   @Output() signedIn = new EventEmitter<{ phone: string }>();
   @Output() googleSignInRequested = new EventEmitter<void>();
   @Output() guestBrowsingRequested = new EventEmitter<void>();
@@ -36,8 +37,17 @@ export class SignIn implements OnDestroy {
   otpCode = '';
   codeSent = signal<boolean>(false);
   resendSeconds = signal<number>(42);
+  /** Set to true when redirected here because the session expired mid-use */
+  sessionExpired = signal<boolean>(false);
 
   private timerInterval: any = null;
+
+  ngOnInit(): void {
+    const reason = this.route.snapshot.queryParamMap.get('reason');
+    if (reason === 'session-expired') {
+      this.sessionExpired.set(true);
+    }
+  }
 
   sendCode() {
     if (!this.phoneNumber || this.phoneNumber.trim().length < 9) {

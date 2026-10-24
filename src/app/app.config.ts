@@ -8,13 +8,22 @@ import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi 
 
 import { routes } from './app.routes';
 import { credentialsInterceptor } from './shared/services/credentials.interceptor';
+import { authInterceptor }        from './shared/services/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    // HttpClient with fetch API (Angular 18+). The interceptor sends the login cookie on every API call.
-    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor]), withInterceptorsFromDi()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([
+        // 1. Always send the session cookie with every request
+        credentialsInterceptor,
+        // 2. On 401: attempt one session-restore then redirect to /sign-in
+        authInterceptor,
+      ]),
+      withInterceptorsFromDi()
+    ),
   ],
 };
