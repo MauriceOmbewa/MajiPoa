@@ -7,15 +7,12 @@ import { map } from 'rxjs';
 /**
  * Protects all vendor portal routes (/vendor-dashboard, /vendor-orders, etc.).
  *
- * Two checks are applied in order:
- *   1. Is the user logged in?           → if not, redirect to /sign-in
- *   2. Do they have the VENDOR DB role? → if not, redirect to /become-vendor
- *      (the upgrade prompt page)
+ * Two checks applied in order:
+ *   1. Is the user logged in?           → no → /sign-in
+ *   2. Do they have the VENDOR DB role? → no → /become-vendor
  *
- * The activeMode check is intentionally NOT done here — the guard is about
- * access control, not current view preference. Once inside the vendor portal
- * the user is always in vendor mode. If they want to go back to customer view
- * they use the mode-switcher in the sidebar.
+ * Uses the auth hint to avoid instant redirect on page refresh when a
+ * valid session cookie may still exist.
  */
 export const vendorGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
@@ -28,7 +25,6 @@ export const vendorGuard: CanActivateFn = () => {
       return false;
     }
     if (auth.hasVendorRole()) {
-      // Ensure the active mode reflects where they are
       if (!roles.isVendorMode()) roles.switchMode('VENDOR');
       return true;
     }
@@ -38,6 +34,11 @@ export const vendorGuard: CanActivateFn = () => {
 
   if (auth.isLoggedIn()) return check();
 
-  // Restore session first (page refresh scenario)
+  // No hint → never been logged in, no point calling the server
+  if (!auth.hadSession()) {
+    router.navigate(['/sign-in']);
+    return false;
+  }
+
   return auth.fetchCurrentUser().pipe(map(() => check()));
 };

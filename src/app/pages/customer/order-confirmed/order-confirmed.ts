@@ -1,9 +1,4 @@
 
-// ==========================================================================
-// MajiSafi - Standalone Angular Order Confirmed Component
-// File: src/app/pages/order-confirmed/order-confirmed.ts
-// ==========================================================================
-
 import {
   Component,
   signal,
@@ -18,7 +13,11 @@ import { RouterModule, Router } from '@angular/router';
 
 import { Navbar } from '../../../shared/layout/navbar/navbar';
 import { Footer } from '../../../shared/layout/footer/footer';
-import { OrderResponse } from '../services/order-service';
+
+import {
+  CustomerOrder,
+  OrderItemResponse,
+} from '../services/order-service';
 
 export interface ConfirmedOrderItem {
   name: string;
@@ -56,7 +55,7 @@ interface DisplayOrderItem {
 }
 
 interface OrderNavigationState {
-  orderResponse?: OrderResponse;
+  orderResponse?: CustomerOrder;
   checkoutLines?: CheckoutLineInfo[];
   phoneNumber?: string;
   mpesaReceiptCode?: string;
@@ -72,13 +71,12 @@ interface OrderNavigationState {
 export class OrderConfirmed {
   private readonly router = inject(Router);
 
-  @Input() set initialOrder(data: Partial<ConfirmedOrderDetails>) {
+  @Input() set initialOrder(_data: Partial<ConfirmedOrderDetails>) {
     // Retained for compatibility with existing parent components.
-    // The API response is the source of truth for the confirmed order.
   }
 
   @Input() set initialVendorGroups(groups: VendorDeliveryGroup[]) {
-    if (groups && groups.length > 0) {
+    if (groups?.length) {
       this.vendorGroups.set(groups);
     }
   }
@@ -88,11 +86,7 @@ export class OrderConfirmed {
   @Output() helpRequested = new EventEmitter<string>();
   @Output() homeRequested = new EventEmitter<void>();
 
-  // Real order response returned by POST /api/orders.
-  orderData = signal<OrderResponse | null>(null);
-
-  // Product names are matched from the checkout cart because
-  // the current OrderResponse contains product IDs, not product names.
+  orderData = signal<CustomerOrder | null>(null);
   displayItems = signal<DisplayOrderItem[]>([]);
 
   phoneNumber = signal('');
@@ -100,8 +94,6 @@ export class OrderConfirmed {
   smsSent = signal(false);
   missingOrder = signal(false);
 
-  // Do not display fake vendor names or estimated delivery times.
-  // Supply actual groups here when the backend supports them.
   vendorGroups = signal<VendorDeliveryGroup[]>([]);
 
   constructor() {
@@ -120,16 +112,24 @@ export class OrderConfirmed {
     this.mpesaReceiptCode.set(state.mpesaReceiptCode ?? '');
 
     this.displayItems.set(
-      (order.items ?? []).map((item) => {
-        const cartLine = checkoutLines.find(
-          (line) => line.productId === item.productId
-        );
+      (order.items ?? []).map(
+        (item: OrderItemResponse): DisplayOrderItem => {
+          const cartLine = checkoutLines.find(
+            (line: CheckoutLineInfo) =>
+              String(line.productId) === String(item.productId)
+          );
 
-        return {
-          ...item,
-          name: cartLine?.name ?? item.productId,
-        };
-      })
+          return {
+            id: String(item.id),
+            productId: String(item.productId),
+            name: cartLine?.name ?? `Product ${item.productId}`,
+            quantity: item.quantity,
+            price: item.price,
+            subTotal:
+              item.subTotal ?? item.price * item.quantity,
+          };
+        }
+      )
     );
   }
 
@@ -140,19 +140,20 @@ export class OrderConfirmed {
       return;
     }
 
+    this.trackRequested.emit(order.orderId);
+
     this.router.navigate(['/live-tracking'], {
       queryParams: { orderId: order.orderId },
     });
   }
 
   getReceiptSms(): void {
-    // Connect this action to a real receipt-SMS backend endpoint.
-    // Do not show success until the backend confirms the SMS was sent.
+    // Connect this to a real SMS endpoint.
+    // Do not report success until the backend confirms sending.
     this.smsSent.set(false);
   }
 
   createAccount(): void {
-    // Connect this action to the account creation flow.
     this.createAccountRequested.emit(this.phoneNumber());
   }
 

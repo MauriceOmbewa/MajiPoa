@@ -35,6 +35,24 @@
   <!-- Right Side: Phone Number OTP Form -->
   <div class="form" style="display:grid;place-items:center;padding:40px 24px;background:#ffffff">
     <div class="inner" style="width:100%;max-width:400px">
+
+      <!-- Session-expired banner — shown when redirected here after timeout -->
+      @if (sessionExpired()) {
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#FEF3EB;
+                    border:1px solid #F5C2A0;border-radius:12px;padding:12px 14px;
+                    margin-bottom:20px">
+          <span style="font-size:18px;flex-shrink:0">⏱️</span>
+          <div>
+            <p style="margin:0 0 2px;font-size:13.5px;font-weight:700;color:#7A3500">
+              Your session expired
+            </p>
+            <p style="margin:0;font-size:13px;color:#8B4513;line-height:1.5">
+              You were signed out after a period of inactivity.
+              Sign in again to continue.
+            </p>
+          </div>
+        </div>
+      }
       
       <h2 style="margin:0 0 6px;font-size:24px;font-weight:700;color:var(--ink, #07243D)">
         Sign in or create an account
